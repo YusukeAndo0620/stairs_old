@@ -15,11 +15,6 @@ BuildContext get scaffoldContext {
 }
 
 void main() {
-  // runApp(const MaterialApp(
-  //     title: _kAppName,
-  //     home: AppLaunch(
-  //       app: App(),
-  //     )));
   runApp(const AppLaunch(app: App()));
 }
 
