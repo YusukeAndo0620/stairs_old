@@ -6,17 +6,20 @@ const _kModalPadding = EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0);
 abstract class Modal extends StatelessWidget {
   const Modal({
     super.key,
+    this.height,
   });
+  String? get title;
+  final double? height;
 
   Widget buildLeadingContent(BuildContext context);
-  Widget buildTrailingContent(BuildContext context);
+  Widget? buildTrailingContent(BuildContext context);
   Widget buildMainContent(BuildContext context);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      height: MediaQuery.of(context).size.height * 0.95,
+      height: height ?? MediaQuery.of(context).size.height * 0.95,
       width: MediaQuery.of(context).size.width,
       padding: _kModalPadding,
       decoration: BoxDecoration(
@@ -34,7 +37,16 @@ abstract class Modal extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               buildLeadingContent(context),
-              buildTrailingContent(context),
+              if (title != null)
+                Text(
+                  title!,
+                  style: theme.textStyleTitle,
+                ),
+              buildTrailingContent(context) != null
+                  ? buildTrailingContent(context)!
+                  : const SizedBox(
+                      width: 60.0,
+                    )
             ],
           ),
           Expanded(

@@ -4,14 +4,15 @@ import '../theme.dart';
 
 import '../../model/model.dart';
 import '../component/input/link_tag_input.dart';
-import '../display/input_link_tag_display_bloc.dart';
+import 'link_tag_display_bloc.dart';
 
 const _kHintTxt = '言語名を追加';
+const _kTagHintText = 'タグを追加';
 const _kSpaceHeight = 120.0;
 const _kContentPadding = EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0);
 
-class InputLinkTagDisplay extends StatelessWidget {
-  const InputLinkTagDisplay({
+class LinkTagDisplay extends StatelessWidget {
+  const LinkTagDisplay({
     super.key,
     required this.title,
     required this.linkTagList,
@@ -22,34 +23,31 @@ class InputLinkTagDisplay extends StatelessWidget {
   final String title;
   final List<LinkTagInfo> linkTagList;
   final Function(String) onTextSubmitted;
-  final VoidCallback onTap;
+  final Function(int) onTap;
   final Function(Object) onTapBack;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => InputLinkTagDisplayBloc(),
-      child: BlocBuilder<InputLinkTagDisplayBloc, InputLinkTagDisplayState>(
-        builder: (context, state) {
-          if (state is InputLinkTagDisplayInitialState) {
-            context
-                .read<InputLinkTagDisplayBloc>()
-                .add(Init(linkTagList: linkTagList));
-            return const SizedBox.shrink();
-          } else if (state is InputLinkTagDisplayGetInfoState) {
-            return _Frame(
-              key: key,
-              title: title,
-              linkTagList: state.linkTagList,
-              onTap: onTap,
-              onTapBack: onTapBack,
-              onTextSubmitted: onTextSubmitted,
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        },
-      ),
+    return BlocBuilder<LinkTagDisplayBloc, LinkTagDisplayState>(
+      builder: (context, state) {
+        if (state is LinkTagDisplayInitialState) {
+          context
+              .read<LinkTagDisplayBloc>()
+              .add(LinkTagDisplayInit(linkTagList: linkTagList));
+          return const SizedBox.shrink();
+        } else if (state is LinkTagDisplayGetInfoState) {
+          return _Frame(
+            key: key,
+            title: title,
+            linkTagList: state.linkTagList,
+            onTap: (id) => onTap(id),
+            onTapBack: onTapBack,
+            onTextSubmitted: onTextSubmitted,
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
     );
   }
 }
@@ -66,7 +64,7 @@ class _Frame extends StatelessWidget {
   final String title;
   final List<LinkTagInfo> linkTagList;
   final Function(String) onTextSubmitted;
-  final VoidCallback onTap;
+  final Function(int) onTap;
   final Function(Object) onTapBack;
 
   @override
@@ -80,7 +78,7 @@ class _Frame extends StatelessWidget {
             theme.icons.back,
             color: theme.colorFgDefault,
           ),
-          onPressed: () => _onTapBack(context),
+          onPressed: () => _onTapBack(context: context, isMovingBack: true),
         ),
         backgroundColor: theme.colorBgLayer1,
         title: Text(
@@ -88,38 +86,45 @@ class _Frame extends StatelessWidget {
           style: theme.textStyleHeading,
         ),
       ),
-      body: Padding(
-        padding: _kContentPadding,
-        child: Column(
-          children: [
-            _Content(
-              key: key,
-              linkTagList: linkTagList,
-              scrollController: scrollController,
-              onTap: onTap,
-              onTextSubmitted: onTextSubmitted,
-            )
-          ],
+      body: GestureDetector(
+        onPanUpdate: (details) {
+          if (details.delta.dx > 25) {
+            _onTapBack(context: context, isMovingBack: true);
+          }
+        },
+        child: Padding(
+          padding: _kContentPadding,
+          child: Column(
+            children: [
+              _Content(
+                key: key,
+                linkTagList: linkTagList,
+                scrollController: scrollController,
+                onTap: (id) => onTap(id),
+                onTextSubmitted: onTextSubmitted,
+              )
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(theme.icons.add),
         onPressed: () {
-          context.read<InputLinkTagDisplayBloc>().add(AddInputLinkTag());
+          context.read<LinkTagDisplayBloc>().add(AddLinkTag());
           context
-              .read<InputLinkTagDisplayBloc>()
+              .read<LinkTagDisplayBloc>()
               .add(MoveLast(scrollController: scrollController));
         },
       ),
     );
   }
 
-  void _onTapBack(BuildContext context) {
-    final state = context.read<InputLinkTagDisplayBloc>().state;
-    if (state is InputLinkTagDisplayGetInfoState) {
+  void _onTapBack({required BuildContext context, required bool isMovingBack}) {
+    final state = context.read<LinkTagDisplayBloc>().state;
+    if (state is LinkTagDisplayGetInfoState) {
       onTapBack(state.linkTagList);
     }
-    Navigator.pop(context);
+    if (isMovingBack) Navigator.pop(context);
   }
 }
 
@@ -134,7 +139,7 @@ class _Content extends StatelessWidget {
   final List<LinkTagInfo> linkTagList;
   final ScrollController scrollController;
   final Function(String) onTextSubmitted;
-  final VoidCallback onTap;
+  final Function(int) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -148,14 +153,16 @@ class _Content extends StatelessWidget {
                 id: info.id,
                 inputValue: info.inputValue,
                 hintText: _kHintTxt,
-                linkedValue: info.linkLabel,
+                tagHintText: _kTagHintText,
+                linkedValue: info.linkLabelList,
                 onTextSubmitted: (value, id) => context
-                    .read<InputLinkTagDisplayBloc>()
-                    .add(EditInputValue(id: id, inputValue: value)),
-                onTap: onTap,
+                    .read<LinkTagDisplayBloc>()
+                    .add(UpdateInputValue(id: id, inputValue: value)),
+                onTap: (id) => onTap(id),
                 onDeleteItem: (inputValue) {
-                  context.read<InputLinkTagDisplayBloc>().add(
-                      DeleteInputLinkTag(id: info.id, inputValue: inputValue));
+                  context
+                      .read<LinkTagDisplayBloc>()
+                      .add(DeleteLinkTag(id: info.id, inputValue: inputValue));
                 },
               ),
             const SizedBox(

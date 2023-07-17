@@ -40,11 +40,11 @@ class LinkTagInfo {
   LinkTagInfo({
     required this.id,
     required this.inputValue,
-    this.linkLabel = const [],
+    this.linkLabelList = const [],
   });
   final int id;
   final String inputValue;
-  final List<LabelInfo> linkLabel;
+  final List<LabelInfo> linkLabelList;
 }
 
 // TODO: Delete

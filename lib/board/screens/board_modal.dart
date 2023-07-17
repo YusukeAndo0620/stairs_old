@@ -4,8 +4,11 @@ import '../../loom/theme.dart';
 import '../../loom/component/modal/modal.dart';
 import '../../loom/component/list_item/card_list_item.dart';
 import '../board_detail_bloc.dart';
-import '../../loom/display/input_link_tag_display.dart';
+import '../../loom/display/link_tag_display.dart';
 import '../../model/model.dart';
+import '../../loom/component/modal/select_item_modal.dart';
+import '../../loom/display/link_tag_display_bloc.dart';
+import '../../loom/component/label_tip.dart';
 
 const _kProjectTitleTxt = 'プロジェクト';
 const _kProjectHintTxt = 'プロジェクト名';
@@ -42,6 +45,8 @@ class BoardModal extends Modal {
     this.boardId,
   });
 
+  @override
+  String? get title => null;
   final String? boardId;
 
   @override
@@ -50,6 +55,7 @@ class BoardModal extends Modal {
     return IconButton(
       icon: Icon(
         theme.icons.close,
+        color: theme.colorFgDefault,
       ),
       iconSize: _kIconSize,
       onPressed: () => Navigator.pop(context),
@@ -77,16 +83,12 @@ class BoardModal extends Modal {
   @override
   Widget buildMainContent(BuildContext context) {
     final theme = Theme.of(context);
-    // if (boardId == null) {
-    //   context.read<BoardDetailBloc>().add(const Init());
-    // } else {
-    //   context.read<BoardDetailBloc>().add(BoardGetDetail(boardId: boardId!));
-    // }
-    return
-        // BlocProvider(
-        //   create: (_) => BoardDetailBloc(),
-        //   child:
-        BlocBuilder<BoardDetailBloc, BoardDetailBlocState>(
+    if (boardId == null) {
+      context.read<BoardDetailBloc>().add(const Init());
+    } else {
+      context.read<BoardDetailBloc>().add(BoardGetDetail(boardId: boardId!));
+    }
+    return BlocBuilder<BoardDetailBloc, BoardDetailBlocState>(
       builder: (context, state) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -169,15 +171,49 @@ class BoardModal extends Modal {
               iconColor: theme.colorPrimary,
               iconData: theme.icons.resume,
               hintText: _kDevLangHintTxt,
-              itemList: [],
+              itemList: [
+                for (final item
+                    in context.read<BoardDetailBloc>().state.devLanguageList)
+                  LabelTip(
+                    label: item.inputValue,
+                    themeColor: theme.colorFgDisabled,
+                  )
+              ],
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) {
-                    return InputLinkTagDisplay(
+                    return LinkTagDisplay(
                       title: _kDevLangTxt,
                       linkTagList: state.devLanguageList,
                       onTextSubmitted: (value) {},
-                      onTap: () {},
+                      onTap: (id) {
+                        showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) {
+                              return SelectItemModal(
+                                id: id,
+                                title: getSelectItemDisplayTitle(
+                                    context: context, id: id),
+                                height:
+                                    MediaQuery.of(context).size.height * 0.7,
+                                labelList: context
+                                    .read<BoardDetailBloc>()
+                                    .state
+                                    .tagList,
+                                selectedLabelList: getDevLangSelectedLabelList(
+                                    context: context, id: id),
+                                onTapListItem: (linkLabelList) {
+                                  context.read<LinkTagDisplayBloc>().add(
+                                        UpdateLinkLabelList(
+                                            id: id,
+                                            linkLabelList: linkLabelList),
+                                      );
+                                },
+                              );
+                            });
+                      },
                       onTapBack: (data) {
                         context.read<BoardDetailBloc>().add(
                               BoardChangDevLanguageList(
@@ -240,5 +276,37 @@ class BoardModal extends Modal {
         );
       },
     );
+  }
+
+  List<LabelInfo> getDevLangSelectedLabelList(
+      {required BuildContext context, required int id}) {
+    return (context.read<LinkTagDisplayBloc>().state
+            as LinkTagDisplayGetInfoState)
+        .linkTagList
+        .firstWhere(
+          (element) => element.id == id,
+          orElse: () => LinkTagInfo(
+            id: 1,
+            inputValue: '',
+            linkLabelList: [],
+          ),
+        )
+        .linkLabelList;
+  }
+
+  String getSelectItemDisplayTitle(
+      {required BuildContext context, required int id}) {
+    return (context.read<LinkTagDisplayBloc>().state
+            as LinkTagDisplayGetInfoState)
+        .linkTagList
+        .firstWhere(
+          (element) => element.id == id,
+          orElse: () => LinkTagInfo(
+            id: 1,
+            inputValue: '',
+            linkLabelList: [],
+          ),
+        )
+        .inputValue;
   }
 }

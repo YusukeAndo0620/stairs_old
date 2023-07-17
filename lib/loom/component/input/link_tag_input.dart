@@ -17,6 +17,7 @@ class LinkTagInput extends StatelessWidget {
     required this.id,
     required this.inputValue,
     required this.hintText,
+    required this.tagHintText,
     this.maxLength = 100,
     this.autoFocus = false,
     required this.linkedValue,
@@ -28,11 +29,12 @@ class LinkTagInput extends StatelessWidget {
   final int id;
   final String inputValue;
   final String hintText;
+  final String tagHintText;
   final List<LabelInfo> linkedValue;
   final int maxLength;
   final bool autoFocus;
   final Function(String, int) onTextSubmitted;
-  final VoidCallback onTap;
+  final Function(int) onTap;
   final Function(String) onDeleteItem;
 
   @override
@@ -71,9 +73,9 @@ class LinkTagInput extends StatelessWidget {
           EventArea(
             itemList:
                 getLinkValueList(context: context, linkedValue: linkedValue),
-            hintText: hintText,
+            hintText: tagHintText,
             trailingIconData: Icons.expand_more,
-            onTap: onTap,
+            onTap: () => onTap(id),
           ),
           const SizedBox(
             width: _kSpaceWidth,

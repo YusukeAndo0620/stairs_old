@@ -15,7 +15,7 @@ final initialState = BoardDetailBlocState(
     (index) => LinkTagInfo(
       id: index,
       inputValue: 'java_$index',
-      linkLabel: List.generate(
+      linkLabelList: List.generate(
         4,
         (labelIndex) => LabelInfo(
           id: labelIndex,
@@ -25,6 +25,19 @@ final initialState = BoardDetailBlocState(
           themeColor: labelIndex.isEven ? Colors.blue : Colors.purple,
         ),
       ),
+    ),
+  ),
+  tagList: List.generate(
+    6,
+    (labelIndex) => LabelInfo(
+      id: labelIndex,
+      labelName:
+          labelIndex.isEven ? '$labelIndex 画面設計' : '$labelIndex API設計書修正対応',
+      themeColor: labelIndex % 3 == 0
+          ? Colors.blue
+          : labelIndex % 3 == 1
+              ? Colors.purple
+              : Colors.yellow,
     ),
   ),
 );
@@ -300,7 +313,12 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
 
   void _onChangeDevLanguageList(
       BoardChangDevLanguageList event, Emitter<BoardDetailBlocState> emit) {
-    emit(state.copyWith(devLanguageList: event.devLanguageList));
+    final emitDevLangList = event.devLanguageList
+        .map((item) => item.inputValue.isNotEmpty ? item : null)
+        .toList();
+
+    emit(state.copyWith(
+        devLanguageList: emitDevLangList.whereType<LinkTagInfo>().toList()));
   }
 
   void _onChangeToolList(

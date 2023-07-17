@@ -30,6 +30,11 @@ class _EventAreaState extends State<EventArea> {
   bool _pressed = false;
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
