@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart' hide Theme;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/single_child_widget.dart';
+import 'package:flutter/cupertino.dart';
+
 import '../../loom/theme.dart';
 import '../../loom/component/modal/modal.dart';
 import '../../loom/component/list_item/card_list_item.dart';
@@ -9,6 +12,8 @@ import '../../model/model.dart';
 import '../../loom/component/modal/select_item_modal.dart';
 import '../../loom/display/link_tag_display_bloc.dart';
 import '../../loom/component/label_tip.dart';
+import '../../loom/display/select_color_display.dart';
+import '../../loom/component/item/color_box.dart';
 
 const _kProjectTitleTxt = 'プロジェクト';
 const _kProjectHintTxt = 'プロジェクト名';
@@ -48,6 +53,11 @@ class BoardModal extends Modal {
   @override
   String? get title => null;
   final String? boardId;
+
+  @override
+  List<SingleChildWidget> getPageProviders() {
+    return [];
+  }
 
   @override
   Widget buildLeadingContent(BuildContext context) {
@@ -115,8 +125,27 @@ class BoardModal extends Modal {
               iconColor: theme.colorPrimary,
               iconData: Icons.palette,
               hintText: _kColorHintTxt,
-              itemList: [],
-              onTap: () {},
+              itemList: [
+                ColorBox(
+                  color: state.colorInfo.themeColor,
+                ),
+              ],
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return SelectColorDisplay(
+                      title: _kColorTxt,
+                      selectedColorInfo: state.colorInfo,
+                      onTap: (id) {},
+                      onTapBackIcon: (colorInfo) {
+                        context.read<BoardDetailBloc>().add(
+                              BoardChangThemeColor(colorInfo: colorInfo),
+                            );
+                      },
+                    );
+                  },
+                ),
+              ),
             ),
             // 業種
             CardLstItem.input(

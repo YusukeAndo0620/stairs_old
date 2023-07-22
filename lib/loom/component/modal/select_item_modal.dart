@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart' hide Theme;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../theme.dart';
+import 'package:provider/single_child_widget.dart';
 
+import '../../theme.dart';
 import '../../../model/model.dart';
-import 'select_item_modal_bloc.dart';
 import '../../component/modal/modal.dart';
+import 'select_item_modal_bloc.dart';
 
 const _kListEmptyTxt = '選択可能なタグがありません。\n ボード設定 > ラベルより、ラベルを追加してください。';
 const _kBorderWidth = 1.0;
@@ -27,6 +28,11 @@ class SelectItemModal extends Modal {
   final List<LabelInfo> labelList;
   final List<LabelInfo> selectedLabelList;
   final Function(List<LabelInfo>) onTapListItem;
+
+  @override
+  List<SingleChildWidget> getPageProviders() {
+    return [BlocProvider(create: (_) => SelectItemModalBloc())];
+  }
 
   @override
   Widget buildLeadingContent(BuildContext context) {

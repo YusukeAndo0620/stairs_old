@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart' hide Theme;
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+
 import '../../theme.dart';
 
 const _kModalPadding = EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0);
@@ -11,9 +14,48 @@ abstract class Modal extends StatelessWidget {
   String? get title;
   final double? height;
 
+  List<SingleChildWidget> getPageProviders();
   Widget buildLeadingContent(BuildContext context);
   Widget? buildTrailingContent(BuildContext context);
   Widget buildMainContent(BuildContext context);
+
+  @override
+  Widget build(BuildContext context) {
+    return getPageProviders().isEmpty
+        ? ModalContent(
+            title: title,
+            height: height,
+            leadingContent: buildLeadingContent(context),
+            mainContent: buildMainContent(context),
+            trailContent: buildTrailingContent(context),
+          )
+        : MultiProvider(
+            key: ValueKey<int>(buildMainContent(context).hashCode),
+            providers: getPageProviders(),
+            child: ModalContent(
+              title: title,
+              height: height,
+              leadingContent: buildLeadingContent(context),
+              mainContent: buildMainContent(context),
+              trailContent: buildTrailingContent(context),
+            ));
+  }
+}
+
+class ModalContent extends StatelessWidget {
+  const ModalContent({
+    super.key,
+    this.title,
+    this.height,
+    required this.leadingContent,
+    required this.mainContent,
+    this.trailContent,
+  });
+  final String? title;
+  final double? height;
+  final Widget leadingContent;
+  final Widget mainContent;
+  final Widget? trailContent;
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +78,14 @@ abstract class Modal extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              buildLeadingContent(context),
+              leadingContent,
               if (title != null)
                 Text(
                   title!,
                   style: theme.textStyleTitle,
                 ),
-              buildTrailingContent(context) != null
-                  ? buildTrailingContent(context)!
+              trailContent != null
+                  ? trailContent!
                   : const SizedBox(
                       width: 60.0,
                     )
@@ -51,7 +93,7 @@ abstract class Modal extends StatelessWidget {
           ),
           Expanded(
             child: SingleChildScrollView(
-              child: buildMainContent(context),
+              child: mainContent,
             ),
           ),
         ],

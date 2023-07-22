@@ -6,7 +6,10 @@ import '../model/model.dart';
 final initialState = BoardDetailBlocState(
   boardId: '',
   projectName: '',
-  themeColor: Color.fromARGB(255, 10, 241, 161),
+  colorInfo: ColorInfo(
+    id: 5,
+    themeColor: Color.fromARGB(255, 10, 241, 161),
+  ),
   industry: '',
   startDate: '',
   endDate: '',
@@ -79,9 +82,9 @@ class BoardChangeProjectName extends BoardDetailBlocEvent {
 
 // Change theme color and set state
 class BoardChangThemeColor extends BoardDetailBlocEvent {
-  const BoardChangThemeColor({required this.themeColor});
+  const BoardChangThemeColor({required this.colorInfo});
 
-  final Color themeColor;
+  final ColorInfo colorInfo;
 }
 
 // Change industry and set state
@@ -161,7 +164,7 @@ class BoardDetailBlocState extends Equatable {
   const BoardDetailBlocState({
     required this.boardId,
     required this.projectName,
-    required this.themeColor,
+    required this.colorInfo,
     required this.industry,
     required this.startDate,
     required this.endDate,
@@ -177,7 +180,7 @@ class BoardDetailBlocState extends Equatable {
 
   final String boardId;
   final String projectName;
-  final Color themeColor;
+  final ColorInfo colorInfo;
   final String industry;
   final String startDate;
   final String endDate;
@@ -194,7 +197,7 @@ class BoardDetailBlocState extends Equatable {
   List<Object?> get props => [
         boardId,
         projectName,
-        themeColor,
+        colorInfo,
         industry,
         startDate,
         endDate,
@@ -210,7 +213,7 @@ class BoardDetailBlocState extends Equatable {
   BoardDetailBlocState copyWith({
     String? boardId,
     String? projectName,
-    Color? themeColor,
+    ColorInfo? colorInfo,
     String? industry,
     String? startDate,
     String? endDate,
@@ -226,7 +229,7 @@ class BoardDetailBlocState extends Equatable {
       BoardDetailBlocState(
         boardId: boardId ?? this.boardId,
         projectName: projectName ?? this.projectName,
-        themeColor: themeColor ?? this.themeColor,
+        colorInfo: colorInfo ?? this.colorInfo,
         industry: industry ?? this.industry,
         startDate: startDate ?? this.startDate,
         endDate: endDate ?? this.endDate,
@@ -285,7 +288,7 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
 
   void _onChangeThemeColor(
       BoardChangThemeColor event, Emitter<BoardDetailBlocState> emit) {
-    emit(state.copyWith(themeColor: event.themeColor));
+    emit(state.copyWith(colorInfo: event.colorInfo));
   }
 
   void _onChangeIndustry(

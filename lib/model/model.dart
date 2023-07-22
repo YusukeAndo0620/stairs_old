@@ -59,3 +59,14 @@ class LabelInfo {
   final String labelName;
   final Color themeColor;
 }
+
+// TODO: Delete
+class ColorInfo {
+  ColorInfo({
+    required this.id,
+    required this.themeColor,
+  });
+
+  final int id;
+  final Color themeColor;
+}

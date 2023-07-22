@@ -10,6 +10,8 @@ import 'loom/theme.dart';
 const _kAppName = 'Stairs';
 
 final _scaffoldKey = GlobalKey();
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
 BuildContext get scaffoldContext {
   return _scaffoldKey.currentContext!;
 }
@@ -78,6 +80,7 @@ class _AppLaunchState extends State<AppLaunch> {
         child: MaterialApp(
           title: _kAppName,
           home: widget.app.buildMainContents(context),
+          navigatorObservers: <NavigatorObserver>[routeObserver],
         ),
       ),
     );
