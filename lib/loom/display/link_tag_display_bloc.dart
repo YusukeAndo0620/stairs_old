@@ -22,7 +22,7 @@ class UpdateInputValue extends LinkTagDisplayEvent {
 class UpdateLinkLabelList extends LinkTagDisplayEvent {
   UpdateLinkLabelList({required this.id, required this.linkLabelList});
   final int id;
-  final List<LabelInfo> linkLabelList;
+  final List<ColorLabelInfo> linkLabelList;
 }
 
 class AddLinkTag extends LinkTagDisplayEvent {
@@ -148,7 +148,7 @@ class LinkTagDisplayBloc
   List<LinkTagInfo> getReplacedList({
     required int targetId,
     String? inputValue,
-    List<LabelInfo>? linkLabelList,
+    List<ColorLabelInfo>? linkLabelList,
   }) {
     final displayState = (state as LinkTagDisplayGetInfoState);
     final targetIndex = displayState.linkTagList

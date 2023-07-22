@@ -29,10 +29,10 @@ class BoardDetailItemInfo {
   final String os;
   final String db;
   final List<LinkTagInfo> devLanguage;
-  final List<LabelInfo> tool;
+  final List<ColorLabelInfo> tool;
   final String devProgress;
   final String devSize;
-  final List<LabelInfo> tag;
+  final List<ColorLabelInfo> tag;
 }
 
 // TODO: Delete
@@ -44,12 +44,12 @@ class LinkTagInfo {
   });
   final int id;
   final String inputValue;
-  final List<LabelInfo> linkLabelList;
+  final List<ColorLabelInfo> linkLabelList;
 }
 
 // TODO: Delete
-class LabelInfo {
-  LabelInfo({
+class ColorLabelInfo {
+  ColorLabelInfo({
     required this.id,
     required this.labelName,
     required this.themeColor,
@@ -69,4 +69,15 @@ class ColorInfo {
 
   final int id;
   final Color themeColor;
+}
+
+// TODO: Delete
+class Label {
+  Label({
+    required this.id,
+    required this.labelName,
+  });
+
+  final int id;
+  final String labelName;
 }

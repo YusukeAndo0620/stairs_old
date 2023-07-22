@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide Theme;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:flutter/cupertino.dart';
 
 import '../../loom/theme.dart';
 import '../../loom/component/modal/modal.dart';
@@ -14,6 +13,9 @@ import '../../loom/display/link_tag_display_bloc.dart';
 import '../../loom/component/label_tip.dart';
 import '../../loom/display/select_color_display.dart';
 import '../../loom/component/item/color_box.dart';
+import '../../loom/display/select_color_display_bloc.dart';
+import '../../loom/display/select_label_display.dart';
+import '../../loom/display/select_label_display_bloc.dart';
 
 const _kProjectTitleTxt = 'プロジェクト';
 const _kProjectHintTxt = 'プロジェクト名';
@@ -56,7 +58,11 @@ class BoardModal extends Modal {
 
   @override
   List<SingleChildWidget> getPageProviders() {
-    return [];
+    return [
+      // BlocProvider(create: (_) => SelectColorDisplayBloc()),
+      // BlocProvider(create: (_) => LinkTagDisplayBloc()),
+      // BlocProvider(create: (_) => SelectLabelDisplayBloc()),
+    ];
   }
 
   @override
@@ -269,8 +275,32 @@ class BoardModal extends Modal {
               iconColor: theme.colorPrimary,
               iconData: theme.icons.resume,
               hintText: _kProgressHintTxt,
-              itemList: [],
-              onTap: () {},
+              itemList: [
+                for (final item
+                    in context.read<BoardDetailBloc>().state.devProgressList)
+                  LabelTip(
+                    label: item.labelName,
+                    themeColor: theme.colorFgDisabled,
+                  )
+              ],
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return SelectLabelDisplay(
+                      title: _kProgressTxt,
+                      selectedLabelList:
+                          context.read<BoardDetailBloc>().state.devProgressList,
+                      onTap: (id) {},
+                      onTapBackIcon: (labelList) {
+                        context.read<BoardDetailBloc>().add(
+                              BoardChangeDevProgressList(
+                                  devProgressList: labelList),
+                            );
+                      },
+                    );
+                  },
+                ),
+              ),
             ),
             // 開発人数
             CardLstItem.input(
@@ -307,7 +337,7 @@ class BoardModal extends Modal {
     );
   }
 
-  List<LabelInfo> getDevLangSelectedLabelList(
+  List<ColorLabelInfo> getDevLangSelectedLabelList(
       {required BuildContext context, required int id}) {
     return (context.read<LinkTagDisplayBloc>().state
             as LinkTagDisplayGetInfoState)

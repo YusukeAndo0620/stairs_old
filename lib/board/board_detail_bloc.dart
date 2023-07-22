@@ -20,7 +20,7 @@ final initialState = BoardDetailBlocState(
       inputValue: 'java_$index',
       linkLabelList: List.generate(
         4,
-        (labelIndex) => LabelInfo(
+        (labelIndex) => ColorLabelInfo(
           id: labelIndex,
           labelName: labelIndex.isEven
               ? '$index 画面設計_$labelIndex'
@@ -32,7 +32,7 @@ final initialState = BoardDetailBlocState(
   ),
   tagList: List.generate(
     6,
-    (labelIndex) => LabelInfo(
+    (labelIndex) => ColorLabelInfo(
       id: labelIndex,
       labelName:
           labelIndex.isEven ? '$labelIndex 画面設計' : '$labelIndex API設計書修正対応',
@@ -134,14 +134,14 @@ class BoardChangDevLanguageList extends BoardDetailBlocEvent {
 class BoardChangeToolList extends BoardDetailBlocEvent {
   const BoardChangeToolList({required this.toolList});
 
-  final List<LabelInfo> toolList;
+  final List<ColorLabelInfo> toolList;
 }
 
 // Change development Progress and set state
-class BoardChangeDevProgress extends BoardDetailBlocEvent {
-  const BoardChangeDevProgress({required this.devProgress});
+class BoardChangeDevProgressList extends BoardDetailBlocEvent {
+  const BoardChangeDevProgressList({required this.devProgressList});
 
-  final String devProgress;
+  final List<Label> devProgressList;
 }
 
 // Change development Size and set state
@@ -155,7 +155,7 @@ class BoardChangeDevSize extends BoardDetailBlocEvent {
 class BoardChangeTagList extends BoardDetailBlocEvent {
   const BoardChangeTagList({required this.tagList});
 
-  final List<LabelInfo> tagList;
+  final List<ColorLabelInfo> tagList;
 }
 
 // State
@@ -173,7 +173,7 @@ class BoardDetailBlocState extends Equatable {
     this.db = '',
     this.devLanguageList = const [],
     this.toolList = const [],
-    this.devProgress = '',
+    this.devProgressList = const [],
     this.devSize = '',
     this.tagList = const [],
   });
@@ -188,10 +188,10 @@ class BoardDetailBlocState extends Equatable {
   final String os;
   final String db;
   final List<LinkTagInfo> devLanguageList;
-  final List<LabelInfo> toolList;
-  final String devProgress;
+  final List<ColorLabelInfo> toolList;
+  final List<Label> devProgressList;
   final String devSize;
-  final List<LabelInfo> tagList;
+  final List<ColorLabelInfo> tagList;
 
   @override
   List<Object?> get props => [
@@ -206,7 +206,7 @@ class BoardDetailBlocState extends Equatable {
         db,
         devLanguageList,
         toolList,
-        devProgress,
+        devProgressList,
         devSize,
         tagList,
       ];
@@ -221,10 +221,10 @@ class BoardDetailBlocState extends Equatable {
     String? os,
     String? db,
     List<LinkTagInfo>? devLanguageList,
-    List<LabelInfo>? toolList,
-    String? devProgress,
+    List<ColorLabelInfo>? toolList,
+    List<Label>? devProgressList,
     String? devSize,
-    List<LabelInfo>? tagList,
+    List<ColorLabelInfo>? tagList,
   }) =>
       BoardDetailBlocState(
         boardId: boardId ?? this.boardId,
@@ -238,7 +238,7 @@ class BoardDetailBlocState extends Equatable {
         db: db ?? this.db,
         devLanguageList: devLanguageList ?? this.devLanguageList,
         toolList: toolList ?? this.toolList,
-        devProgress: devProgress ?? this.devProgress,
+        devProgressList: devProgressList ?? this.devProgressList,
         devSize: devSize ?? this.devSize,
         tagList: tagList ?? this.tagList,
       );
@@ -262,7 +262,7 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
     on<BoardChangeDb>(_onChangeDb);
     on<BoardChangDevLanguageList>(_onChangeDevLanguageList);
     on<BoardChangeToolList>(_onChangeToolList);
-    on<BoardChangeDevProgress>(_onChangeDevProgress);
+    on<BoardChangeDevProgressList>(_onChangeDevProgressList);
     on<BoardChangeDevSize>(_onChangeDevSize);
     on<BoardChangeTagList>(_onChangeTagList);
   }
@@ -329,9 +329,9 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
     emit(state.copyWith(toolList: event.toolList));
   }
 
-  void _onChangeDevProgress(
-      BoardChangeDevProgress event, Emitter<BoardDetailBlocState> emit) {
-    emit(state.copyWith(devProgress: event.devProgress));
+  void _onChangeDevProgressList(
+      BoardChangeDevProgressList event, Emitter<BoardDetailBlocState> emit) {
+    emit(state.copyWith(devProgressList: event.devProgressList));
   }
 
   void _onChangeDevSize(

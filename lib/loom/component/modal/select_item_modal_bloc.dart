@@ -4,7 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import '../../../model/model.dart';
 
-class CheckLabelInfo extends LabelInfo {
+class CheckLabelInfo extends ColorLabelInfo {
   CheckLabelInfo({
     required super.id,
     required super.labelName,
@@ -28,8 +28,8 @@ class SelectItemInit extends SelectItemModalEvent {
   });
 
   final int id;
-  final List<LabelInfo> labelList;
-  final List<LabelInfo> selectedLabelList;
+  final List<ColorLabelInfo> labelList;
+  final List<ColorLabelInfo> selectedLabelList;
 }
 
 class SelectItemTapListItem extends SelectItemModalEvent {
@@ -76,11 +76,11 @@ class SelectItemGetCheckListState extends SelectItemModalState {
       );
 
 // チェックリストで、選択された要素のリストを取得
-  List<LabelInfo> get selectedList {
+  List<ColorLabelInfo> get selectedList {
     final selectedList =
         checkList.map((item) => item.checked ? item : null).toList();
     selectedList.removeWhere((element) => element == null);
-    return selectedList.whereType<LabelInfo>().toList();
+    return selectedList.whereType<ColorLabelInfo>().toList();
   }
 }
 

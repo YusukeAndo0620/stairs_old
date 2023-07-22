@@ -25,9 +25,9 @@ class SelectItemModal extends Modal {
   final int id;
   @override
   final String title;
-  final List<LabelInfo> labelList;
-  final List<LabelInfo> selectedLabelList;
-  final Function(List<LabelInfo>) onTapListItem;
+  final List<ColorLabelInfo> labelList;
+  final List<ColorLabelInfo> selectedLabelList;
+  final Function(List<ColorLabelInfo>) onTapListItem;
 
   @override
   List<SingleChildWidget> getPageProviders() {
@@ -86,7 +86,7 @@ class _Frame extends StatelessWidget {
   });
   final String title;
   final List<CheckLabelInfo> checkList;
-  final Function(List<LabelInfo>) onTapListItem;
+  final Function(List<ColorLabelInfo>) onTapListItem;
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +123,7 @@ class _Content extends StatelessWidget {
     required this.onTapListItem,
   });
   final List<CheckLabelInfo> checkList;
-  final Function(List<LabelInfo>) onTapListItem;
+  final Function(List<ColorLabelInfo>) onTapListItem;
 
   @override
   Widget build(BuildContext context) {

@@ -30,7 +30,7 @@ class LinkTagInput extends StatelessWidget {
   final String inputValue;
   final String hintText;
   final String tagHintText;
-  final List<LabelInfo> linkedValue;
+  final List<ColorLabelInfo> linkedValue;
   final int maxLength;
   final bool autoFocus;
   final Function(String, int) onTextSubmitted;
@@ -94,7 +94,7 @@ class LinkTagInput extends StatelessWidget {
 
   List<Widget> getLinkValueList({
     required BuildContext context,
-    required List<LabelInfo> linkedValue,
+    required List<ColorLabelInfo> linkedValue,
   }) {
     return linkedValue
         .map((item) => LabelTip(
