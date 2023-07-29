@@ -4,53 +4,6 @@ import 'package:equatable/equatable.dart';
 import 'package:collection/collection.dart';
 import '../../../model/model.dart';
 
-final labelList = [
-  Label(
-    id: 1,
-    labelName: '要件定義',
-  ),
-  Label(
-    id: 2,
-    labelName: '基本設計',
-  ),
-  Label(
-    id: 3,
-    labelName: '詳細設計',
-  ),
-  Label(
-    id: 4,
-    labelName: '画面設計書作成',
-  ),
-  Label(
-    id: 5,
-    labelName: 'API設計書作成',
-  ),
-  Label(
-    id: 6,
-    labelName: '画面設計書修正',
-  ),
-  Label(
-    id: 7,
-    labelName: 'API設計書修正',
-  ),
-  Label(
-    id: 8,
-    labelName: '新規実装',
-  ),
-  Label(
-    id: 9,
-    labelName: '実装修正',
-  ),
-  Label(
-    id: 10,
-    labelName: 'バグ対応',
-  ),
-  Label(
-    id: 11,
-    labelName: 'レビュー',
-  ),
-];
-
 class CheckLabel extends Label {
   CheckLabel({
     required super.id,
@@ -132,7 +85,7 @@ class SelectLabelDisplayBloc
   }
 
   void _onInit(SelectLabelInit event, Emitter<SelectLabelDisplayState> emit) {
-    final checkList = labelList
+    final checkList = devProgressList
         .map(
           (item) => CheckLabel(
             id: item.id,

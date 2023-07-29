@@ -30,12 +30,8 @@ class AddLinkTag extends LinkTagDisplayEvent {
 }
 
 class DeleteLinkTag extends LinkTagDisplayEvent {
-  const DeleteLinkTag({
-    required this.id,
-    required this.inputValue,
-  });
+  const DeleteLinkTag({required this.id});
   final int id;
-  final String inputValue;
 }
 
 class MoveLast extends LinkTagDisplayEvent {

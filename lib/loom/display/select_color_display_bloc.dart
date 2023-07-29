@@ -3,49 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../model/model.dart';
 
-final _colorList = [
-  ColorInfo(
-    id: 1,
-    themeColor: Color.fromARGB(255, 255, 31, 31),
-  ),
-  ColorInfo(
-    id: 2,
-    themeColor: Color.fromARGB(255, 7, 77, 255),
-  ),
-  ColorInfo(
-    id: 3,
-    themeColor: Color.fromARGB(255, 239, 255, 8),
-  ),
-  ColorInfo(
-    id: 4,
-    themeColor: Color.fromARGB(255, 11, 255, 3),
-  ),
-  ColorInfo(
-    id: 5,
-    themeColor: Color.fromARGB(255, 10, 241, 161),
-  ),
-  ColorInfo(
-    id: 6,
-    themeColor: Color.fromARGB(255, 0, 253, 249),
-  ),
-  ColorInfo(
-    id: 7,
-    themeColor: Color.fromARGB(255, 255, 162, 1),
-  ),
-  ColorInfo(
-    id: 8,
-    themeColor: Color.fromARGB(255, 228, 50, 255),
-  ),
-  ColorInfo(
-    id: 9,
-    themeColor: Color.fromARGB(255, 255, 146, 146),
-  ),
-  ColorInfo(
-    id: 10,
-    themeColor: Colors.black,
-  ),
-];
-
 // Event
 abstract class SelectColorDisplayEvent {
   const SelectColorDisplayEvent();
@@ -120,7 +77,7 @@ class SelectColorDisplayBloc
   void _onInit(SelectColorInit event, Emitter<SelectColorDisplayState> emit) {
     emit(SelectColorGotCompleteState(
       selectedColorId: event.selectColorInfo.id,
-      colorList: _colorList,
+      colorList: colorList,
     ));
   }
 

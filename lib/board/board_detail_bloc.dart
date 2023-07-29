@@ -4,46 +4,33 @@ import 'package:equatable/equatable.dart';
 import '../model/model.dart';
 
 final initialState = BoardDetailBlocState(
-  boardId: '',
-  projectName: '',
-  colorInfo: ColorInfo(
-    id: 5,
-    themeColor: Color.fromARGB(255, 10, 241, 161),
-  ),
-  industry: '',
-  startDate: '',
-  endDate: '',
-  devLanguageList: List.generate(
-    10,
-    (index) => LinkTagInfo(
-      id: index,
-      inputValue: 'java_$index',
-      linkLabelList: List.generate(
-        4,
-        (labelIndex) => ColorLabelInfo(
-          id: labelIndex,
-          labelName: labelIndex.isEven
-              ? '$index 画面設計_$labelIndex'
-              : '$index API設計書修正対応',
-          themeColor: labelIndex.isEven ? Colors.blue : Colors.purple,
+    boardId: '',
+    projectName: '',
+    colorInfo: ColorInfo(
+      id: 5,
+      themeColor: Color.fromARGB(255, 10, 241, 161),
+    ),
+    industry: '',
+    startDate: '',
+    endDate: '',
+    devLanguageList: List.generate(
+      10,
+      (index) => LinkTagInfo(
+        id: index,
+        inputValue: 'java_$index',
+        linkLabelList: List.generate(
+          4,
+          (labelIndex) => ColorLabelInfo(
+            id: labelIndex,
+            labelName: labelIndex.isEven
+                ? '$index 画面設計_$labelIndex'
+                : '$index API設計書修正対応',
+            themeColor: labelIndex.isEven ? Colors.blue : Colors.purple,
+          ),
         ),
       ),
     ),
-  ),
-  tagList: List.generate(
-    6,
-    (labelIndex) => ColorLabelInfo(
-      id: labelIndex,
-      labelName:
-          labelIndex.isEven ? '$labelIndex 画面設計' : '$labelIndex API設計書修正対応',
-      themeColor: labelIndex % 3 == 0
-          ? Colors.blue
-          : labelIndex % 3 == 1
-              ? Colors.purple
-              : Colors.yellow,
-    ),
-  ),
-);
+    tagList: tagList);
 
 // Event
 abstract class BoardDetailBlocEvent {

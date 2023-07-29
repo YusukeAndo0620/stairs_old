@@ -24,6 +24,7 @@ class SelectColorDisplay extends InputDisplay {
 
   @override
   List<SingleChildWidget> getPageProviders() {
+    // return [BlocProvider(create: (_) => SelectColorDisplayBloc())];
     return [];
   }
 

@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../theme.dart';
 
 import '../../model/model.dart';
-import '../component/input/link_tag_input.dart';
+import '../component/list_item/link_list_item.dart';
+import '../component/label_tip.dart';
 import 'link_tag_display_bloc.dart';
 
 const _kHintTxt = '言語名を追加';
@@ -149,12 +150,15 @@ class _Content extends StatelessWidget {
         child: Column(
           children: [
             for (final info in linkTagList)
-              LinkTagInput(
+              LinkListItem(
                 id: info.id,
                 inputValue: info.inputValue,
                 hintText: _kHintTxt,
-                tagHintText: _kTagHintText,
-                linkedValue: info.linkLabelList,
+                linkHintText: _kTagHintText,
+                linkedWidgets: getLinkValueList(
+                  context: context,
+                  linkedValue: info.linkLabelList,
+                ),
                 onTextSubmitted: (value, id) => context
                     .read<LinkTagDisplayBloc>()
                     .add(UpdateInputValue(id: id, inputValue: value)),
@@ -162,7 +166,7 @@ class _Content extends StatelessWidget {
                 onDeleteItem: (inputValue) {
                   context
                       .read<LinkTagDisplayBloc>()
-                      .add(DeleteLinkTag(id: info.id, inputValue: inputValue));
+                      .add(DeleteLinkTag(id: info.id));
                 },
               ),
             const SizedBox(
@@ -172,5 +176,17 @@ class _Content extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  List<Widget> getLinkValueList({
+    required BuildContext context,
+    required List<ColorLabelInfo> linkedValue,
+  }) {
+    return linkedValue
+        .map((item) => LabelTip(
+              label: item.labelName,
+              themeColor: item.themeColor,
+            ))
+        .toList();
   }
 }

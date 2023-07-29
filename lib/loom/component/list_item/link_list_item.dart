@@ -4,79 +4,88 @@ import '../input/text_input.dart';
 import '../event_area.dart';
 
 const _kListItemBorder = 1.0;
+const _kCDeleteIconSize = 16.0;
 const _kSpaceWidth = 16.0;
-const _kBoardListTitlePadding = EdgeInsets.symmetric(vertical: 16.0);
+const _kContentPadding = EdgeInsets.symmetric(vertical: 16.0);
 
+/// Input text area and add link area
 class LinkListItem extends StatelessWidget {
   const LinkListItem({
     super.key,
+    required this.id,
     required this.inputValue,
     required this.hintText,
+    required this.linkHintText,
     this.maxLength = 100,
     this.autoFocus = false,
+    required this.linkedWidgets,
     required this.onTextSubmitted,
-    required this.linkedValue,
     required this.onTap,
+    required this.onDeleteItem,
   });
 
+  final int id;
   final String inputValue;
   final String hintText;
-  final List<String> linkedValue;
+  final String linkHintText;
+  final List<Widget> linkedWidgets;
   final int maxLength;
   final bool autoFocus;
-  final Function(String) onTextSubmitted;
-  final VoidCallback onTap;
+  final Function(String, int) onTextSubmitted;
+  final Function(int) onTap;
+  final Function(String) onDeleteItem;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-        width: double.infinity,
-        padding: _kBoardListTitlePadding,
-        decoration: BoxDecoration(
-          color: theme.colorFgDefaultWhite,
-          border: Border(
-            bottom: BorderSide(
-              color: theme.colorFgDefault,
-              width: _kListItemBorder,
-            ),
+      width: MediaQuery.of(context).size.width,
+      padding: _kContentPadding,
+      decoration: BoxDecoration(
+        color: theme.colorFgDefaultWhite,
+        border: Border(
+          bottom: BorderSide(
+            color: theme.colorFgDisabled,
+            width: _kListItemBorder,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            TextInput(
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.2,
+            child: TextInput(
               iconColor: theme.colorPrimary,
               textController: TextEditingController(text: inputValue),
               hintText: hintText,
               maxLength: maxLength,
               autoFocus: autoFocus,
-              onSubmitted: onTextSubmitted,
+              onSubmitted: (value) => onTextSubmitted(value, id),
             ),
-            const SizedBox(
-              width: _kSpaceWidth,
+          ),
+          const SizedBox(
+            width: _kSpaceWidth,
+          ),
+          EventArea(
+            itemList: linkedWidgets,
+            hintText: linkHintText,
+            trailingIconData: Icons.expand_more,
+            onTap: () => onTap(id),
+          ),
+          const SizedBox(
+            width: _kSpaceWidth,
+          ),
+          IconButton(
+            icon: Icon(
+              theme.icons.close,
             ),
-            EventArea(
-              itemList:
-                  getLinkValueList(context: context, linkedValue: linkedValue),
-              hintText: hintText,
-              trailingIconData: Icons.expand_more,
-              onTap: onTap,
-            ),
-          ],
-        ));
-  }
-
-  List<Widget> getLinkValueList({
-    required BuildContext context,
-    required List<String> linkedValue,
-  }) {
-    final theme = Theme.of(context);
-    return linkedValue
-        .map((item) => Text(
-              item,
-              style: theme.textStyleBody,
-            ))
-        .toList();
+            iconSize: _kCDeleteIconSize,
+            onPressed: () => onDeleteItem(inputValue),
+          ),
+        ],
+      ),
+    );
   }
 }

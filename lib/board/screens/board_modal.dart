@@ -13,9 +13,8 @@ import '../../loom/display/link_tag_display_bloc.dart';
 import '../../loom/component/label_tip.dart';
 import '../../loom/display/select_color_display.dart';
 import '../../loom/component/item/color_box.dart';
-import '../../loom/display/select_color_display_bloc.dart';
 import '../../loom/display/select_label_display.dart';
-import '../../loom/display/select_label_display_bloc.dart';
+import '../../loom/display/input_tag_display.dart';
 
 const _kProjectTitleTxt = 'プロジェクト';
 const _kProjectHintTxt = 'プロジェクト名';
@@ -58,11 +57,7 @@ class BoardModal extends Modal {
 
   @override
   List<SingleChildWidget> getPageProviders() {
-    return [
-      // BlocProvider(create: (_) => SelectColorDisplayBloc()),
-      // BlocProvider(create: (_) => LinkTagDisplayBloc()),
-      // BlocProvider(create: (_) => SelectLabelDisplayBloc()),
-    ];
+    return [];
   }
 
   @override
@@ -325,8 +320,31 @@ class BoardModal extends Modal {
               iconColor: theme.colorPrimary,
               iconData: Icons.label,
               hintText: _kLabelHintTxt,
-              itemList: [],
-              onTap: () {},
+              itemList: [
+                for (final item
+                    in context.read<BoardDetailBloc>().state.tagList)
+                  LabelTip(
+                    label: item.labelName,
+                    themeColor: item.themeColor,
+                  )
+              ],
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return InputTagDisplay(
+                      title: _kLabelTxt,
+                      linkTagList: state.tagList,
+                      onTextSubmitted: (value) {},
+                      onTapBack: (data) {
+                        context.read<BoardDetailBloc>().add(
+                              BoardChangeTagList(
+                                  tagList: (data as List<ColorLabelInfo>)),
+                            );
+                      },
+                    );
+                  },
+                ),
+              ),
             ),
             const SizedBox(
               height: _kProjectAndBoardSpace,

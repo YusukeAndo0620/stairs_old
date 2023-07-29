@@ -24,7 +24,7 @@ abstract class InputDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return getPageProviders().isEmpty
-        ? InputDisplayContent(
+        ? _InputDisplayContent(
             title: title,
             leadingContent: buildLeadingContent(context),
             mainContent: buildMainContent(context),
@@ -36,7 +36,7 @@ abstract class InputDisplay extends StatelessWidget {
         : MultiProvider(
             key: ValueKey<int>(buildMainContent(context).hashCode),
             providers: getPageProviders(),
-            child: InputDisplayContent(
+            child: _InputDisplayContent(
               title: title,
               leadingContent: buildLeadingContent(context),
               mainContent: buildMainContent(context),
@@ -49,8 +49,8 @@ abstract class InputDisplay extends StatelessWidget {
   }
 }
 
-class InputDisplayContent extends StatelessWidget {
-  const InputDisplayContent({
+class _InputDisplayContent extends StatelessWidget {
+  const _InputDisplayContent({
     super.key,
     required this.title,
     required this.leadingContent,
