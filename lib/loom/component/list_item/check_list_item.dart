@@ -18,7 +18,7 @@ class CheckListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
 
     return GestureDetector(
       onTap: () => onTap(info),
@@ -58,7 +58,7 @@ class CheckIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return isChecked
         ? SizedBox(
             width: _kCheckIconBoxSize,

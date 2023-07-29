@@ -37,7 +37,7 @@ class LinkListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return Container(
       width: MediaQuery.of(context).size.width,
       padding: _kContentPadding,

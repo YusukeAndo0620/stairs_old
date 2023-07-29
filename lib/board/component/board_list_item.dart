@@ -30,7 +30,7 @@ class _BoardListItemState extends State<BoardListItem> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return ListTile(
       title: Container(
         padding: _kBoardListItemContentPadding,

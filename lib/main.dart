@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart' hide Theme;
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app/app.dart';
 import 'package:meta/meta.dart';
 import 'package:provider/single_child_widget.dart';
@@ -81,13 +82,23 @@ class _AppLaunchState extends State<AppLaunch> {
           title: _kAppName,
           home: widget.app.buildMainContents(context),
           navigatorObservers: <NavigatorObserver>[routeObserver],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('ja'),
+            Locale('en'),
+          ],
+          locale: const Locale('ja'),
         ),
       ),
     );
   }
 
   Widget _themeBuilder(BuildContext context) {
-    return Theme.loomTheme(
+    return LoomTheme.loomTheme(
         key: _scaffoldKey, child: _buildMainContents(context));
   }
 }

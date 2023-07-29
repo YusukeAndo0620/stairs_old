@@ -18,7 +18,7 @@ class InputTooltipDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return _Frame(
       title: title,
       onTapBack: onTapBack,
@@ -41,7 +41,7 @@ class _Frame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

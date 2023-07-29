@@ -59,7 +59,7 @@ class ModalContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return Container(
       height: height ?? MediaQuery.of(context).size.height * 0.95,
       width: MediaQuery.of(context).size.width,

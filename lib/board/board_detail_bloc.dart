@@ -11,8 +11,8 @@ final initialState = BoardDetailBlocState(
       themeColor: Color.fromARGB(255, 10, 241, 161),
     ),
     industry: '',
-    startDate: '',
-    endDate: '',
+    startDate: DateTime(2010, 1, 1),
+    endDate: DateTime.now(),
     devLanguageList: [
       LinkTagInfo(
         id: 1,
@@ -86,8 +86,8 @@ class BoardChangIndustry extends BoardDetailBlocEvent {
 class BoardChangeDueDate extends BoardDetailBlocEvent {
   const BoardChangeDueDate({required this.startDate, required this.endDate});
 
-  final String startDate;
-  final String endDate;
+  final DateTime startDate;
+  final DateTime endDate;
 }
 
 // Change description and set state
@@ -170,8 +170,8 @@ class BoardDetailBlocState extends Equatable {
   final String projectName;
   final ColorInfo colorInfo;
   final String industry;
-  final String startDate;
-  final String endDate;
+  final DateTime startDate;
+  final DateTime endDate;
   final String description;
   final String os;
   final String db;
@@ -203,8 +203,8 @@ class BoardDetailBlocState extends Equatable {
     String? projectName,
     ColorInfo? colorInfo,
     String? industry,
-    String? startDate,
-    String? endDate,
+    DateTime? startDate,
+    DateTime? endDate,
     String? description,
     String? os,
     String? db,

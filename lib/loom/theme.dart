@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'loom.dart';
 
 @sealed
-abstract class Theme {
-  const Theme._();
+abstract class LoomTheme {
+  const LoomTheme._();
 
   static Widget loomTheme({
     Key? key,

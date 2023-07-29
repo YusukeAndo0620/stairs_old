@@ -25,7 +25,7 @@ class SelectLabelDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
 
     return BlocProvider(
       create: (_) => SelectLabelDisplayBloc(),

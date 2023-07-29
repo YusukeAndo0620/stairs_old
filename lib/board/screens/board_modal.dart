@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' hide Theme;
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -15,6 +15,7 @@ import '../../loom/display/select_color_display.dart';
 import '../../loom/component/item/color_box.dart';
 import '../../loom/display/select_label_display.dart';
 import '../../loom/display/input_tag_display.dart';
+import '../../loom/component/item/date_range.dart';
 
 const _kProjectTitleTxt = 'プロジェクト';
 const _kProjectHintTxt = 'プロジェクト名';
@@ -62,7 +63,7 @@ class BoardModal extends Modal {
 
   @override
   Widget buildLeadingContent(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return IconButton(
       icon: Icon(
         theme.icons.close,
@@ -75,7 +76,7 @@ class BoardModal extends Modal {
 
   @override
   Widget buildTrailingContent(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return SizedBox(
       width: _kTrailingWidth,
       child: IconButton(
@@ -93,7 +94,7 @@ class BoardModal extends Modal {
 
   @override
   Widget buildMainContent(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     if (boardId == null) {
       context.read<BoardDetailBloc>().add(const Init());
     } else {
@@ -164,8 +165,49 @@ class BoardModal extends Modal {
               iconColor: theme.colorPrimary,
               iconData: theme.icons.calender,
               hintText: _kDueHintTxt,
-              itemList: [],
-              onTap: () {},
+              itemList: [
+                DateRange(
+                  startDate: state.startDate,
+                  endDate: state.endDate,
+                )
+              ],
+              onTap: () async {
+                final bloc = context.read<BoardDetailBloc>();
+                DateTimeRange? range = await showDateRangePicker(
+                  context: context,
+                  initialDateRange: DateTimeRange(
+                    start: state.startDate,
+                    end: state.endDate,
+                  ),
+                  firstDate: DateTime(1960, 1, 1),
+                  lastDate: DateTime.now(),
+                  initialEntryMode: DatePickerEntryMode.input,
+                  builder: (context, child) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: ColorScheme.light(
+                          primary:
+                              LoomTheme.of(context).colorPrimary, // ヘッダー背景色
+                          onPrimary: LoomTheme.of(context)
+                              .colorBgLayer1, // ヘッダーテキストカラー
+                          onSurface: LoomTheme.of(context)
+                              .colorFgDefault, // カレンダーのテキストカラー
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
+                );
+
+                if (range != null) {
+                  bloc.add(
+                    BoardChangeDueDate(
+                      startDate: range.start,
+                      endDate: range.end,
+                    ),
+                  );
+                }
+              },
             ),
             // 業務内容
             CardLstItem.input(

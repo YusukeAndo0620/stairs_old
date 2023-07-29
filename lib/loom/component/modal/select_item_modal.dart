@@ -39,7 +39,7 @@ class SelectItemModal extends Modal {
 
   @override
   Widget buildLeadingContent(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return IconButton(
       icon: Icon(
         theme.icons.back,
@@ -93,7 +93,7 @@ class _Frame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return Container(
       color: theme.colorBgLayer1,
       padding: _kContentPadding,
@@ -130,7 +130,7 @@ class _Content extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return Column(
       children: [
         for (final info in checkList)
@@ -186,7 +186,7 @@ class _ListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
 
     return Padding(
       padding: _kContentPadding,

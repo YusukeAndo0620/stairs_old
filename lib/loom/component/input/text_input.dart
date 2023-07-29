@@ -55,7 +55,7 @@ class TextInputState extends State<TextInput> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: _kMaxWidth),
       child: TextField(

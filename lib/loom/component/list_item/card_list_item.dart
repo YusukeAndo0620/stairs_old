@@ -83,7 +83,7 @@ class CardLstItem extends StatelessWidget {
   /// Main build
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
 
     return Padding(
       padding: _kListItemContentPadding,
@@ -126,7 +126,7 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return Container(
       color: bgColor,
       width: double.infinity,
@@ -145,7 +145,7 @@ class _Label extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return SizedBox(
       width: _kLabelWidth,
       child: Text(
@@ -169,7 +169,7 @@ class _LabelWithIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     return SizedBox(
       width: _kLabelWidth,
       child: Row(

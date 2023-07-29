@@ -71,7 +71,7 @@ class _Frame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final theme = LoomTheme.of(context);
     final scrollController = ScrollController();
     return Scaffold(
       appBar: AppBar(
