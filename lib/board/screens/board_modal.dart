@@ -15,6 +15,7 @@ import '../../loom/display/select_color_display.dart';
 import '../../loom/component/item/color_box.dart';
 import '../../loom/display/select_label_display.dart';
 import '../../loom/display/input_tag_display.dart';
+import '../../loom/display/input_tool_display.dart';
 import '../../loom/component/item/date_range.dart';
 
 const _kProjectTitleTxt = 'プロジェクト';
@@ -303,8 +304,30 @@ class BoardModal extends Modal {
               iconColor: theme.colorPrimary,
               iconData: theme.icons.resume,
               hintText: _kToolHintTxt,
-              itemList: [],
-              onTap: () {},
+              itemList: [
+                for (final item
+                    in context.read<BoardDetailBloc>().state.toolList)
+                  LabelTip(
+                    label: item.labelName,
+                    themeColor: theme.colorFgDisabled,
+                  )
+              ],
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return InputToolDisplay(
+                      title: _kToolTxt,
+                      toolList: state.toolList,
+                      onTapBack: (data) {
+                        context.read<BoardDetailBloc>().add(
+                              BoardChangeToolList(
+                                  toolList: (data as List<Label>)),
+                            );
+                      },
+                    );
+                  },
+                ),
+              ),
             ),
             // 作業工程
             CardLstItem.labeWithIcon(
@@ -375,8 +398,7 @@ class BoardModal extends Modal {
                   builder: (context) {
                     return InputTagDisplay(
                       title: _kLabelTxt,
-                      linkTagList: state.tagList,
-                      onTextSubmitted: (value) {},
+                      tagList: state.tagList,
                       onTapBack: (data) {
                         context.read<BoardDetailBloc>().add(
                               BoardChangeTagList(
@@ -398,14 +420,14 @@ class BoardModal extends Modal {
   }
 
   List<ColorLabelInfo> getDevLangSelectedLabelList(
-      {required BuildContext context, required int id}) {
+      {required BuildContext context, required String id}) {
     return (context.read<LinkTagDisplayBloc>().state
             as LinkTagDisplayGetInfoState)
         .linkTagList
         .firstWhere(
           (element) => element.id == id,
           orElse: () => LinkTagInfo(
-            id: 1,
+            id: uuid.v4(),
             inputValue: '',
             linkLabelList: [],
           ),
@@ -414,14 +436,14 @@ class BoardModal extends Modal {
   }
 
   String getSelectItemDisplayTitle(
-      {required BuildContext context, required int id}) {
+      {required BuildContext context, required String id}) {
     return (context.read<LinkTagDisplayBloc>().state
             as LinkTagDisplayGetInfoState)
         .linkTagList
         .firstWhere(
           (element) => element.id == id,
           orElse: () => LinkTagInfo(
-            id: 1,
+            id: uuid.v4(),
             inputValue: '',
             linkLabelList: [],
           ),

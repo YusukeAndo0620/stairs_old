@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide Theme;
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../loom/theme.dart';
-import '../board_list_bloc.dart';
+import 'board_modal.dart';
 
 const _kBoardEmptyTxt = '表示可能なボードがありません。\nボードを作成してください。';
 
@@ -27,11 +26,13 @@ class BoardEmpty extends StatelessWidget {
           ),
         ),
         IconButton(
-            onPressed: () => context.read<BoardListBloc>().add(
-                  BoardTapCreate(
-                    context: context,
-                    theme: theme,
-                  ),
+            onPressed: () => showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) {
+                    return const BoardModal();
+                  },
                 ),
             icon: Icon(
               theme.icons.add,

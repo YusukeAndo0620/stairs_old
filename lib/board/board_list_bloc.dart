@@ -36,16 +36,6 @@ class BoardTapListItem extends BoardListBlocEvent {
   final String boardId;
 }
 
-class BoardTapCreate extends BoardListBlocEvent {
-  const BoardTapCreate({
-    required this.context,
-    required this.theme,
-  });
-
-  final BuildContext context;
-  final LoomThemeData theme;
-}
-
 class BoardTapEdit extends BoardListBlocEvent {
   const BoardTapEdit({
     required this.boardId,
@@ -79,7 +69,7 @@ class BoardListBloc extends Bloc<BoardListBlocEvent, BoardListBlocState> {
       : super(
           BoardListBlocState(
             boardList: List.generate(
-              20,
+              2,
               (index) => BoardListItemInfo(
                   boardId: index.toString(),
                   projectName: 'title_$index',
@@ -90,7 +80,6 @@ class BoardListBloc extends Bloc<BoardListBlocEvent, BoardListBlocState> {
     on<_Init>(_onInit);
     on<BoardGetList>(_onGetList);
     on<BoardTapListItem>(_onTapListItem);
-    on<BoardTapCreate>(_onTapCreate);
     on<BoardTapEdit>(_onTapEdit);
     on<BoardTapDelete>(_onTapDelete);
   }
@@ -104,17 +93,6 @@ class BoardListBloc extends Bloc<BoardListBlocEvent, BoardListBlocState> {
 
   Future<void> _onTapListItem(
       BoardTapListItem event, Emitter<BoardListBlocState> emit) async {}
-
-  Future<void> _onTapCreate(
-      BoardTapCreate event, Emitter<BoardListBlocState> emit) async {
-    showModalBottomSheet(
-        context: event.context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (context) {
-          return const BoardModal();
-        });
-  }
 
   void _onTapEdit(BoardTapEdit event, Emitter<BoardListBlocState> emit) {
     showModalBottomSheet(

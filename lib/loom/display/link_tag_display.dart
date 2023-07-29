@@ -25,7 +25,7 @@ class LinkTagDisplay extends StatelessWidget {
   final String title;
   final List<LinkTagInfo> linkTagList;
   final Function(String) onTextSubmitted;
-  final Function(int) onTap;
+  final Function(String) onTap;
   final Function(Object) onTapBack;
 
   @override
@@ -66,7 +66,7 @@ class _Frame extends StatelessWidget {
   final String title;
   final List<LinkTagInfo> linkTagList;
   final Function(String) onTextSubmitted;
-  final Function(int) onTap;
+  final Function(String) onTap;
   final Function(Object) onTapBack;
 
   @override
@@ -141,7 +141,7 @@ class _Content extends StatelessWidget {
   final List<LinkTagInfo> linkTagList;
   final ScrollController scrollController;
   final Function(String) onTextSubmitted;
-  final Function(int) onTap;
+  final Function(String) onTap;
 
   @override
   Widget build(BuildContext context) {

@@ -16,9 +16,9 @@ class ColorListItem extends StatelessWidget {
     required this.colorInfo,
     required this.onTap,
   });
-  final int selectedColorId;
+  final String selectedColorId;
   final ColorInfo colorInfo;
-  final Function(int) onTap;
+  final Function(String) onTap;
 
   @override
   Widget build(BuildContext context) {

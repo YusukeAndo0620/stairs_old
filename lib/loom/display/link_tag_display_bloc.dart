@@ -15,13 +15,13 @@ class LinkTagDisplayInit extends LinkTagDisplayEvent {
 
 class UpdateInputValue extends LinkTagDisplayEvent {
   UpdateInputValue({required this.id, required this.inputValue});
-  final int id;
+  final String id;
   final String inputValue;
 }
 
 class UpdateLinkLabelList extends LinkTagDisplayEvent {
   UpdateLinkLabelList({required this.id, required this.linkLabelList});
-  final int id;
+  final String id;
   final List<ColorLabelInfo> linkLabelList;
 }
 
@@ -31,7 +31,7 @@ class AddLinkTag extends LinkTagDisplayEvent {
 
 class DeleteLinkTag extends LinkTagDisplayEvent {
   const DeleteLinkTag({required this.id});
-  final int id;
+  final String id;
 }
 
 class MoveLast extends LinkTagDisplayEvent {
@@ -111,10 +111,8 @@ class LinkTagDisplayBloc
 
   void _onTapAdd(AddLinkTag event, Emitter<LinkTagDisplayState> emit) {
     if (state is LinkTagDisplayGetInfoState) {
-      final addingLinkTagInfo = LinkTagInfo(
-          id: (state as LinkTagDisplayGetInfoState).linkTagList.length + 1,
-          inputValue: '',
-          linkLabelList: []);
+      final addingLinkTagInfo =
+          LinkTagInfo(id: uuid.v4(), inputValue: '', linkLabelList: []);
       final addedList = getList();
 
       addedList.add(addingLinkTagInfo);
@@ -142,7 +140,7 @@ class LinkTagDisplayBloc
   }
 
   List<LinkTagInfo> getReplacedList({
-    required int targetId,
+    required String targetId,
     String? inputValue,
     List<ColorLabelInfo>? linkLabelList,
   }) {

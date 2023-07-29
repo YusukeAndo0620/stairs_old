@@ -1,38 +1,31 @@
 import 'package:flutter/material.dart' hide Theme;
 import '../../theme.dart';
 import '../input/text_input.dart';
-import '../event_area.dart';
 
 const _kListItemBorder = 1.0;
 const _kCDeleteIconSize = 16.0;
 const _kSpaceWidth = 16.0;
 const _kContentPadding = EdgeInsets.symmetric(vertical: 16.0);
 
-/// Input text area and add link area
-class LinkListItem extends StatelessWidget {
-  const LinkListItem({
+/// Input text area
+class InputListItem extends StatelessWidget {
+  const InputListItem({
     super.key,
     required this.id,
     required this.inputValue,
     required this.hintText,
-    required this.linkHintText,
     this.maxLength = 100,
     this.autoFocus = false,
-    required this.linkedWidgets,
     required this.onTextSubmitted,
-    required this.onTap,
     required this.onDeleteItem,
   });
 
   final String id;
   final String inputValue;
   final String hintText;
-  final String linkHintText;
-  final List<Widget> linkedWidgets;
   final int maxLength;
   final bool autoFocus;
   final Function(String, String) onTextSubmitted;
-  final Function(String) onTap;
   final Function(String) onDeleteItem;
 
   @override
@@ -51,11 +44,11 @@ class LinkListItem extends StatelessWidget {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.2,
+            width: MediaQuery.of(context).size.width * 0.5,
             child: TextInput(
               iconColor: theme.colorPrimary,
               textController: TextEditingController(text: inputValue),
@@ -64,15 +57,6 @@ class LinkListItem extends StatelessWidget {
               autoFocus: autoFocus,
               onSubmitted: (value) => onTextSubmitted(value, id),
             ),
-          ),
-          const SizedBox(
-            width: _kSpaceWidth,
-          ),
-          EventArea(
-            itemList: linkedWidgets,
-            hintText: linkHintText,
-            trailingIconData: Icons.expand_more,
-            onTap: () => onTap(id),
           ),
           const SizedBox(
             width: _kSpaceWidth,

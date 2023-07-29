@@ -4,10 +4,10 @@ import 'package:equatable/equatable.dart';
 import '../model/model.dart';
 
 final initialState = BoardDetailBlocState(
-    boardId: '',
+    boardId: uuid.v4(),
     projectName: '',
     colorInfo: ColorInfo(
-      id: 5,
+      id: uuid.v4(),
       themeColor: Color.fromARGB(255, 10, 241, 161),
     ),
     industry: '',
@@ -15,7 +15,7 @@ final initialState = BoardDetailBlocState(
     endDate: DateTime.now(),
     devLanguageList: [
       LinkTagInfo(
-        id: 1,
+        id: uuid.v4(),
         inputValue: 'Java',
         linkLabelList: [
           tagList[0],
@@ -23,7 +23,7 @@ final initialState = BoardDetailBlocState(
         ],
       ),
       LinkTagInfo(
-        id: 2,
+        id: uuid.v4(),
         inputValue: 'Vue',
         linkLabelList: [
           tagList[4],
@@ -31,6 +31,14 @@ final initialState = BoardDetailBlocState(
         ],
       ),
     ],
+    toolList: toolList,
+    devProgressList: [
+      devProgressList[1],
+      devProgressList[2],
+      devProgressList[3],
+      devProgressList[4],
+    ],
+    devSize: '100',
     tagList: tagList);
 
 // Event
@@ -122,7 +130,7 @@ class BoardChangDevLanguageList extends BoardDetailBlocEvent {
 class BoardChangeToolList extends BoardDetailBlocEvent {
   const BoardChangeToolList({required this.toolList});
 
-  final List<ColorLabelInfo> toolList;
+  final List<Label> toolList;
 }
 
 // Change development Progress and set state
@@ -176,7 +184,7 @@ class BoardDetailBlocState extends Equatable {
   final String os;
   final String db;
   final List<LinkTagInfo> devLanguageList;
-  final List<ColorLabelInfo> toolList;
+  final List<Label> toolList;
   final List<Label> devProgressList;
   final String devSize;
   final List<ColorLabelInfo> tagList;
@@ -209,7 +217,7 @@ class BoardDetailBlocState extends Equatable {
     String? os,
     String? db,
     List<LinkTagInfo>? devLanguageList,
-    List<ColorLabelInfo>? toolList,
+    List<Label>? toolList,
     List<Label>? devProgressList,
     String? devSize,
     List<ColorLabelInfo>? tagList,
@@ -260,7 +268,11 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
   }
 
   Future<void> _onGetDetail(
-      BoardGetDetail event, Emitter<BoardDetailBlocState> emit) async {}
+      BoardGetDetail event, Emitter<BoardDetailBlocState> emit) async {
+    if (event.boardId.isEmpty) {
+      emit(initialState);
+    } else {}
+  }
 
   Future<void> _onCreate(
       BoardCreate event, Emitter<BoardDetailBlocState> emit) async {}
@@ -305,16 +317,16 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
   void _onChangeDevLanguageList(
       BoardChangDevLanguageList event, Emitter<BoardDetailBlocState> emit) {
     final emitDevLangList = event.devLanguageList
-        .map((item) => item.inputValue.isNotEmpty ? item : null)
+        .where((item) => item.inputValue.isNotEmpty)
         .toList();
-
-    emit(state.copyWith(
-        devLanguageList: emitDevLangList.whereType<LinkTagInfo>().toList()));
+    emit(state.copyWith(devLanguageList: emitDevLangList));
   }
 
   void _onChangeToolList(
       BoardChangeToolList event, Emitter<BoardDetailBlocState> emit) {
-    emit(state.copyWith(toolList: event.toolList));
+    final emitToolList =
+        event.toolList.where((item) => item.labelName.isNotEmpty).toList();
+    emit(state.copyWith(toolList: emitToolList));
   }
 
   void _onChangeDevProgressList(

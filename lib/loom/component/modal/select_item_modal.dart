@@ -25,7 +25,7 @@ class SelectItemModal extends Modal {
     required this.selectedLabelList,
     required this.onTapListItem,
   });
-  final int id;
+  final String id;
   @override
   final String title;
   final List<ColorLabelInfo> labelList;

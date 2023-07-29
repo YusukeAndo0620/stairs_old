@@ -20,25 +20,24 @@ class InputTagDisplay extends StatelessWidget {
   const InputTagDisplay({
     super.key,
     required this.title,
-    required this.linkTagList,
-    required this.onTextSubmitted,
+    required this.tagList,
     required this.onTapBack,
   });
   final String title;
-  final List<ColorLabelInfo> linkTagList;
-  final Function(String) onTextSubmitted;
+  final List<ColorLabelInfo> tagList;
   final Function(Object) onTapBack;
 
   @override
   Widget build(BuildContext context) {
     final theme = LoomTheme.of(context);
+    final scrollController = ScrollController();
 
     return BlocBuilder<InputTagDisplayBloc, InputTagDisplayState>(
       buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         if (state is InputTagDisplayInitialState) {
           context.read<InputTagDisplayBloc>().add(
-                InputTagDisplayInit(linkTagList: linkTagList),
+                InputTagDisplayInit(tagList: tagList),
               );
           return const SizedBox.shrink();
         } else {
@@ -52,7 +51,7 @@ class InputTagDisplay extends StatelessWidget {
                 onPressed: () {
                   final state = context.read<InputTagDisplayBloc>().state
                       as InputTagDisplayGetInfoState;
-                  onTapBack(state.linkTagList);
+                  onTapBack(state.tagList);
                   Navigator.of(context).pop();
                 },
               ),
@@ -62,17 +61,26 @@ class InputTagDisplay extends StatelessWidget {
                 style: theme.textStyleHeading,
               ),
             ),
+            floatingActionButton: FloatingActionButton(
+              child: Icon(theme.icons.add),
+              onPressed: () {
+                context.read<InputTagDisplayBloc>().add(AddTag());
+                context
+                    .read<InputTagDisplayBloc>()
+                    .add(MoveLast(scrollController: scrollController));
+              },
+            ),
             body: Padding(
               padding: _kContentPadding,
               child: Column(
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
+                      controller: scrollController,
                       child: Column(
                         children: [
                           for (final info
-                              in (state as InputTagDisplayGetInfoState)
-                                  .linkTagList)
+                              in (state as InputTagDisplayGetInfoState).tagList)
                             LinkListItem(
                               id: info.id,
                               inputValue: info.labelName,
@@ -112,7 +120,7 @@ class InputTagDisplay extends StatelessWidget {
                               onDeleteItem: (inputValue) {
                                 context
                                     .read<InputTagDisplayBloc>()
-                                    .add(DeleteLinkTag(id: info.id));
+                                    .add(DeleteTag(id: info.id));
                               },
                             ),
                           const SizedBox(

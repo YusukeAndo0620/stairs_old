@@ -27,7 +27,7 @@ class SelectItemInit extends SelectItemModalEvent {
     required this.selectedLabelList,
   });
 
-  final int id;
+  final String id;
   final List<ColorLabelInfo> labelList;
   final List<ColorLabelInfo> selectedLabelList;
 }
@@ -57,7 +57,7 @@ class SelectItemGetCheckListState extends SelectItemModalState {
     required this.id,
     required this.checkList,
   });
-  final int id;
+  final String id;
   final List<CheckLabelInfo> checkList;
 
   @override
@@ -67,7 +67,7 @@ class SelectItemGetCheckListState extends SelectItemModalState {
       ];
 
   SelectItemGetCheckListState copyWith({
-    int? id,
+    String? id,
     List<CheckLabelInfo>? checkList,
   }) =>
       SelectItemGetCheckListState(

@@ -18,7 +18,7 @@ class SelectColorInit extends SelectColorDisplayEvent {
 class SelectColorTapListItem extends SelectColorDisplayEvent {
   const SelectColorTapListItem({required this.colorId});
 
-  final int colorId;
+  final String colorId;
 }
 
 // State
@@ -40,7 +40,7 @@ class SelectColorGotCompleteState extends SelectColorDisplayState {
     required this.selectedColorId,
     required this.colorList,
   });
-  final int selectedColorId;
+  final String selectedColorId;
   final List<ColorInfo> colorList;
 
   @override
@@ -50,7 +50,7 @@ class SelectColorGotCompleteState extends SelectColorDisplayState {
       ];
 
   SelectColorGotCompleteState copyWith({
-    int? selectedColorId,
+    String? selectedColorId,
     List<ColorInfo>? colorList,
   }) =>
       SelectColorGotCompleteState(

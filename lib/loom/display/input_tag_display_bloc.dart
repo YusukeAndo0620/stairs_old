@@ -9,31 +9,31 @@ abstract class InputTagDisplayEvent {
 }
 
 class InputTagDisplayInit extends InputTagDisplayEvent {
-  const InputTagDisplayInit({required this.linkTagList});
-  final List<ColorLabelInfo> linkTagList;
+  const InputTagDisplayInit({required this.tagList});
+  final List<ColorLabelInfo> tagList;
 }
 
 class UpdateInputValue extends InputTagDisplayEvent {
   UpdateInputValue({required this.id, required this.inputValue});
-  final int id;
+  final String id;
   final String inputValue;
 }
 
 class UpdateLinkColor extends InputTagDisplayEvent {
   UpdateLinkColor({required this.id, required this.themeColor});
-  final int id;
+  final String id;
   final Color themeColor;
 }
 
-class AddLinkTag extends InputTagDisplayEvent {
-  AddLinkTag();
+class AddTag extends InputTagDisplayEvent {
+  AddTag();
 }
 
-class DeleteLinkTag extends InputTagDisplayEvent {
-  const DeleteLinkTag({
+class DeleteTag extends InputTagDisplayEvent {
+  const DeleteTag({
     required this.id,
   });
-  final int id;
+  final String id;
 }
 
 class MoveLast extends InputTagDisplayEvent {
@@ -55,18 +55,18 @@ class InputTagDisplayInitialState extends InputTagDisplayState {
 }
 
 class InputTagDisplayGetInfoState extends InputTagDisplayState {
-  const InputTagDisplayGetInfoState({required this.linkTagList});
+  const InputTagDisplayGetInfoState({required this.tagList});
 
-  final List<ColorLabelInfo> linkTagList;
+  final List<ColorLabelInfo> tagList;
 
   @override
-  List<Object?> get props => [linkTagList];
+  List<Object?> get props => [tagList];
 
   InputTagDisplayGetInfoState copyWith({
-    List<ColorLabelInfo>? linkTagList,
+    List<ColorLabelInfo>? tagList,
   }) =>
       InputTagDisplayGetInfoState(
-        linkTagList: linkTagList ?? this.linkTagList,
+        tagList: tagList ?? this.tagList,
       );
 }
 
@@ -80,20 +80,20 @@ class InputTagDisplayBloc
     on<InputTagDisplayInit>(_onInit);
     on<UpdateInputValue>(_onUpdateInputValue);
     on<UpdateLinkColor>(_onUpdateLinkColor);
-    on<AddLinkTag>(_onTapAdd);
-    on<DeleteLinkTag>(_onTapDelete);
+    on<AddTag>(_onTapAdd);
+    on<DeleteTag>(_onTapDelete);
     on<MoveLast>(_onMoveLast);
   }
 
   void _onInit(InputTagDisplayInit event, Emitter<InputTagDisplayState> emit) {
-    emit(InputTagDisplayGetInfoState(linkTagList: event.linkTagList));
+    emit(InputTagDisplayGetInfoState(tagList: event.tagList));
   }
 
   void _onUpdateInputValue(
       UpdateInputValue event, Emitter<InputTagDisplayState> emit) {
     emit(
       (state as InputTagDisplayGetInfoState).copyWith(
-        linkTagList: getReplacedList(
+        tagList: getReplacedList(
           targetId: event.id,
           inputValue: event.inputValue,
         ),
@@ -105,38 +105,37 @@ class InputTagDisplayBloc
       UpdateLinkColor event, Emitter<InputTagDisplayState> emit) {
     emit(
       (state as InputTagDisplayGetInfoState).copyWith(
-        linkTagList:
+        tagList:
             getReplacedList(targetId: event.id, themeColor: event.themeColor),
       ),
     );
   }
 
-  void _onTapAdd(AddLinkTag event, Emitter<InputTagDisplayState> emit) {
+  void _onTapAdd(AddTag event, Emitter<InputTagDisplayState> emit) {
     if (state is InputTagDisplayGetInfoState) {
       final addingColorLabelInfo = ColorLabelInfo(
-        id: (state as InputTagDisplayGetInfoState).linkTagList.length + 1,
+        id: uuid.v4(),
         labelName: '',
         themeColor: colorList[0].themeColor,
       );
-      final addedList = getList();
+      final emitTagList = getList();
 
-      addedList.add(addingColorLabelInfo);
+      emitTagList.add(addingColorLabelInfo);
       emit((state as InputTagDisplayGetInfoState)
-          .copyWith(linkTagList: addedList));
+          .copyWith(tagList: emitTagList));
     }
   }
 
-  void _onTapDelete(
-      DeleteLinkTag event, Emitter<InputTagDisplayState> emit) async {
-    final emitDevLangList =
-        (state as InputTagDisplayGetInfoState).linkTagList.map((item) {
+  void _onTapDelete(DeleteTag event, Emitter<InputTagDisplayState> emit) async {
+    final emitTagList =
+        (state as InputTagDisplayGetInfoState).tagList.map((item) {
       if (item.id != event.id) {
         return item;
       }
     }).toList();
-    emitDevLangList.removeWhere((element) => element == null);
-    emit((state as InputTagDisplayGetInfoState).copyWith(
-        linkTagList: emitDevLangList.whereType<ColorLabelInfo>().toList()));
+    emitTagList.removeWhere((element) => element == null);
+    emit((state as InputTagDisplayGetInfoState)
+        .copyWith(tagList: emitTagList.whereType<ColorLabelInfo>().toList()));
   }
 
   void _onMoveLast(MoveLast event, Emitter<InputTagDisplayState> emit) {
@@ -145,17 +144,16 @@ class InputTagDisplayBloc
   }
 
   List<ColorLabelInfo> getReplacedList(
-      {required int targetId, String? inputValue, Color? themeColor}) {
+      {required String targetId, String? inputValue, Color? themeColor}) {
     final displayState = (state as InputTagDisplayGetInfoState);
-    final targetIndex = displayState.linkTagList
-        .indexWhere((element) => element.id == targetId);
+    final targetIndex =
+        displayState.tagList.indexWhere((element) => element.id == targetId);
     final replacedList = getList();
 
     final editTarget = ColorLabelInfo(
       id: targetId,
-      labelName: inputValue ?? displayState.linkTagList[targetIndex].labelName,
-      themeColor:
-          themeColor ?? displayState.linkTagList[targetIndex].themeColor,
+      labelName: inputValue ?? displayState.tagList[targetIndex].labelName,
+      themeColor: themeColor ?? displayState.tagList[targetIndex].themeColor,
     );
 
     replacedList.replaceRange(targetIndex, targetIndex + 1, [editTarget]);
@@ -164,7 +162,7 @@ class InputTagDisplayBloc
 
   List<ColorLabelInfo> getList() {
     return (state as InputTagDisplayGetInfoState)
-        .linkTagList
+        .tagList
         .map((item) => item)
         .toList();
   }
