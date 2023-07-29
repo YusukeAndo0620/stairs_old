@@ -13,23 +13,24 @@ final initialState = BoardDetailBlocState(
     industry: '',
     startDate: '',
     endDate: '',
-    devLanguageList: List.generate(
-      10,
-      (index) => LinkTagInfo(
-        id: index,
-        inputValue: 'java_$index',
-        linkLabelList: List.generate(
-          4,
-          (labelIndex) => ColorLabelInfo(
-            id: labelIndex,
-            labelName: labelIndex.isEven
-                ? '$index 画面設計_$labelIndex'
-                : '$index API設計書修正対応',
-            themeColor: labelIndex.isEven ? Colors.blue : Colors.purple,
-          ),
-        ),
+    devLanguageList: [
+      LinkTagInfo(
+        id: 1,
+        inputValue: 'Java',
+        linkLabelList: [
+          tagList[0],
+          tagList[1],
+        ],
       ),
-    ),
+      LinkTagInfo(
+        id: 2,
+        inputValue: 'Vue',
+        linkLabelList: [
+          tagList[4],
+          tagList[5],
+        ],
+      ),
+    ],
     tagList: tagList);
 
 // Event

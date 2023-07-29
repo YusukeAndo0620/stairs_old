@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart' hide Theme;
 
-const _kColorWidth = 30.0;
-const _kColorHeight = 30.0;
+const _kColorSize = 30.0;
 const _kColorRadius = 20.0;
 const _kContentPadding = EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0);
 
+/// カラーボックス(円形)
 class ColorBox extends StatelessWidget {
   const ColorBox({
     super.key,
-    this.width = _kColorWidth,
-    this.height = _kColorHeight,
+    this.size = _kColorSize,
     required this.color,
   });
-  final double width;
-  final double height;
+  final double size;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
-      height: _kColorHeight,
+      width: size,
+      height: size,
       padding: _kContentPadding,
       decoration: BoxDecoration(
         color: color,

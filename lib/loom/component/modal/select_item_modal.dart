@@ -6,12 +6,15 @@ import '../../theme.dart';
 import '../../../model/model.dart';
 import '../../component/modal/modal.dart';
 import 'select_item_modal_bloc.dart';
+import '../item/color_box.dart';
 
 const _kListEmptyTxt = '選択可能なタグがありません。\n ボード設定 > ラベルより、ラベルを追加してください。';
+const _kListItemSpace = 16.0;
 const _kBorderWidth = 1.0;
 const _kCheckIconSize = 20.0;
 const _kContentPadding = EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0);
 
+/// アイテム選択リスト画面(カラーボックス+タイトル)
 class SelectItemModal extends Modal {
   const SelectItemModal({
     super.key,
@@ -149,13 +152,9 @@ class _Content extends StatelessWidget {
                   : const SizedBox(
                       width: _kCheckIconSize,
                     ),
-              title: Padding(
-                padding: _kContentPadding,
-                child: Text(
-                  info.labelName,
-                  style: theme.textStyleBody.copyWith(color: info.themeColor),
-                  overflow: TextOverflow.ellipsis,
-                ),
+              title: _ListItem(
+                key: key,
+                info: info,
               ),
               shape: Border(
                 bottom: BorderSide(
@@ -175,5 +174,36 @@ class _Content extends StatelessWidget {
     context
         .read<SelectItemModalBloc>()
         .add(SelectItemTapListItem(tappedItem: tappedItem));
+  }
+}
+
+class _ListItem extends StatelessWidget {
+  const _ListItem({
+    super.key,
+    required this.info,
+  });
+  final CheckLabelInfo info;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: _kContentPadding,
+      child: Row(
+        children: [
+          ColorBox(
+            color: info.themeColor,
+            size: _kCheckIconSize,
+          ),
+          const SizedBox(width: _kListItemSpace),
+          Text(
+            info.labelName,
+            style: theme.textStyleBody,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
   }
 }

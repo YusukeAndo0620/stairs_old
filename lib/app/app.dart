@@ -18,8 +18,6 @@ class App extends AppFunction {
     globalProvides
       ..add(BlocProvider(create: (_) => BoardListBloc()))
       ..add(BlocProvider(create: (_) => BoardDetailBloc()))
-      ..add(BlocProvider(create: (_) => SelectColorDisplayBloc()))
-      ..add(BlocProvider(create: (_) => SelectLabelDisplayBloc()))
       ..add(BlocProvider(create: (_) => InputTagDisplayBloc()))
       ..add(BlocProvider(create: (_) => LinkTagDisplayBloc()));
   }

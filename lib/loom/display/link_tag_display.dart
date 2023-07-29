@@ -12,6 +12,7 @@ const _kTagHintText = 'タグを追加';
 const _kSpaceHeight = 120.0;
 const _kContentPadding = EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0);
 
+/// タグ紐付け画面
 class LinkTagDisplay extends StatelessWidget {
   const LinkTagDisplay({
     super.key,
