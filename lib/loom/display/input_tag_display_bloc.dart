@@ -25,6 +25,10 @@ class UpdateLinkColor extends InputTagDisplayEvent {
   final Color themeColor;
 }
 
+class FormattedTagList extends InputTagDisplayEvent {
+  FormattedTagList();
+}
+
 class AddTag extends InputTagDisplayEvent {
   AddTag();
 }
@@ -68,6 +72,9 @@ class InputTagDisplayGetInfoState extends InputTagDisplayState {
       InputTagDisplayGetInfoState(
         tagList: tagList ?? this.tagList,
       );
+
+  List<ColorLabelInfo> get formattedTagList =>
+      tagList.where((item) => item.labelName.isNotEmpty).toList();
 }
 
 // Bloc
@@ -80,6 +87,7 @@ class InputTagDisplayBloc
     on<InputTagDisplayInit>(_onInit);
     on<UpdateInputValue>(_onUpdateInputValue);
     on<UpdateLinkColor>(_onUpdateLinkColor);
+    on<FormattedTagList>(_onFormattedTagList);
     on<AddTag>(_onTapAdd);
     on<DeleteTag>(_onTapDelete);
     on<MoveLast>(_onMoveLast);
@@ -108,6 +116,14 @@ class InputTagDisplayBloc
         tagList:
             getReplacedList(targetId: event.id, themeColor: event.themeColor),
       ),
+    );
+  }
+
+  void _onFormattedTagList(
+      FormattedTagList event, Emitter<InputTagDisplayState> emit) {
+    final getInfoState = (state as InputTagDisplayGetInfoState);
+    emit(
+      getInfoState.copyWith(tagList: getInfoState.formattedTagList),
     );
   }
 

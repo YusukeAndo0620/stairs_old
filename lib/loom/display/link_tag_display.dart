@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart' hide Theme;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'link_tag_display_bloc.dart';
 import '../theme.dart';
 
 import '../../model/model.dart';
+import '../component/item/empty_display.dart';
 import '../component/list_item/link_list_item.dart';
 import '../component/label_tip.dart';
-import 'link_tag_display_bloc.dart';
 
 const _kHintTxt = '言語名を追加';
 const _kTagHintText = 'タグを追加';
+const _kLinkTagListEmptyTxt = '言語が登録されていません。\n言語を登録してください。';
 const _kSpaceHeight = 120.0;
 const _kContentPadding = EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0);
 
@@ -96,17 +98,21 @@ class _Frame extends StatelessWidget {
         },
         child: Padding(
           padding: _kContentPadding,
-          child: Column(
-            children: [
-              _Content(
-                key: key,
-                linkTagList: linkTagList,
-                scrollController: scrollController,
-                onTap: (id) => onTap(id),
-                onTextSubmitted: onTextSubmitted,
-              )
-            ],
-          ),
+          child: linkTagList.isEmpty
+              ? const EmptyDisplay(
+                  message: _kLinkTagListEmptyTxt,
+                )
+              : Column(
+                  children: [
+                    _Content(
+                      key: key,
+                      linkTagList: linkTagList,
+                      scrollController: scrollController,
+                      onTap: (id) => onTap(id),
+                      onTextSubmitted: onTextSubmitted,
+                    )
+                  ],
+                ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
