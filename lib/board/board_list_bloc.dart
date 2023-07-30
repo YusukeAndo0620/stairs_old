@@ -3,19 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../board/screens/board_modal.dart';
 import '../loom/loom_theme_data.dart';
-
-// TODO: Delete
-class BoardListItemInfo {
-  BoardListItemInfo({
-    required this.boardId,
-    required this.projectName,
-    required this.themeColor,
-  });
-
-  final String boardId;
-  final String projectName;
-  final String themeColor;
-}
+import '../model/model.dart';
+import '../model/dummy.dart';
 
 // Event
 abstract class BoardListBlocEvent {
@@ -67,15 +56,7 @@ class BoardListBlocState extends Equatable {
 class BoardListBloc extends Bloc<BoardListBlocEvent, BoardListBlocState> {
   BoardListBloc()
       : super(
-          BoardListBlocState(
-            boardList: List.generate(
-              2,
-              (index) => BoardListItemInfo(
-                  boardId: index.toString(),
-                  projectName: 'title_$index',
-                  themeColor: ""),
-            ),
-          ),
+          const BoardListBlocState(boardList: []),
         ) {
     on<_Init>(_onInit);
     on<BoardGetList>(_onGetList);
@@ -89,7 +70,9 @@ class BoardListBloc extends Bloc<BoardListBlocEvent, BoardListBlocState> {
   }
 
   Future<void> _onGetList(
-      BoardGetList event, Emitter<BoardListBlocState> emit) async {}
+      BoardGetList event, Emitter<BoardListBlocState> emit) async {
+    emit(BoardListBlocState(boardList: dummyBoardList));
+  }
 
   Future<void> _onTapListItem(
       BoardTapListItem event, Emitter<BoardListBlocState> emit) async {}

@@ -1,42 +1,54 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 const uuid = Uuid();
 
 // TODO: Delete
+class BoardListItemInfo {
+  BoardListItemInfo({
+    required this.boardId,
+    required this.projectName,
+    required this.themeColor,
+  });
+
+  final String boardId;
+  final String projectName;
+  final Color themeColor;
+}
+
+// TODO: Delete
 class BoardDetailItemInfo {
   BoardDetailItemInfo({
     required this.boardId,
     required this.projectName,
-    required this.themeColor,
+    required this.themeColorId,
     required this.industry,
     required this.startDate,
     required this.endDate,
     this.description = '',
     this.os = '',
     this.db = '',
-    this.devLanguage = const [],
-    this.tool = const [],
-    this.devProgress = '',
+    this.devLanguageList = const [],
+    this.toolList = const [],
+    this.devProgressList = const [],
     this.devSize = '',
-    this.tag = const [],
+    this.tagList = const [],
   });
 
   final String boardId;
   final String projectName;
-  final String themeColor;
+  final String themeColorId;
   final String industry;
   final String startDate;
   final String endDate;
   final String description;
   final String os;
   final String db;
-  final List<LinkTagInfo> devLanguage;
-  final List<ColorLabelInfo> tool;
-  final String devProgress;
+  final List<LinkTagInfo> devLanguageList;
+  final List<Label> toolList;
+  final List<Label> devProgressList;
   final String devSize;
-  final List<ColorLabelInfo> tag;
+  final List<ColorLabelInfo> tagList;
 }
 
 // TODO: Delete

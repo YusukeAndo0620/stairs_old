@@ -1,7 +1,9 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../model/model.dart';
+import '../model/dummy.dart';
 
 final initialState = BoardDetailBlocState(
     boardId: uuid.v4(),
@@ -13,24 +15,7 @@ final initialState = BoardDetailBlocState(
     industry: '',
     startDate: DateTime(2010, 1, 1),
     endDate: DateTime.now(),
-    devLanguageList: [
-      LinkTagInfo(
-        id: uuid.v4(),
-        inputValue: 'Java',
-        linkLabelList: [
-          tagList[0],
-          tagList[1],
-        ],
-      ),
-      LinkTagInfo(
-        id: uuid.v4(),
-        inputValue: 'Vue',
-        linkLabelList: [
-          tagList[4],
-          tagList[5],
-        ],
-      ),
-    ],
+    devLanguageList: const [],
     toolList: toolList,
     devProgressList: [
       devProgressList[1],
@@ -271,7 +256,31 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
       BoardGetDetail event, Emitter<BoardDetailBlocState> emit) async {
     if (event.boardId.isEmpty) {
       emit(initialState);
-    } else {}
+    } else {
+      final detailInfo = dummyBoardDetailList
+          .firstWhereOrNull((item) => item.boardId == event.boardId);
+      if (detailInfo == null) {
+        emit(initialState);
+      } else {
+        emit(BoardDetailBlocState(
+          boardId: detailInfo.boardId,
+          projectName: detailInfo.projectName,
+          colorInfo: colorList
+              .firstWhere((element) => element.id == detailInfo.themeColorId),
+          industry: detailInfo.industry,
+          startDate: DateTime.parse(detailInfo.startDate),
+          endDate: DateTime.parse(detailInfo.endDate),
+          description: detailInfo.description,
+          os: detailInfo.os,
+          db: detailInfo.db,
+          devLanguageList: detailInfo.devLanguageList,
+          toolList: detailInfo.toolList,
+          devProgressList: detailInfo.devProgressList,
+          devSize: detailInfo.devSize,
+          tagList: detailInfo.tagList,
+        ));
+      }
+    }
   }
 
   Future<void> _onCreate(

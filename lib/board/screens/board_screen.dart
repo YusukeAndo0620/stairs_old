@@ -16,6 +16,7 @@ class Board extends DisplayContents {
   Widget buildContent(BuildContext context) {
     return BlocBuilder<BoardListBloc, BoardListBlocState>(
         builder: (context, state) {
+      context.read<BoardListBloc>().add(const BoardGetList());
       return state.boardList.isEmpty
           ? const BoardEmpty()
           : BoardList(

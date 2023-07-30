@@ -31,7 +31,9 @@ class BoardEmpty extends StatelessWidget {
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,
                   builder: (context) {
-                    return const BoardModal();
+                    return const BoardModal(
+                      boardId: '',
+                    );
                   },
                 ),
             icon: Icon(

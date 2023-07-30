@@ -4,6 +4,7 @@ import '../../loom/theme.dart';
 import '../board_list_bloc.dart';
 import 'board_modal.dart';
 import '../component/board_list_item.dart';
+import '../../model/model.dart';
 
 const _kBoardTitleTxt = 'ボード一覧';
 const _kBoardListTitlePadding =
@@ -27,7 +28,9 @@ class BoardList extends StatelessWidget {
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
             builder: (context) {
-              return const BoardModal();
+              return const BoardModal(
+                boardId: '',
+              );
             },
           );
         },
@@ -62,6 +65,7 @@ class BoardList extends StatelessWidget {
                     BoardListItem(
                       boardId: listItem.boardId,
                       projectName: listItem.projectName,
+                      themeColor: listItem.themeColor,
                       onTap: (boardId) => context.read<BoardListBloc>().add(
                             BoardTapListItem(boardId: boardId),
                           ),

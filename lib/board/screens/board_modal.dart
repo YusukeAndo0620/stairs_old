@@ -50,12 +50,12 @@ const _kProjectAndBoardSpace = 30.0;
 class BoardModal extends Modal {
   const BoardModal({
     super.key,
-    this.boardId,
+    required this.boardId,
   });
 
   @override
   String? get title => null;
-  final String? boardId;
+  final String boardId;
 
   @override
   List<SingleChildWidget> getPageProviders() {
@@ -96,10 +96,10 @@ class BoardModal extends Modal {
   @override
   Widget buildMainContent(BuildContext context) {
     final theme = LoomTheme.of(context);
-    if (boardId == null) {
+    if (boardId.isEmpty) {
       context.read<BoardDetailBloc>().add(const Init());
     } else {
-      context.read<BoardDetailBloc>().add(BoardGetDetail(boardId: boardId!));
+      context.read<BoardDetailBloc>().add(BoardGetDetail(boardId: boardId));
     }
     return BlocBuilder<BoardDetailBloc, BoardDetailBlocState>(
       builder: (context, state) {

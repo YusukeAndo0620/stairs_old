@@ -14,11 +14,13 @@ class BoardListItem extends StatefulWidget {
     super.key,
     required this.boardId,
     required this.projectName,
+    required this.themeColor,
     required this.onTap,
   });
 
   final String boardId;
   final String projectName;
+  final Color themeColor;
   final Function(String) onTap;
 
   @override
@@ -32,6 +34,11 @@ class _BoardListItemState extends State<BoardListItem> {
   Widget build(BuildContext context) {
     final theme = LoomTheme.of(context);
     return ListTile(
+      leading: Icon(
+        Icons.table_chart,
+        color: widget.themeColor,
+        size: 45,
+      ),
       title: Container(
         padding: _kBoardListItemContentPadding,
         child: Text(
