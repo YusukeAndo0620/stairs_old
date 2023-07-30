@@ -83,3 +83,56 @@ List<BoardDetailItemInfo> dummyBoardDetailList = [
     tagList: tagList,
   ),
 ];
+
+final dummyWorkBoardList = [
+  WorkBoard(
+    workBoardId: '1',
+    title: '作業中',
+    themeColor: colorList[4].themeColor,
+    workBoardItemList: [
+      WorkBoardItemInfo(
+        workBoardId: '1',
+        workBoardItemId: uuid.v4(),
+        title: 'アカウント作成画面設計修正',
+        description: 'アカウント作成画面の修正を行う。',
+        startDate: '2023-07-30 00:00:00',
+        endDate: DateTime.now().toString(),
+        labelList: tagList,
+      ),
+      WorkBoardItemInfo(
+        workBoardId: '1',
+        workBoardItemId: uuid.v4(),
+        title: 'ワークフロー一覧実装',
+        description: 'ワークフロー一覧の新規実装',
+        startDate: '2023-07-30 00:00:00',
+        endDate: DateTime.now().toString(),
+        labelList: tagList,
+      ),
+    ],
+  ),
+  WorkBoard(
+    workBoardId: '2',
+    title: '完了',
+    themeColor: colorList[5].themeColor,
+    workBoardItemList: [
+      WorkBoardItemInfo(
+        workBoardId: '2',
+        workBoardItemId: uuid.v4(),
+        title: 'アカウント作成画面設計修正',
+        description: 'アカウント作成画面の修正を行う。',
+        startDate: '2023-07-30 00:00:00',
+        endDate: DateTime.now().toString(),
+        labelList: tagList,
+      ),
+      WorkBoardItemInfo(
+        workBoardId: '2',
+        workBoardItemId: uuid.v4(),
+        title: 'ワークフロー一覧実装',
+        description: 'ワークフロー一覧の新規実装',
+        startDate: '2023-07-30 00:00:00',
+        endDate: DateTime.now().toString(),
+        labelList: tagList,
+      ),
+    ],
+  ),
+];

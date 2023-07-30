@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart' hide Theme;
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../loom/theme.dart';
-import '../board_list_bloc.dart';
-import 'board_modal.dart';
+import '../../../loom/theme.dart';
+import '../../../model/model.dart';
 import '../component/board_list_item.dart';
-import '../../model/model.dart';
+import '../../work_board/screen/work_board_screen.dart';
+import 'board_modal.dart';
 
 const _kBoardTitleTxt = 'ボード一覧';
 const _kBoardListTitlePadding =
@@ -66,9 +65,16 @@ class BoardList extends StatelessWidget {
                       boardId: listItem.boardId,
                       projectName: listItem.projectName,
                       themeColor: listItem.themeColor,
-                      onTap: (boardId) => context.read<BoardListBloc>().add(
-                            BoardTapListItem(boardId: boardId),
-                          ),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return WorkBoardScreen(
+                              boardId: listItem.boardId,
+                              title: listItem.projectName,
+                            );
+                          },
+                        ),
+                      ),
                     ),
                 ],
               ),

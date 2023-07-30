@@ -52,6 +52,42 @@ class BoardDetailItemInfo {
 }
 
 // TODO: Delete
+class WorkBoard {
+  WorkBoard({
+    required this.workBoardId,
+    required this.title,
+    required this.themeColor,
+    required this.workBoardItemList,
+  });
+
+  final String workBoardId;
+  final String title;
+  final Color themeColor;
+  final List<WorkBoardItemInfo> workBoardItemList;
+}
+
+// TODO: Delete
+class WorkBoardItemInfo {
+  WorkBoardItemInfo({
+    required this.workBoardId,
+    required this.workBoardItemId,
+    required this.title,
+    required this.description,
+    required this.startDate,
+    required this.endDate,
+    required this.labelList,
+  });
+
+  final String workBoardId;
+  final String workBoardItemId;
+  final String title;
+  final String description;
+  final String startDate;
+  final String endDate;
+  final List<ColorLabelInfo> labelList;
+}
+
+// TODO: Delete
 class LinkTagInfo {
   LinkTagInfo({
     required this.id,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' hide Theme;
-import 'loom/theme.dart';
-import 'app/enum/screen_id.dart';
+import '../loom/theme.dart';
+import '../app/enum/screen_id.dart';
 
 const _kFooterButtons = [
   _FooterInfo(

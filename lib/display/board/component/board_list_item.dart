@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' hide Theme;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../loom/theme.dart';
+import '../../../loom/theme.dart';
 import '../board_list_bloc.dart';
 
 const _kBoardListItemContentPadding =
@@ -21,7 +21,7 @@ class BoardListItem extends StatefulWidget {
   final String boardId;
   final String projectName;
   final Color themeColor;
-  final Function(String) onTap;
+  final VoidCallback onTap;
 
   @override
   State<StatefulWidget> createState() => _BoardListItemState();
@@ -113,11 +113,7 @@ class _BoardListItemState extends State<BoardListItem> {
         setState(() {
           _pressed = true;
         });
-        context.read<BoardListBloc>().add(
-              BoardTapListItem(
-                boardId: widget.boardId,
-              ),
-            );
+        widget.onTap();
       },
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' hide Theme;
-import '../../loom/theme.dart';
+import '../../../loom/theme.dart';
 import 'board_modal.dart';
 
 const _kBoardEmptyTxt = '表示可能なボードがありません。\nボードを作成してください。';
