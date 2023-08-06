@@ -82,8 +82,8 @@ class WorkBoardItemInfo {
   final String workBoardItemId;
   final String title;
   final String description;
-  final String startDate;
-  final String endDate;
+  final DateTime startDate;
+  final DateTime endDate;
   final List<ColorLabelInfo> labelList;
 }
 

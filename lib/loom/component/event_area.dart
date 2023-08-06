@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' hide Theme;
+import 'package:flutter/material.dart';
 import '/loom/theme.dart';
 
 const _kAnimatedDuration = Duration(milliseconds: 100);
