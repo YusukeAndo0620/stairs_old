@@ -32,8 +32,7 @@ class CardLstItem extends StatelessWidget {
 
   CardLstItem.input({
     Key? key,
-    required Color iconColor,
-    required IconData iconData,
+    required Icon icon,
     String inputValue = '',
     required String hintText,
     TextInputType inputType = TextInputType.text,
@@ -43,9 +42,8 @@ class CardLstItem extends StatelessWidget {
   }) : this._(
           key: key,
           primaryItem: TextInput(
-            iconColor: iconColor,
+            icon: icon,
             textController: TextEditingController(text: inputValue),
-            iconData: iconData,
             hintText: hintText,
             inputType: inputType,
             maxLength: maxLength,

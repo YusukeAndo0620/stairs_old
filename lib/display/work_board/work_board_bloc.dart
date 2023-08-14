@@ -25,6 +25,18 @@ class WorkBoardGetList extends WorkBoardBlocEvent {
   final String boardId;
 }
 
+class WorkBoardAddCard extends WorkBoardBlocEvent {
+  const WorkBoardAddCard({required this.workBoardId});
+
+  final String workBoardId;
+}
+
+class WorkBoardAddTaskItem extends WorkBoardBlocEvent {
+  const WorkBoardAddTaskItem({required this.workBoardItemId});
+
+  final String workBoardItemId;
+}
+
 class WorkBoardTapListItem extends WorkBoardBlocEvent {
   const WorkBoardTapListItem({required this.workBoardItemId});
 
@@ -143,6 +155,8 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
     on<_Init>(_onInit);
     on<WorkBoardGetList>(_onGetList);
     on<WorkBoardTapListItem>(_onTapListItem);
+    on<WorkBoardAddCard>(_onAddCard);
+    on<WorkBoardAddTaskItem>(_onAddTaskItem);
     on<WorkBoardTapEdit>(_onTapEdit);
     on<WorkBoardDeleteListItem>(_onDeleteListItem);
     on<WorkBoardInitDragging>(_onInitDragging);
@@ -163,6 +177,12 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
 
   Future<void> _onTapListItem(
       WorkBoardTapListItem event, Emitter<WorkBoardBlocState> emit) async {}
+
+  Future<void> _onAddCard(
+      WorkBoardAddCard event, Emitter<WorkBoardBlocState> emit) async {}
+
+  Future<void> _onAddTaskItem(
+      WorkBoardAddTaskItem event, Emitter<WorkBoardBlocState> emit) async {}
 
   void _onTapEdit(WorkBoardTapEdit event, Emitter<WorkBoardBlocState> emit) {
     // showModalBottomSheet(
@@ -269,7 +289,7 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
     if (state.draggingItem == null || state.shrinkItem == null) {
       return;
     }
-    final targetList = state.workBoardList.map((item) => item).toList();
+    final targetList = [...state.workBoardList];
     final workBoardIndex = targetList.indexWhere(
       (element) => element.workBoardId == state.shrinkItem!.workBoardId,
     );

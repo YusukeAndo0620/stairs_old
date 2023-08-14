@@ -71,6 +71,7 @@ class BoardList extends StatelessWidget {
                             return WorkBoardScreen(
                               boardId: listItem.boardId,
                               title: listItem.projectName,
+                              themeColor: listItem.themeColor,
                             );
                           },
                         ),

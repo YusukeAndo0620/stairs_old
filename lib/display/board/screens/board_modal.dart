@@ -114,8 +114,10 @@ class BoardModal extends Modal {
             ),
             // プロジェクト名,
             CardLstItem.input(
-              iconColor: theme.colorPrimary,
-              iconData: Icons.assessment,
+              icon: Icon(
+                Icons.assessment,
+                color: theme.colorPrimary,
+              ),
               inputValue: state.projectName,
               hintText: _kProjectHintTxt,
               onSubmitted: (projectName) => context
@@ -152,8 +154,10 @@ class BoardModal extends Modal {
             ),
             // 業種
             CardLstItem.input(
-              iconColor: theme.colorPrimary,
-              iconData: theme.icons.trash,
+              icon: Icon(
+                theme.icons.trash,
+                color: theme.colorPrimary,
+              ),
               inputValue: state.industry,
               hintText: _kIndustryHintTxt,
               onSubmitted: (industry) => context
@@ -212,8 +216,10 @@ class BoardModal extends Modal {
             ),
             // 業務内容
             CardLstItem.input(
-              iconColor: theme.colorPrimary,
-              iconData: theme.icons.trash,
+              icon: Icon(
+                theme.icons.trash,
+                color: theme.colorPrimary,
+              ),
               inputValue: state.description,
               hintText: _kContentHintTxt,
               maxLength: _kContentMaxLength,
@@ -223,16 +229,20 @@ class BoardModal extends Modal {
             ),
             // OS
             CardLstItem.input(
-                iconColor: theme.colorPrimary,
-                iconData: Icons.laptop_chromebook,
+                icon: Icon(
+                  Icons.laptop_chromebook,
+                  color: theme.colorPrimary,
+                ),
                 inputValue: state.os,
                 hintText: _kOsHintTxt,
                 onSubmitted: (os) =>
                     context.read<BoardDetailBloc>().add(BoardChangeOs(os: os))),
             // DB
             CardLstItem.input(
-              iconColor: theme.colorPrimary,
-              iconData: Icons.data_array,
+              icon: Icon(
+                Icons.data_array,
+                color: theme.colorPrimary,
+              ),
               inputValue: state.db,
               hintText: _kDbHintTxt,
               onSubmitted: (db) =>
@@ -365,9 +375,11 @@ class BoardModal extends Modal {
             // 開発人数
             CardLstItem.input(
                 inputType: TextInputType.number,
-                iconColor: theme.colorPrimary,
                 inputValue: state.devSize,
-                iconData: Icons.group,
+                icon: Icon(
+                  Icons.group,
+                  color: theme.colorPrimary,
+                ),
                 hintText: _kDevSizeHintTxt,
                 onSubmitted: (devSize) => context
                     .read<BoardDetailBloc>()

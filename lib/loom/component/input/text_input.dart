@@ -10,8 +10,7 @@ const _kBorderWidth = 1.0;
 class TextInput extends StatefulWidget {
   const TextInput({
     super.key,
-    required this.iconColor,
-    this.iconData,
+    this.icon,
     required this.textController,
     this.inputType = TextInputType.text,
     required this.hintText,
@@ -19,8 +18,7 @@ class TextInput extends StatefulWidget {
     this.autoFocus = false,
     required this.onSubmitted,
   });
-  final Color iconColor;
-  final IconData? iconData;
+  final Icon? icon;
   final TextEditingController textController;
   final TextInputType inputType;
   final String hintText;
@@ -39,11 +37,13 @@ class TextInputState extends State<TextInput> {
   void initState() {
     super.initState();
 
-    focusNode.addListener(() {
-      if (!focusNode.hasFocus) {
-        widget.onSubmitted(widget.textController.text);
-      }
-    });
+    focusNode.addListener(
+      () {
+        if (!focusNode.hasFocus) {
+          widget.onSubmitted(widget.textController.text);
+        }
+      },
+    );
   }
 
   @override
@@ -77,12 +77,7 @@ class TextInputState extends State<TextInput> {
           FocusScope.of(context).unfocus();
         },
         decoration: InputDecoration(
-          icon: widget.iconData != null
-              ? Icon(
-                  widget.iconData,
-                  color: widget.iconColor,
-                )
-              : null,
+          icon: widget.icon != null ? widget.icon! : null,
           counterText: '',
           hintStyle: theme.textStyleFootnote,
           hintText: widget.hintText,

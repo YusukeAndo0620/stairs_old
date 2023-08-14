@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../loom/theme.dart';
 import '../../../model/model.dart';
 import '../../../loom/component/label_tip.dart';
+import '../../../loom/component/item/tap_action.dart';
 import '../work_board_position_bloc.dart';
 
 const _kEllipsisTxt = '...';
@@ -13,9 +14,9 @@ const _kBorderWidth = 1.0;
 const _kTitleMaxLine = 2;
 const _kTitleAndLabelSpace = 24.0;
 const _kAnimatedDuration = Duration(milliseconds: 100);
-const kDraggedItemHeight = 130.0;
+const kDraggedItemHeight = 120.0;
 
-const _kContentPadding = EdgeInsets.all(16.0);
+const _kContentPadding = EdgeInsets.all(8.0);
 const _kLabelContentPadding = EdgeInsets.only(right: 8.0, bottom: 8.0);
 const _kContentMargin = EdgeInsets.symmetric(vertical: 4.0);
 
@@ -50,7 +51,6 @@ class TaskListItem extends StatefulWidget {
 }
 
 class _TaskListItemState extends State<TaskListItem> {
-  bool _pressed = false;
   final itemKey = GlobalKey<_TaskListItemState>();
 
   @override
@@ -84,59 +84,38 @@ class _TaskListItemState extends State<TaskListItem> {
         dueDate: widget.dueDate,
         labelList: widget.labelList,
       ),
-      child: GestureDetector(
-        key: itemKey,
-        onTapDown: (_) {
-          setState(() {
-            _pressed = true;
-          });
-        },
-        onTapUp: (_) {
-          setState(() {
-            _pressed = false;
-          });
-        },
-        onTapCancel: () {
-          setState(() {
-            _pressed = false;
-          });
-        },
-        onTap: widget.onTap,
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedContainer(
-          width: double.infinity,
-          padding: _kContentPadding,
-          margin: _kContentMargin,
-          duration: _kAnimatedDuration,
-          decoration: BoxDecoration(
-            color: _pressed ? theme.colorPrimary : null,
-            border: Border.all(
-              color: widget.themeColor,
-              width: _kBorderWidth,
+      child: TapAction(
+        key: ValueKey(widget.id),
+        width: double.infinity,
+        tappedColor: widget.themeColor.withOpacity(0.7),
+        margin: _kContentMargin,
+        padding: _kContentPadding,
+        border: Border.all(
+          color: widget.themeColor,
+          width: _kBorderWidth,
+        ),
+        borderRadius: BorderRadius.circular(5.0),
+        onTap: () {},
+        widget: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.title,
+              style: theme.textStyleBody,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.title,
-                style: theme.textStyleBody,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-              ),
-              const SizedBox(
-                height: _kTitleAndLabelSpace,
-              ),
-              _LabelArea(
-                key: ValueKey(widget.id),
-                themeColor: widget.themeColor,
-                dueDate: widget.dueDate,
-                labelList: widget.labelList,
-              )
-            ],
-          ),
+            const SizedBox(
+              height: _kTitleAndLabelSpace,
+            ),
+            _LabelArea(
+              key: ValueKey(widget.id),
+              themeColor: widget.themeColor,
+              dueDate: widget.dueDate,
+              labelList: widget.labelList,
+            )
+          ],
         ),
       ),
     );
@@ -234,9 +213,11 @@ class _LabelArea extends StatelessWidget {
           child: LabelTip(
             type: LabelTipType.square,
             label: _getFormattedDate(dueDate),
-            themeColor: DateTime.now().difference(dueDate).inDays < 3
+            textColor: dueDate.difference(DateTime.now()).inDays < 3
                 ? theme.colorDangerBgDefault
-                : theme.colorPrimary,
+                : theme.colorFgDefault,
+            themeColor: theme.colorDisabled,
+            iconData: Icons.date_range,
           ),
         ),
         for (final label in displayLabelList)
@@ -251,33 +232,10 @@ class _LabelArea extends StatelessWidget {
           Text(
             _kEllipsisTxt,
             textAlign: TextAlign.center,
-            style: theme.textStyleBody,
+            style:
+                theme.textStyleFootnote.copyWith(color: theme.colorFgDefault),
           )
       ],
-    );
-  }
-}
-
-class ShrinkTaskListItem extends StatelessWidget {
-  const ShrinkTaskListItem({
-    super.key,
-    required this.id,
-  });
-  final String id;
-
-  @override
-  Widget build(BuildContext context) {
-    final itemKey = GlobalKey();
-    final theme = LoomTheme.of(context);
-
-    context
-        .read<WorkBoardPositionBloc>()
-        .add(WorkBoardSetCardItemPosition(workBoardItemId: id, key: itemKey));
-    return Container(
-      key: itemKey,
-      width: MediaQuery.of(context).size.width * 0.7,
-      height: kDraggedItemHeight,
-      color: theme.colorDisabled.withOpacity(0.2),
     );
   }
 }

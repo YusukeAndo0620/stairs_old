@@ -56,13 +56,11 @@ class WorkBoard {
   WorkBoard({
     required this.workBoardId,
     required this.title,
-    required this.themeColor,
     required this.workBoardItemList,
   });
 
   final String workBoardId;
   final String title;
-  final Color themeColor;
   final List<WorkBoardItemInfo> workBoardItemList;
 }
 

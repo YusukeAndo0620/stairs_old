@@ -17,10 +17,12 @@ class WorkBoardScreen extends StatelessWidget {
     super.key,
     required this.boardId,
     required this.title,
+    required this.themeColor,
   });
 
   final String boardId;
   final String title;
+  final Color themeColor;
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +38,7 @@ class WorkBoardScreen extends StatelessWidget {
           create: (_) => CarouselDisplayBloc(),
         )
       ],
-      child: BlocConsumer<WorkBoardBloc, WorkBoardBlocState>(
-        listenWhen: (previous, current) =>
-            previous.workBoardList.length != current.workBoardList.length,
-        listener: (context, state) {},
+      child: BlocBuilder<WorkBoardBloc, WorkBoardBlocState>(
         builder: (context, state) {
           context.read<WorkBoardBloc>().add(WorkBoardGetList(boardId: boardId));
           context
@@ -59,54 +58,58 @@ class WorkBoardScreen extends StatelessWidget {
               backgroundColor: theme.colorBgLayer1,
               title: Text(
                 title,
-                style: theme.textStyleHeading,
+                style: theme.textStyleHeading
+                    .copyWith(color: theme.colorFgDefault.withOpacity(0.9)),
               ),
             ),
-            body: CarouselDisplay(
-              pages: [
-                for (final item in state.workBoardList)
-                  WorkBoardCard(
-                    workBoardId: item.workBoardId,
-                    displayedWorkBoardId: state
-                        .workBoardList[context
-                            .read<CarouselDisplayBloc>()
-                            .state
-                            .currentPage]
-                        .workBoardId,
-                    title: item.title,
-                    themeColor: item.themeColor,
-                    workBoardItemList: item.workBoardItemList,
-                    onPageChanged: (pageAction) {
-                      final carouselDisplayState =
-                          context.read<CarouselDisplayBloc>().state;
-                      //すでにページ番号が更新されていた場合、処理を行わない
-                      if (state
-                              .workBoardList[context
+            body: Container(
+              color: themeColor.withOpacity(0.1),
+              child: CarouselDisplay(
+                pages: [
+                  for (final item in state.workBoardList)
+                    WorkBoardCard(
+                      workBoardId: item.workBoardId,
+                      displayedWorkBoardId: state
+                          .workBoardList[context
+                              .read<CarouselDisplayBloc>()
+                              .state
+                              .currentPage]
+                          .workBoardId,
+                      title: item.title,
+                      themeColor: themeColor,
+                      workBoardItemList: item.workBoardItemList,
+                      onPageChanged: (pageAction) {
+                        final carouselDisplayState =
+                            context.read<CarouselDisplayBloc>().state;
+                        //すでにページ番号が更新されていた場合、処理を行わない
+                        if (state
+                                .workBoardList[context
+                                    .read<CarouselDisplayBloc>()
+                                    .state
+                                    .currentPage]
+                                .workBoardId !=
+                            item.workBoardId) {
+                          return;
+                        }
+                        switch (pageAction) {
+                          case PageAction.next:
+                            if (carouselDisplayState.currentPage <
+                                state.workBoardList.length) {
+                              context
                                   .read<CarouselDisplayBloc>()
-                                  .state
-                                  .currentPage]
-                              .workBoardId !=
-                          item.workBoardId) {
-                        return;
-                      }
-                      switch (pageAction) {
-                        case PageAction.next:
-                          if (carouselDisplayState.currentPage <
-                              state.workBoardList.length) {
-                            context
-                                .read<CarouselDisplayBloc>()
-                                .add(const CarouselDisplayMoveNextPage());
-                          }
-                        case PageAction.previous:
-                          if (carouselDisplayState.currentPage > 0) {
-                            context
-                                .read<CarouselDisplayBloc>()
-                                .add(const CarouselDisplayMovePreviousPage());
-                          }
-                      }
-                    },
-                  ),
-              ],
+                                  .add(const CarouselDisplayMoveNextPage());
+                            }
+                          case PageAction.previous:
+                            if (carouselDisplayState.currentPage > 0) {
+                              context
+                                  .read<CarouselDisplayBloc>()
+                                  .add(const CarouselDisplayMovePreviousPage());
+                            }
+                        }
+                      },
+                    ),
+                ],
+              ),
             ),
           );
         },

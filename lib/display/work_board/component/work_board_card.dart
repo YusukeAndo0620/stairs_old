@@ -2,17 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../loom/theme.dart';
+import '../../../loom/component/item/tap_action.dart';
+import '../../../loom/component/button/custom_text_button.dart';
 import '../../../model/model.dart';
 import '../component/task_list_item.dart';
+import '../component/shrink_list_item.dart';
 import '../work_board_position_bloc.dart';
 import '../work_board_bloc.dart';
 import '../screen/work_board_screen.dart';
+import 'input_task_item.dart';
 
 const _kBorderWidth = 1.0;
 const _kWorkBoardAddBtnSpace = 16.0;
-const _kWorkBoardAddBtnTxt = 'カードを追加';
+const _kListAndAddBtnSpace = 16.0;
+const _kWorkBoardAddBtnTxt = 'タスクを追加';
+const _kCancelBtnTxt = 'キャンセル';
+const _kAddBtnTxt = '追加';
 
-const _kContentPadding = EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0);
+const _kAnimatedDuration = Duration(milliseconds: 100);
+
+const _kContentPadding = EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0);
 const _kContentMargin = EdgeInsets.only(
   top: 24,
   bottom: 48.0,
@@ -21,7 +30,7 @@ const _kContentMargin = EdgeInsets.only(
 );
 
 ///ワークボードカード
-class WorkBoardCard extends StatelessWidget {
+class WorkBoardCard extends StatefulWidget {
   const WorkBoardCard({
     super.key,
     required this.workBoardId,
@@ -39,16 +48,48 @@ class WorkBoardCard extends StatelessWidget {
   final Function(PageAction) onPageChanged;
 
   @override
+  State<StatefulWidget> createState() => _WorkBoardCardState();
+}
+
+class _WorkBoardCardState extends State<WorkBoardCard> {
+  bool _isAddedNewTask = false;
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<WorkBoardPositionBloc, WorkBoardPositionBlocState>(
       builder: (context, state) {
         final theme = LoomTheme.of(context);
         final workBoardCardKey = GlobalKey();
         context.read<WorkBoardPositionBloc>().add(WorkBoardSetCardPosition(
-            workBoardId: workBoardId, key: workBoardCardKey));
+            workBoardId: widget.workBoardId, key: workBoardCardKey));
+
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) async {
+            if (_isAddedNewTask) {
+              await Future.delayed(const Duration(milliseconds: 50)).then(
+                (value) => _scrollController.animateTo(
+                  _scrollController.position.maxScrollExtent,
+                  duration: _kAnimatedDuration,
+                  curve: Curves.easeIn,
+                ),
+              );
+            }
+          },
+        );
 
         return DragTarget(
-          key: ValueKey(workBoardId),
+          key: ValueKey(widget.workBoardId),
           builder: (context, accepted, rejected) {
             return Container(
               padding: _kContentPadding,
@@ -64,19 +105,20 @@ class WorkBoardCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _Header(
-                    key: key,
-                    title: title,
-                    listSize: workBoardItemList.length,
+                    key: widget.key,
+                    title: widget.title,
+                    listSize: widget.workBoardItemList.length,
                   ),
                   Expanded(
                     child: SingleChildScrollView(
                       key: workBoardCardKey,
+                      controller: _scrollController,
                       child: Column(
                         children: [
-                          for (final item in workBoardItemList)
+                          for (final item in widget.workBoardItemList)
                             if (item.workBoardItemId == kShrinkId)
                               ShrinkTaskListItem(
-                                key: key,
+                                key: widget.key,
                                 id: kShrinkId,
                               )
                             else
@@ -84,18 +126,18 @@ class WorkBoardCard extends StatelessWidget {
                                 id: item.workBoardItemId,
                                 title: item.title,
                                 dueDate: item.endDate,
-                                themeColor: themeColor,
+                                themeColor: widget.themeColor,
                                 labelList: item.labelList,
                                 onTap: () {},
                                 onDragStarted: () {
-                                  context
-                                      .read<WorkBoardBloc>()
-                                      .add(WorkBoardSetDraggingItem(
-                                        draggingItem: item,
-                                      ));
+                                  context.read<WorkBoardBloc>().add(
+                                        WorkBoardSetDraggingItem(
+                                          draggingItem: item,
+                                        ),
+                                      );
                                   context.read<WorkBoardBloc>().add(
                                         WorkBoardReplaceShrinkItem(
-                                            workBoardId: workBoardId,
+                                            workBoardId: widget.workBoardId,
                                             workBoardItemId:
                                                 item.workBoardItemId),
                                       );
@@ -107,15 +149,62 @@ class WorkBoardCard extends StatelessWidget {
                                       const WorkBoardCompleteDraggedItem());
                                 },
                               ),
+                          if (_isAddedNewTask) ...[
+                            InputTaskItem(
+                              inputValue: '',
+                              dueDate:
+                                  DateTime.now().add(const Duration(days: 7)),
+                              labelList: [],
+                              themeColor: widget.themeColor,
+                              onTextSubmitted: (inputValue) {},
+                            ),
+                          ]
                         ],
                       ),
                     ),
                   ),
-                  _AddingItemButton(
-                    key: key,
-                    themeColor: themeColor,
-                    onTapAddingBtn: () {},
-                  )
+                  if (_isAddedNewTask) ...[
+                    const SizedBox(
+                      height: _kListAndAddBtnSpace,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        CustomTextButton(
+                          title: _kCancelBtnTxt,
+                          themeColor: widget.themeColor,
+                          onTap: () {
+                            setState(
+                              () {
+                                _isAddedNewTask = false;
+                              },
+                            );
+                          },
+                        ),
+                        CustomTextButton(
+                          title: _kAddBtnTxt,
+                          themeColor: widget.themeColor,
+                          onTap: () {
+                            setState(
+                              () {
+                                _isAddedNewTask = false;
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (!_isAddedNewTask)
+                    _AddingItemButton(
+                      key: widget.key,
+                      themeColor: widget.themeColor,
+                      onTapAddingBtn: () async => setState(
+                        () {
+                          _isAddedNewTask = true;
+                        },
+                      ),
+                    )
                 ],
               ),
             );
@@ -124,7 +213,7 @@ class WorkBoardCard extends StatelessWidget {
             if (context.read<WorkBoardBloc>().state.draggingItem == null) {
               context.read<WorkBoardBloc>().add(
                     WorkBoardSetDraggingItem(
-                      draggingItem: workBoardItemList.firstWhere(
+                      draggingItem: widget.workBoardItemList.firstWhere(
                           (element) => element.workBoardItemId == details.data),
                     ),
                   );
@@ -156,15 +245,18 @@ class WorkBoardCard extends StatelessWidget {
     }
     final currentDraggingItemDx = details.offset.dx;
     final currentDraggingItemDy = details.offset.dy;
-    final workBoardPosition = positionState.workBoardPositionMap[workBoardId];
+    final workBoardPosition =
+        positionState.workBoardPositionMap[widget.workBoardId];
     if (workBoardPosition == null) return;
 
-    if (displayedWorkBoardId == workBoardId) {
-      if (workBoardPosition.dx + workBoardPosition.width / 3 <
+    // ページ移動
+    if (widget.displayedWorkBoardId == widget.workBoardId) {
+      if (workBoardPosition.dx + workBoardPosition.width / 2 <
           currentDraggingItemDx) {
-        onPageChanged(PageAction.next);
-      } else if (currentDraggingItemDx < workBoardPosition.dx) {
-        onPageChanged(PageAction.previous);
+        widget.onPageChanged(PageAction.next);
+      } else if (currentDraggingItemDx <
+          workBoardPosition.dx - workBoardPosition.width / 3) {
+        widget.onPageChanged(PageAction.previous);
       }
     }
 
@@ -176,18 +268,18 @@ class WorkBoardCard extends StatelessWidget {
       return;
     }
 
-    for (final item in workBoardItemList) {
+    for (final item in widget.workBoardItemList) {
       if (positionState.workBoardItemPositionMap[item.workBoardItemId] ==
           null) {
         return;
       }
       if (positionState.workBoardItemPositionMap[item.workBoardItemId]!.dy >=
           currentDraggingItemDy) {
-        final insertingShrinkItemIndex = workBoardItemList.indexWhere(
+        final insertingShrinkItemIndex = widget.workBoardItemList.indexWhere(
             (element) => element.workBoardItemId == item.workBoardItemId);
         context.read<WorkBoardBloc>().add(
               WorkBoardDeleteAndAddShrinkItem(
-                workBoardId: workBoardId,
+                workBoardId: widget.workBoardId,
                 insertingIndex: insertingShrinkItemIndex,
               ),
             );
@@ -196,8 +288,8 @@ class WorkBoardCard extends StatelessWidget {
     }
     context.read<WorkBoardBloc>().add(
           WorkBoardDeleteAndAddShrinkItem(
-            workBoardId: workBoardId,
-            insertingIndex: workBoardItemList.length,
+            workBoardId: widget.workBoardId,
+            insertingIndex: widget.workBoardItemList.length,
           ),
         );
   }
@@ -239,7 +331,8 @@ class _Header extends StatelessWidget {
         children: [
           Text(
             title,
-            style: theme.textStyleSubHeading,
+            style:
+                theme.textStyleSubHeading.copyWith(color: theme.colorFgDefault),
           ),
           Text('${listSize.toString()} 件'),
         ],
@@ -260,17 +353,17 @@ class _AddingItemButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = LoomTheme.of(context);
-
-    return Container(
+    return TapAction(
+      key: key,
+      tappedColor: themeColor,
       padding: _kContentPadding,
-      decoration: BoxDecoration(
-        color: themeColor.withOpacity(0.3),
-        border: Border.all(
-          color: theme.colorFgDisabled,
-          width: _kBorderWidth,
-        ),
+      border: Border.all(
+        color: themeColor,
+        width: _kBorderWidth,
+        strokeAlign: BorderSide.strokeAlignOutside,
       ),
-      child: Row(
+      onTap: onTapAddingBtn,
+      widget: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(

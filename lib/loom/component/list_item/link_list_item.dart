@@ -57,7 +57,6 @@ class LinkListItem extends StatelessWidget {
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.2,
             child: TextInput(
-              iconColor: theme.colorPrimary,
               textController: TextEditingController(text: inputValue),
               hintText: hintText,
               maxLength: maxLength,

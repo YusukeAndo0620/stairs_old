@@ -50,7 +50,6 @@ class InputListItem extends StatelessWidget {
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.5,
             child: TextInput(
-              iconColor: theme.colorPrimary,
               textController: TextEditingController(text: inputValue),
               hintText: hintText,
               maxLength: maxLength,

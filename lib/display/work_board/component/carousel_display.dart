@@ -24,7 +24,7 @@ class CarouselDisplay extends StatelessWidget {
     Completer<bool> completer = Completer<bool>();
 
     /// Callback called after widget has been fully built
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       completer.complete(true);
     });
 

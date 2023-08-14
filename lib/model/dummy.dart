@@ -88,7 +88,6 @@ final dummyWorkBoardList = [
   WorkBoard(
     workBoardId: '1',
     title: '作業中',
-    themeColor: colorList[4].themeColor,
     workBoardItemList: [
       WorkBoardItemInfo(
         workBoardId: '1',
@@ -96,7 +95,7 @@ final dummyWorkBoardList = [
         title: 'アカウント作成画面設計修正',
         description: 'アカウント作成画面の修正を行う。',
         startDate: DateTime.parse('2023-07-30 00:00:00'),
-        endDate: DateTime.now(),
+        endDate: DateTime.now().add(const Duration(days: 5)),
         labelList: tagList,
       ),
       WorkBoardItemInfo(
@@ -122,7 +121,6 @@ final dummyWorkBoardList = [
   WorkBoard(
     workBoardId: '2',
     title: '完了',
-    themeColor: colorList[5].themeColor,
     workBoardItemList: [
       WorkBoardItemInfo(
         workBoardId: '2',
@@ -136,7 +134,7 @@ final dummyWorkBoardList = [
       WorkBoardItemInfo(
         workBoardId: '2',
         workBoardItemId: uuid.v4(),
-        title: 'Voice &nSearch設定',
+        title: 'Voice & Search設定',
         description: 'ワークフロー一覧の新規実装',
         startDate: DateTime.parse('2023-07-30 00:00:00'),
         endDate: DateTime.now(),
