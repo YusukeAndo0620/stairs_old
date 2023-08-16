@@ -1,15 +1,24 @@
-import 'dart:math';
-
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../board/screens/board_modal.dart';
 import '../../loom/loom_theme_data.dart';
 import '../../model/model.dart';
 import '../../model/dummy.dart';
 
 const kShrinkId = 'shrinkId';
+
+class WorkBoardInfo {
+  WorkBoardInfo({
+    required this.workBoardId,
+    required this.title,
+    required this.workBoardItemList,
+  });
+
+  final String workBoardId;
+  final String title;
+  final List<WorkBoardItemInfo> workBoardItemList;
+}
 
 // Event
 abstract class WorkBoardBlocEvent {
@@ -32,9 +41,17 @@ class WorkBoardAddCard extends WorkBoardBlocEvent {
 }
 
 class WorkBoardAddTaskItem extends WorkBoardBlocEvent {
-  const WorkBoardAddTaskItem({required this.workBoardItemId});
+  const WorkBoardAddTaskItem({
+    required this.workBoardId,
+    required this.inputValue,
+    required this.dueDate,
+    required this.labelList,
+  });
 
-  final String workBoardItemId;
+  final String workBoardId;
+  final String inputValue;
+  final DateTime dueDate;
+  final List<ColorLabelInfo> labelList;
 }
 
 class WorkBoardTapListItem extends WorkBoardBlocEvent {
@@ -182,7 +199,27 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
       WorkBoardAddCard event, Emitter<WorkBoardBlocState> emit) async {}
 
   Future<void> _onAddTaskItem(
-      WorkBoardAddTaskItem event, Emitter<WorkBoardBlocState> emit) async {}
+      WorkBoardAddTaskItem event, Emitter<WorkBoardBlocState> emit) async {
+    final emitWorkBoardList = [...state.workBoardList];
+    final targetWorkBoardIndex = emitWorkBoardList
+        .indexWhere((element) => element.workBoardId == event.workBoardId);
+    if (targetWorkBoardIndex < 0) return;
+
+    emitWorkBoardList[targetWorkBoardIndex].workBoardItemList.add(
+          WorkBoardItemInfo(
+            workBoardId: event.workBoardId,
+            workBoardItemId: uuid.v4(),
+            title: event.inputValue,
+            description: '',
+            startDate: DateTime.now(),
+            endDate: event.dueDate,
+            labelList: event.labelList,
+          ),
+        );
+    emit(
+      state.copyWith(workBoardList: emitWorkBoardList),
+    );
+  }
 
   void _onTapEdit(WorkBoardTapEdit event, Emitter<WorkBoardBlocState> emit) {
     // showModalBottomSheet(

@@ -32,6 +32,7 @@ class TapAction extends StatefulWidget {
 
 class _TappedActionState extends State<TapAction> {
   bool _pressed = false;
+  final itemKey = GlobalKey<_TappedActionState>();
 
   @override
   void initState() {
@@ -46,7 +47,7 @@ class _TappedActionState extends State<TapAction> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      key: widget.key,
+      key: itemKey,
       onTapDown: (_) {
         setState(() {
           _pressed = true;

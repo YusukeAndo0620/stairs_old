@@ -13,7 +13,6 @@ const _kEllipsisTxt = '...';
 const _kBorderWidth = 1.0;
 const _kTitleMaxLine = 2;
 const _kTitleAndLabelSpace = 24.0;
-const _kAnimatedDuration = Duration(milliseconds: 100);
 const kDraggedItemHeight = 120.0;
 
 const _kContentPadding = EdgeInsets.all(8.0);
@@ -85,7 +84,7 @@ class _TaskListItemState extends State<TaskListItem> {
         labelList: widget.labelList,
       ),
       child: TapAction(
-        key: ValueKey(widget.id),
+        key: itemKey,
         width: double.infinity,
         tappedColor: widget.themeColor.withOpacity(0.7),
         margin: _kContentMargin,

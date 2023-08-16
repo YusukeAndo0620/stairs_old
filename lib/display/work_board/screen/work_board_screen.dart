@@ -36,7 +36,7 @@ class WorkBoardScreen extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => CarouselDisplayBloc(),
-        )
+        ),
       ],
       child: BlocBuilder<WorkBoardBloc, WorkBoardBlocState>(
         builder: (context, state) {
