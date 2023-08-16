@@ -68,6 +68,7 @@ class WorkBoardScreen extends StatelessWidget {
                 pages: [
                   for (final item in state.workBoardList)
                     WorkBoardCard(
+                      boardId: boardId,
                       workBoardId: item.workBoardId,
                       displayedWorkBoardId: state
                           .workBoardList[context

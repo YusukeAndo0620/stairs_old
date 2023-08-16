@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../loom/theme.dart';
 import '../../../loom/component/item/tap_action.dart';
 import '../../../loom/component/button/custom_text_button.dart';
+import '../../../display/board/board_detail_bloc.dart' hide Init;
 import '../../../model/model.dart';
 import '../component/task_list_item.dart';
 import '../component/input_task_item_bloc.dart';
@@ -17,6 +18,7 @@ const _kBorderWidth = 1.0;
 const _kWorkBoardAddBtnSpace = 16.0;
 const _kListAndAddBtnSpace = 16.0;
 const _kMovingDownHeight = 150.0;
+const _kPageStorageKeyPrefixTxt = 'PageStorageKey_';
 const _kWorkBoardAddBtnTxt = 'タスクを追加';
 const _kCancelBtnTxt = 'キャンセル';
 const _kAddBtnTxt = '追加';
@@ -35,6 +37,7 @@ const _kContentMargin = EdgeInsets.only(
 class WorkBoardCard extends StatefulWidget {
   const WorkBoardCard({
     super.key,
+    required this.boardId,
     required this.workBoardId,
     required this.displayedWorkBoardId,
     required this.title,
@@ -42,6 +45,7 @@ class WorkBoardCard extends StatefulWidget {
     required this.workBoardItemList,
     required this.onPageChanged,
   });
+  final String boardId;
   final String workBoardId;
   final String displayedWorkBoardId;
   final String title;
@@ -70,189 +74,211 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => InputTaskItemBloc(),
-      child: BlocBuilder<WorkBoardPositionBloc, WorkBoardPositionBlocState>(
-        builder: (context, state) {
-          final theme = LoomTheme.of(context);
-          final workBoardCardKey = GlobalKey();
+    return BlocBuilder<WorkBoardPositionBloc, WorkBoardPositionBlocState>(
+      builder: (context, state) {
+        final theme = LoomTheme.of(context);
+        final workBoardCardKey = GlobalKey();
 
-          context.read<WorkBoardPositionBloc>().add(WorkBoardSetCardPosition(
-              workBoardId: widget.workBoardId, key: workBoardCardKey));
+        context.read<WorkBoardPositionBloc>().add(WorkBoardSetCardPosition(
+            workBoardId: widget.workBoardId, key: workBoardCardKey));
 
-          WidgetsBinding.instance.addPostFrameCallback(
-            (_) async {
-              if (_isAddedNewTask) {
-                await Future.delayed(const Duration(milliseconds: 50)).then(
-                  (value) => _scrollController.animateTo(
-                    _scrollController.position.maxScrollExtent,
-                    duration: _kAnimatedDuration,
-                    curve: Curves.easeIn,
-                  ),
-                );
-              }
-              if (_isMovingLast) {
-                await Future.delayed(const Duration(milliseconds: 50)).then(
-                  (value) => _scrollController.jumpTo(
-                    _scrollController.position.maxScrollExtent,
-                  ),
-                );
-                _isMovingLast = false;
-              }
-            },
-          );
-
-          return DragTarget(
-            key: ValueKey(widget.workBoardId),
-            builder: (context, accepted, rejected) {
-              return Container(
-                padding: _kContentPadding,
-                margin: _kContentMargin,
-                decoration: BoxDecoration(
-                  color: theme.colorFgDefaultWhite,
-                  border: Border.all(
-                    color: theme.colorFgDisabled,
-                    width: _kBorderWidth,
-                  ),
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) async {
+            if (_isAddedNewTask) {
+              await Future.delayed(const Duration(milliseconds: 50)).then(
+                (value) => _scrollController.animateTo(
+                  _scrollController.position.maxScrollExtent,
+                  duration: _kAnimatedDuration,
+                  curve: Curves.easeIn,
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _Header(
-                      key: widget.key,
-                      title: widget.title,
-                      listSize: widget.workBoardItemList.length,
+              );
+            }
+            if (_isMovingLast) {
+              await Future.delayed(const Duration(milliseconds: 50)).then(
+                (value) => _scrollController.jumpTo(
+                  _scrollController.position.maxScrollExtent,
+                ),
+              );
+              _isMovingLast = false;
+            }
+          },
+        );
+
+        return BlocBuilder<InputTaskItemBloc, InputTaskItemBlocState>(
+          builder: (context, state) {
+            return DragTarget(
+              key: ValueKey(widget.workBoardId),
+              builder: (context, accepted, rejected) {
+                return Container(
+                  padding: _kContentPadding,
+                  margin: _kContentMargin,
+                  decoration: BoxDecoration(
+                    color: theme.colorFgDefaultWhite,
+                    border: Border.all(
+                      color: theme.colorFgDisabled,
+                      width: _kBorderWidth,
                     ),
-                    Expanded(
-                      child: SingleChildScrollView(
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _Header(
+                        key: widget.key,
+                        title: widget.title,
+                        listSize: widget.workBoardItemList.length,
+                      ),
+                      Expanded(
                         key: workBoardCardKey,
-                        controller: _scrollController,
-                        child: Column(
-                          children: [
-                            for (final item in widget.workBoardItemList)
-                              if (item.workBoardItemId == kShrinkId)
-                                ShrinkTaskListItem(
-                                  key: widget.key,
-                                  id: kShrinkId,
-                                )
-                              else
-                                TaskListItem(
-                                  id: item.workBoardItemId,
-                                  title: item.title,
-                                  dueDate: item.endDate,
+                        child: SingleChildScrollView(
+                          key: PageStorageKey(
+                              _kPageStorageKeyPrefixTxt + widget.workBoardId),
+                          controller: _scrollController,
+                          child: Column(
+                            children: [
+                              for (final item in widget.workBoardItemList)
+                                if (item.workBoardItemId == kShrinkId)
+                                  ShrinkTaskListItem(
+                                    key: widget.key,
+                                    id: kShrinkId,
+                                  )
+                                else
+                                  TaskListItem(
+                                    id: item.workBoardItemId,
+                                    title: item.title,
+                                    dueDate: item.endDate,
+                                    themeColor: widget.themeColor,
+                                    labelList: item.labelList,
+                                    onTap: () {},
+                                    onDragStarted: () {
+                                      context.read<WorkBoardBloc>().add(
+                                            WorkBoardSetDraggingItem(
+                                              draggingItem: item,
+                                            ),
+                                          );
+                                      context.read<WorkBoardBloc>().add(
+                                            WorkBoardReplaceShrinkItem(
+                                                workBoardId: widget.workBoardId,
+                                                workBoardItemId:
+                                                    item.workBoardItemId),
+                                          );
+                                    },
+                                    onDragUpdate: (detail) {},
+                                    onDragCompleted: () {},
+                                    onDraggableCanceled: (velocity, offset) {
+                                      context.read<WorkBoardBloc>().add(
+                                          const WorkBoardCompleteDraggedItem());
+                                    },
+                                  ),
+                              if (_isAddedNewTask) ...[
+                                InputTaskItem(
+                                  id: '${widget.workBoardId}_${uuid.v4()}',
                                   themeColor: widget.themeColor,
-                                  labelList: item.labelList,
-                                  onTap: () {},
-                                  onDragStarted: () {
-                                    context.read<WorkBoardBloc>().add(
-                                          WorkBoardSetDraggingItem(
-                                            draggingItem: item,
-                                          ),
-                                        );
-                                    context.read<WorkBoardBloc>().add(
-                                          WorkBoardReplaceShrinkItem(
-                                              workBoardId: widget.workBoardId,
-                                              workBoardItemId:
-                                                  item.workBoardItemId),
-                                        );
-                                  },
-                                  onDragUpdate: (detail) {},
-                                  onDragCompleted: () {},
-                                  onDraggableCanceled: (velocity, offset) {
-                                    context.read<WorkBoardBloc>().add(
-                                        const WorkBoardCompleteDraggedItem());
-                                  },
+                                  labelList: context
+                                      .read<BoardDetailBloc>()
+                                      .getLabelList(boardId: widget.boardId),
                                 ),
-                            if (_isAddedNewTask) ...[
-                              InputTaskItem(
+                              ]
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (_isAddedNewTask) ...[
+                        const SizedBox(
+                          height: _kListAndAddBtnSpace,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            CustomTextButton(
+                              title: _kCancelBtnTxt,
+                              themeColor: widget.themeColor,
+                              onTap: () {
+                                setState(
+                                  () {
+                                    _isAddedNewTask = false;
+                                  },
+                                );
+                              },
+                            ),
+                            AbsorbPointer(
+                              absorbing: context
+                                  .read<InputTaskItemBloc>()
+                                  .state
+                                  .inputValue
+                                  .isEmpty,
+                              child: CustomTextButton(
+                                title: _kAddBtnTxt,
                                 themeColor: widget.themeColor,
+                                disabled: context
+                                    .read<InputTaskItemBloc>()
+                                    .state
+                                    .inputValue
+                                    .isEmpty,
+                                onTap: () {
+                                  setState(
+                                    () {
+                                      _isAddedNewTask = false;
+                                      _isMovingLast = true;
+                                    },
+                                  );
+                                  final taskItemBloc =
+                                      context.read<InputTaskItemBloc>();
+                                  context.read<WorkBoardBloc>().add(
+                                        WorkBoardAddTaskItem(
+                                          workBoardId: widget.workBoardId,
+                                          inputValue:
+                                              taskItemBloc.state.inputValue,
+                                          dueDate: taskItemBloc.state.dueDate,
+                                          labelList:
+                                              taskItemBloc.state.labelList,
+                                        ),
+                                      );
+                                  taskItemBloc.add(const Init());
+                                },
                               ),
-                            ]
+                            ),
                           ],
                         ),
-                      ),
-                    ),
-                    if (_isAddedNewTask) ...[
-                      const SizedBox(
-                        height: _kListAndAddBtnSpace,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CustomTextButton(
-                            title: _kCancelBtnTxt,
-                            themeColor: widget.themeColor,
-                            onTap: () {
-                              setState(
-                                () {
-                                  _isAddedNewTask = false;
-                                },
-                              );
+                      ],
+                      if (!_isAddedNewTask)
+                        _AddingItemButton(
+                          key: widget.key,
+                          themeColor: widget.themeColor,
+                          onTapAddingBtn: () async => setState(
+                            () {
+                              _isAddedNewTask = true;
                             },
                           ),
-                          CustomTextButton(
-                            title: _kAddBtnTxt,
-                            themeColor: widget.themeColor,
-                            onTap: () {
-                              setState(
-                                () {
-                                  _isAddedNewTask = false;
-                                  _isMovingLast = true;
-                                },
-                              );
-                              final taskItemBloc =
-                                  context.read<InputTaskItemBloc>();
-                              context.read<WorkBoardBloc>().add(
-                                    WorkBoardAddTaskItem(
-                                      workBoardId: widget.workBoardId,
-                                      inputValue: taskItemBloc.state.inputValue,
-                                      dueDate: taskItemBloc.state.dueDate,
-                                      labelList: taskItemBloc.state.labelList,
-                                    ),
-                                  );
-                              taskItemBloc.add(const Init());
-                            },
-                          ),
-                        ],
-                      ),
+                        )
                     ],
-                    if (!_isAddedNewTask)
-                      _AddingItemButton(
-                        key: widget.key,
-                        themeColor: widget.themeColor,
-                        onTapAddingBtn: () async => setState(
-                          () {
-                            _isAddedNewTask = true;
-                          },
+                  ),
+                );
+              },
+              onMove: (details) async {
+                if (context.read<WorkBoardBloc>().state.draggingItem == null) {
+                  context.read<WorkBoardBloc>().add(
+                        WorkBoardSetDraggingItem(
+                          draggingItem: widget.workBoardItemList.firstWhere(
+                              (element) =>
+                                  element.workBoardItemId == details.data),
                         ),
-                      )
-                  ],
-                ),
-              );
-            },
-            onMove: (details) async {
-              if (context.read<WorkBoardBloc>().state.draggingItem == null) {
-                context.read<WorkBoardBloc>().add(
-                      WorkBoardSetDraggingItem(
-                        draggingItem: widget.workBoardItemList.firstWhere(
-                            (element) =>
-                                element.workBoardItemId == details.data),
-                      ),
-                    );
-              }
+                      );
+                }
 
-              await onMove(
-                context: context,
-                workBoardCardKey: workBoardCardKey,
-                details: details,
-              );
-            },
-            onAcceptWithDetails: (details) {
-              onAccepted(context: context, details: details);
-            },
-          );
-        },
-      ),
+                await onMove(
+                  context: context,
+                  workBoardCardKey: workBoardCardKey,
+                  details: details,
+                );
+              },
+              onAcceptWithDetails: (details) {
+                onAccepted(context: context, details: details);
+              },
+            );
+          },
+        );
+      },
+      // ),
     );
   }
 
@@ -284,21 +310,24 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
         widget.onPageChanged(PageAction.previous);
       }
       // 縦スクロール
-      if (currentDraggingItemDy >
-          ((workBoardCardKey.currentContext!.size!.height / 2) +
-              _scrollController.offset)) {
+      //下に移動
+      if (_scrollController.offset <
+              _scrollController.position.maxScrollExtent &&
+          workBoardCardKey.currentContext!.size!.height / 2 + 125 <
+              currentDraggingItemDy) {
         _scrollController.animateTo(
           _scrollController.offset + _kMovingDownHeight,
           duration: _kAnimatedDuration,
-          curve: Curves.easeIn,
+          curve: Curves.linear,
         );
-      } else if (currentDraggingItemDy <
-          ((workBoardCardKey.currentContext!.size!.height / 2) +
-              _scrollController.offset)) {
+        //上に移動
+      } else if (_scrollController.offset > 0 &&
+          workBoardCardKey.currentContext!.size!.height / 2 - 100 >
+              currentDraggingItemDy) {
         _scrollController.animateTo(
           _scrollController.offset - _kMovingDownHeight,
           duration: _kAnimatedDuration,
-          curve: Curves.easeIn,
+          curve: Curves.linear,
         );
       }
     }

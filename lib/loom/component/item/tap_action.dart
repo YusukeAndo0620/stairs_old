@@ -13,6 +13,7 @@ class TapAction extends StatefulWidget {
     this.margin,
     this.padding,
     this.border,
+    this.shape,
     this.borderRadius,
     required this.onTap,
   });
@@ -23,6 +24,7 @@ class TapAction extends StatefulWidget {
   final EdgeInsets? margin;
   final EdgeInsets? padding;
   final BoxBorder? border;
+  final BoxShape? shape;
   final BorderRadiusGeometry? borderRadius;
   final VoidCallback onTap;
 
@@ -75,6 +77,7 @@ class _TappedActionState extends State<TapAction> {
           color: _pressed ? widget.tappedColor.withOpacity(0.7) : null,
           border: widget.border,
           borderRadius: widget.borderRadius,
+          shape: widget.shape ?? BoxShape.rectangle,
         ),
         child: widget.widget,
       ),

@@ -352,4 +352,26 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
       BoardChangeTagList event, Emitter<BoardDetailBlocState> emit) {
     emit(state.copyWith(tagList: event.tagList));
   }
+
+// ボードで設定したラベル（開発言語＋タグ）リスト取得
+  List<ColorLabelInfo> getLabelList({required String boardId}) {
+    //TODO: API使用予定
+    final boardDetail = dummyBoardDetailList
+        .firstWhere((element) => element.boardId == boardId);
+    final labelList = <ColorLabelInfo>[];
+
+    for (final devItem in boardDetail.devLanguageList) {
+      final targetList = devItem.linkLabelList
+          .map(
+            (item) => ColorLabelInfo(
+              id: devItem.inputValue + item.id,
+              labelName: devItem.inputValue + ' - ' + item.labelName,
+              themeColor: item.themeColor,
+            ),
+          )
+          .toList();
+      labelList.addAll(targetList);
+    }
+    return [...boardDetail.tagList, ...labelList];
+  }
 }

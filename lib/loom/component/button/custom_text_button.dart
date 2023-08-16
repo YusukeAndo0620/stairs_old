@@ -12,31 +12,36 @@ class CustomTextButton extends StatelessWidget {
     super.key,
     required this.title,
     required this.themeColor,
+    this.disabled = false,
     required this.onTap,
   });
   final String title;
   final Color themeColor;
+  final bool disabled;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = LoomTheme.of(context);
-    return TapAction(
-      key: key,
-      minWidth: _kMinWidth,
-      padding: _kContentPadding,
-      border: Border.all(
-        color: themeColor,
-        width: _kBorderWidth,
-        strokeAlign: BorderSide.strokeAlignOutside,
-      ),
-      borderRadius: BorderRadius.circular(5.0),
-      tappedColor: themeColor,
-      onTap: onTap,
-      widget: Text(
-        title,
-        style: theme.textStyleBody,
-        textAlign: TextAlign.center,
+    return Opacity(
+      opacity: disabled ? 0.5 : 1.0,
+      child: TapAction(
+        key: key,
+        minWidth: _kMinWidth,
+        padding: _kContentPadding,
+        border: Border.all(
+          color: themeColor,
+          width: _kBorderWidth,
+          strokeAlign: BorderSide.strokeAlignOutside,
+        ),
+        borderRadius: BorderRadius.circular(5.0),
+        tappedColor: themeColor,
+        onTap: onTap,
+        widget: Text(
+          title,
+          style: theme.textStyleBody,
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

@@ -271,31 +271,28 @@ class BoardModal extends Modal {
                       onTextSubmitted: (value) {},
                       onTap: (id) {
                         showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) {
-                              return SelectItemModal(
-                                id: id,
-                                title: getSelectItemDisplayTitle(
-                                    context: context, id: id),
-                                height:
-                                    MediaQuery.of(context).size.height * 0.7,
-                                labelList: context
-                                    .read<BoardDetailBloc>()
-                                    .state
-                                    .tagList,
-                                selectedLabelList: getDevLangSelectedLabelList(
-                                    context: context, id: id),
-                                onTapListItem: (linkLabelList) {
-                                  context.read<LinkTagDisplayBloc>().add(
-                                        UpdateLinkLabelList(
-                                            id: id,
-                                            linkLabelList: linkLabelList),
-                                      );
-                                },
-                              );
-                            });
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) {
+                            return SelectItemModal(
+                              id: id,
+                              title: getSelectItemDisplayTitle(
+                                  context: context, id: id),
+                              height: MediaQuery.of(context).size.height * 0.7,
+                              labelList:
+                                  context.read<BoardDetailBloc>().state.tagList,
+                              selectedLabelList: getDevLangSelectedLabelList(
+                                  context: context, id: id),
+                              onTapListItem: (linkLabelList) {
+                                context.read<LinkTagDisplayBloc>().add(
+                                      UpdateLinkLabelList(
+                                          id: id, linkLabelList: linkLabelList),
+                                    );
+                              },
+                            );
+                          },
+                        );
                       },
                       onTapBack: (data) {
                         context.read<BoardDetailBloc>().add(

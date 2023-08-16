@@ -8,18 +8,6 @@ import '../../model/dummy.dart';
 
 const kShrinkId = 'shrinkId';
 
-class WorkBoardInfo {
-  WorkBoardInfo({
-    required this.workBoardId,
-    required this.title,
-    required this.workBoardItemList,
-  });
-
-  final String workBoardId;
-  final String title;
-  final List<WorkBoardItemInfo> workBoardItemList;
-}
-
 // Event
 abstract class WorkBoardBlocEvent {
   const WorkBoardBlocEvent();
