@@ -6,6 +6,7 @@ import '../work_board_position_bloc.dart';
 import '../component/carousel_display_bloc.dart';
 import '../component/carousel_display.dart';
 import '../component/work_board_card.dart';
+import '../component/work_board_adding_card.dart';
 
 enum PageAction {
   next,
@@ -44,6 +45,11 @@ class WorkBoardScreen extends StatelessWidget {
           context
               .read<WorkBoardPositionBloc>()
               .add(WorkBoardPositionInit(boardId: boardId));
+          context.read<CarouselDisplayBloc>().add(
+                CarouselDisplayInit(
+                  maxPage: state.workBoardList.length,
+                ),
+              );
 
           final theme = LoomTheme.of(context);
           return Scaffold(
@@ -95,7 +101,7 @@ class WorkBoardScreen extends StatelessWidget {
                         switch (pageAction) {
                           case PageAction.next:
                             if (carouselDisplayState.currentPage <
-                                state.workBoardList.length) {
+                                state.workBoardList.length - 1) {
                               context
                                   .read<CarouselDisplayBloc>()
                                   .add(const CarouselDisplayMoveNextPage());
@@ -109,6 +115,17 @@ class WorkBoardScreen extends StatelessWidget {
                         }
                       },
                     ),
+                  WorkBoardAddingCard(
+                    themeColor: themeColor,
+                    onOpenCard: () => context.read<CarouselDisplayBloc>().add(
+                          const CarouselDisplayMoveLastPage(),
+                        ),
+                    onTapAddingBtn: (inputValue) {
+                      context.read<WorkBoardBloc>().add(
+                            WorkBoardAddCard(title: inputValue),
+                          );
+                    },
+                  ),
                 ],
               ),
             ),

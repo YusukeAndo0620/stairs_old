@@ -203,8 +203,8 @@ class _TileContent extends StatelessWidget {
       children: [
         for (final info in checkList)
           GestureDetector(
-            onTap: () {
-              _onTap(context: context, tappedItem: info);
+            onTap: () async {
+              await _onTap(context: context, tappedItem: info);
               onTapListItem([]);
             },
             child: Badge(
@@ -281,8 +281,8 @@ class _ListItem extends StatelessWidget {
   }
 }
 
-void _onTap(
-    {required BuildContext context, required CheckLabelInfo tappedItem}) {
+Future<void> _onTap(
+    {required BuildContext context, required CheckLabelInfo tappedItem}) async {
   context
       .read<SelectItemModalBloc>()
       .add(SelectItemTapListItem(tappedItem: tappedItem));

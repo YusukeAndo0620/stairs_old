@@ -278,7 +278,6 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
           },
         );
       },
-      // ),
     );
   }
 
@@ -298,48 +297,68 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
     final currentDraggingItemDy = details.offset.dy;
     final workBoardPosition =
         positionState.workBoardPositionMap[widget.workBoardId];
+
     if (workBoardPosition == null) return;
+    final criteriaMovingPrevious =
+        workBoardPosition.dx - workBoardPosition.width / 6;
+    final criteriaMovingNext =
+        workBoardPosition.dx + workBoardPosition.width / 4;
 
     if (widget.displayedWorkBoardId == widget.workBoardId) {
+      // カード内移動
+      if (currentDraggingItemDx < criteriaMovingNext &&
+          criteriaMovingPrevious < currentDraggingItemDx) {
+        // 縦スクロール
+        //下に移動
+        if (_scrollController.offset <
+                _scrollController.position.maxScrollExtent &&
+            workBoardCardKey.currentContext!.size!.height / 2 + 125 <
+                currentDraggingItemDy) {
+          _scrollController.animateTo(
+            _scrollController.offset + _kMovingDownHeight,
+            duration: _kAnimatedDuration,
+            curve: Curves.linear,
+          );
+          //上に移動
+        } else if (_scrollController.offset > 0 &&
+            workBoardCardKey.currentContext!.size!.height / 2 - 100 >
+                currentDraggingItemDy) {
+          _scrollController.animateTo(
+            _scrollController.offset - _kMovingDownHeight,
+            duration: _kAnimatedDuration,
+            curve: Curves.linear,
+          );
+        }
+        replaceShrinkItem(
+          positionState: positionState,
+          currentDraggingItemDy: currentDraggingItemDy,
+        );
+        return;
+      }
       // 横ページ移動
-      if (workBoardPosition.dx + workBoardPosition.width / 2 <
-          currentDraggingItemDx) {
+      if (criteriaMovingNext < currentDraggingItemDx) {
         widget.onPageChanged(PageAction.next);
-      } else if (currentDraggingItemDx <
-          workBoardPosition.dx - workBoardPosition.width / 3) {
+      } else if (currentDraggingItemDx < criteriaMovingNext) {
         widget.onPageChanged(PageAction.previous);
       }
-      // 縦スクロール
-      //下に移動
-      if (_scrollController.offset <
-              _scrollController.position.maxScrollExtent &&
-          workBoardCardKey.currentContext!.size!.height / 2 + 125 <
-              currentDraggingItemDy) {
-        _scrollController.animateTo(
-          _scrollController.offset + _kMovingDownHeight,
-          duration: _kAnimatedDuration,
-          curve: Curves.linear,
-        );
-        //上に移動
-      } else if (_scrollController.offset > 0 &&
-          workBoardCardKey.currentContext!.size!.height / 2 - 100 >
-              currentDraggingItemDy) {
-        _scrollController.animateTo(
-          _scrollController.offset - _kMovingDownHeight,
-          duration: _kAnimatedDuration,
-          curve: Curves.linear,
-        );
-      }
     }
+    replaceShrinkItem(
+      positionState: positionState,
+      currentDraggingItemDy: currentDraggingItemDy,
+    );
+  }
 
+  void replaceShrinkItem({
+    required WorkBoardPositionBlocState positionState,
+    required double currentDraggingItemDy,
+  }) {
+    if (positionState.workBoardItemPositionMap[kShrinkId] == null) return;
     final shrinkItemPosition =
         positionState.workBoardItemPositionMap[kShrinkId]!.dy;
-
     if (shrinkItemPosition - (kDraggedItemHeight / 2) < currentDraggingItemDy &&
         currentDraggingItemDy < shrinkItemPosition + (kDraggedItemHeight / 2)) {
       return;
     }
-
     for (final item in widget.workBoardItemList) {
       if (positionState.workBoardItemPositionMap[item.workBoardItemId] ==
           null) {

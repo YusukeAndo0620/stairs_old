@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme.dart';
 
 const _kAnimatedDuration = Duration(milliseconds: 100);
 
@@ -7,6 +8,7 @@ class TapAction extends StatefulWidget {
   const TapAction({
     super.key,
     this.width,
+    this.height,
     this.minWidth,
     required this.widget,
     required this.tappedColor,
@@ -18,6 +20,7 @@ class TapAction extends StatefulWidget {
     required this.onTap,
   });
   final double? width;
+  final double? height;
   final double? minWidth;
   final Widget widget;
   final Color tappedColor;
@@ -48,6 +51,7 @@ class _TappedActionState extends State<TapAction> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = LoomTheme.of(context);
     return GestureDetector(
       key: itemKey,
       onTapDown: (_) {
@@ -69,12 +73,15 @@ class _TappedActionState extends State<TapAction> {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         width: widget.width,
+        height: widget.height,
         margin: widget.margin,
         padding: widget.padding,
         duration: _kAnimatedDuration,
         constraints: BoxConstraints(minWidth: widget.minWidth ?? 0.0),
         decoration: BoxDecoration(
-          color: _pressed ? widget.tappedColor.withOpacity(0.7) : null,
+          color: _pressed
+              ? widget.tappedColor.withOpacity(0.7)
+              : theme.colorBgLayer1,
           border: widget.border,
           borderRadius: widget.borderRadius,
           shape: widget.shape ?? BoxShape.rectangle,

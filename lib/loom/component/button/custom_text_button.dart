@@ -3,6 +3,7 @@ import '../../../loom/theme.dart';
 import '../../../loom/component/item/tap_action.dart';
 
 const _kBorderWidth = 1.0;
+const _kIconAndTextSpace = 16.0;
 const _kMinWidth = 100.0;
 const _kContentPadding = EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0);
 
@@ -11,11 +12,15 @@ class CustomTextButton extends StatelessWidget {
   const CustomTextButton({
     super.key,
     required this.title,
+    this.icon,
+    this.height,
     required this.themeColor,
     this.disabled = false,
     required this.onTap,
   });
   final String title;
+  final double? height;
+  final Icon? icon;
   final Color themeColor;
   final bool disabled;
   final VoidCallback onTap;
@@ -28,6 +33,7 @@ class CustomTextButton extends StatelessWidget {
       child: TapAction(
         key: key,
         minWidth: _kMinWidth,
+        height: height,
         padding: _kContentPadding,
         border: Border.all(
           color: themeColor,
@@ -37,10 +43,21 @@ class CustomTextButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(5.0),
         tappedColor: themeColor,
         onTap: onTap,
-        widget: Text(
-          title,
-          style: theme.textStyleBody,
-          textAlign: TextAlign.center,
+        widget: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (icon != null) ...[
+              icon!,
+              const SizedBox(
+                width: _kIconAndTextSpace,
+              ),
+            ],
+            Text(
+              title,
+              style: theme.textStyleBody,
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );

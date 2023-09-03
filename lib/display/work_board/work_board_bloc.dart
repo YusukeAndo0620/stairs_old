@@ -23,9 +23,9 @@ class WorkBoardGetList extends WorkBoardBlocEvent {
 }
 
 class WorkBoardAddCard extends WorkBoardBlocEvent {
-  const WorkBoardAddCard({required this.workBoardId});
+  const WorkBoardAddCard({required this.title});
 
-  final String workBoardId;
+  final String title;
 }
 
 class WorkBoardAddTaskItem extends WorkBoardBlocEvent {
@@ -177,14 +177,30 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
 
   Future<void> _onGetList(
       WorkBoardGetList event, Emitter<WorkBoardBlocState> emit) async {
-    emit(state.copyWith(workBoardList: dummyWorkBoardList));
+    emit(state.copyWith(
+        workBoardList: state.workBoardList.isEmpty
+            ? dummyWorkBoardList
+            : state.workBoardList));
   }
 
   Future<void> _onTapListItem(
       WorkBoardTapListItem event, Emitter<WorkBoardBlocState> emit) async {}
 
   Future<void> _onAddCard(
-      WorkBoardAddCard event, Emitter<WorkBoardBlocState> emit) async {}
+      WorkBoardAddCard event, Emitter<WorkBoardBlocState> emit) async {
+    final emitList = [
+      ...state.workBoardList,
+    ];
+
+    emitList.add(
+      WorkBoard(
+        workBoardId: uuid.v4(),
+        title: event.title,
+        workBoardItemList: <WorkBoardItemInfo>[],
+      ),
+    );
+    emit(state.copyWith(workBoardList: emitList));
+  }
 
   Future<void> _onAddTaskItem(
       WorkBoardAddTaskItem event, Emitter<WorkBoardBlocState> emit) async {
@@ -275,7 +291,7 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
   Future<void> _onDeleteAndAddShrinkItem(WorkBoardDeleteAndAddShrinkItem event,
       Emitter<WorkBoardBlocState> emit) async {
     final shrinkItem = getShrinkItem(workBoardId: event.workBoardId);
-    final targetList = [...state.workBoardList];
+    var targetList = [...state.workBoardList];
 
     if (state.shrinkItem == null) return;
     final currentShrinkItemWBIndex = targetList.indexWhere(
@@ -287,16 +303,29 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
         .workBoardItemList
         .indexWhere((element) =>
             element.workBoardItemId == state.shrinkItem!.workBoardItemId);
+
+    // Shrink Itemを追加する対象のWorkBoard
     final workBoardIndex = targetList.indexWhere(
       (element) => element.workBoardId == event.workBoardId,
     );
-    targetList[workBoardIndex]
-        .workBoardItemList
-        .insert(event.insertingIndex, shrinkItem);
+    final targetWorkBoard = targetList[workBoardIndex];
+
+    if (targetList[workBoardIndex].workBoardItemList.isEmpty) {
+      final replaceWorkBoard = WorkBoard(
+          workBoardId: targetWorkBoard.workBoardId,
+          title: targetWorkBoard.title,
+          workBoardItemList: [shrinkItem]);
+      targetList
+          .replaceRange(workBoardIndex, workBoardIndex + 1, [replaceWorkBoard]);
+    } else {
+      targetWorkBoard.workBoardItemList.insert(
+          targetWorkBoard.workBoardItemList.isEmpty ? 1 : event.insertingIndex,
+          shrinkItem);
+    }
 
     //同じワークボード内で移動した場合、それぞれのindexで削除対象を判定
     if (shrinkItem.workBoardId == state.shrinkItem!.workBoardId) {
-      targetList[workBoardIndex].workBoardItemList.removeAt(
+      targetWorkBoard.workBoardItemList.removeAt(
           currentShrinkItemWBItemIndex < event.insertingIndex
               ? currentShrinkItemWBItemIndex
               : currentShrinkItemWBItemIndex + 1);

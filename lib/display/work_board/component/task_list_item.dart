@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../loom/theme.dart';
+import '../../../loom/test_selector/test_selector.dart';
 import '../../../model/model.dart';
 import '../../../loom/component/label_tip.dart';
 import '../../../loom/component/item/tap_action.dart';
@@ -82,7 +83,7 @@ class _TaskListItemState extends State<TaskListItem> {
         themeColor: widget.themeColor,
         dueDate: widget.dueDate,
         labelList: widget.labelList,
-      ),
+      ).testSelector('task_list_item_drag_item'),
       child: TapAction(
         key: itemKey,
         width: double.infinity,
@@ -116,8 +117,8 @@ class _TaskListItemState extends State<TaskListItem> {
             )
           ],
         ),
-      ),
-    );
+      ).testSelector('task_list_item_list_item'),
+    ).testSelector('task_list_item');
   }
 }
 
