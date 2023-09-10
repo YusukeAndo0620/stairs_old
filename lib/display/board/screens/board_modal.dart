@@ -1,22 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/single_child_widget.dart';
+import 'package:stairs/loom/loom_package.dart';
 
-import '../../../loom/theme.dart';
-import '../../../loom/component/modal/modal.dart';
-import '../../../loom/component/list_item/card_list_item.dart';
 import '../board_detail_bloc.dart';
-import '../../../loom/display/link_tag_display.dart';
 import '../../../model/model.dart';
-import '../../../loom/component/modal/select_item_modal.dart';
-import '../../../loom/display/link_tag_display_bloc.dart';
-import '../../../loom/component/label_tip.dart';
-import '../../../loom/display/select_color_display.dart';
-import '../../../loom/component/item/color_box.dart';
-import '../../../loom/display/select_label_display.dart';
-import '../../../loom/display/input_tag_display.dart';
-import '../../../loom/display/input_tool_display.dart';
-import '../../../loom/component/item/date_range.dart';
 
 const _kProjectTitleTxt = 'プロジェクト';
 const _kProjectHintTxt = 'プロジェクト名';

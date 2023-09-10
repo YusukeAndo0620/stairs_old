@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:stairs/loom/component/input/text_input.dart';
-
-import '../../../loom/theme.dart';
-import '../../../loom/component/button/custom_text_button.dart';
+import 'package:stairs/loom/loom_package.dart';
 
 const _kBorderWidth = 1.0;
 const _kMaxLength = 30;

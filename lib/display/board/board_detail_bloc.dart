@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stairs/loom/loom_package.dart';
 import 'package:equatable/equatable.dart';
 import '../../model/model.dart';
 import '../../model/dummy.dart';

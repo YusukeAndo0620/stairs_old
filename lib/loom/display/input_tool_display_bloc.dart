@@ -13,8 +13,9 @@ class InputToolDisplayInit extends InputToolDisplayEvent {
   final List<Label> toolList;
 }
 
-class UpdateInputValue extends InputToolDisplayEvent {
-  UpdateInputValue({required this.id, required this.inputValue});
+class InputToolDisplayUpdateInputValue extends InputToolDisplayEvent {
+  InputToolDisplayUpdateInputValue(
+      {required this.id, required this.inputValue});
   final String id;
   final String inputValue;
 }
@@ -30,8 +31,8 @@ class DeleteToolItem extends InputToolDisplayEvent {
   final String id;
 }
 
-class MoveLast extends InputToolDisplayEvent {
-  MoveLast({required this.scrollController});
+class InputToolDisplayMoveLast extends InputToolDisplayEvent {
+  InputToolDisplayMoveLast({required this.scrollController});
   final ScrollController scrollController;
 }
 
@@ -72,10 +73,10 @@ class InputToolDisplayBloc
           const InputToolDisplayInitialState(),
         ) {
     on<InputToolDisplayInit>(_onInit);
-    on<UpdateInputValue>(_onUpdateInputValue);
+    on<InputToolDisplayUpdateInputValue>(_onUpdateInputValue);
     on<AddToolItem>(_onTapAdd);
     on<DeleteToolItem>(_onTapDelete);
-    on<MoveLast>(_onMoveLast);
+    on<InputToolDisplayMoveLast>(_onMoveLast);
   }
 
   void _onInit(
@@ -83,8 +84,8 @@ class InputToolDisplayBloc
     emit(InputToolDisplayGetInfoState(toolList: event.toolList));
   }
 
-  void _onUpdateInputValue(
-      UpdateInputValue event, Emitter<InputToolDisplayState> emit) {
+  void _onUpdateInputValue(InputToolDisplayUpdateInputValue event,
+      Emitter<InputToolDisplayState> emit) {
     emit(
       (state as InputToolDisplayGetInfoState).copyWith(
         toolList: getReplacedList(
@@ -122,7 +123,8 @@ class InputToolDisplayBloc
         .copyWith(toolList: emitToolList.whereType<Label>().toList()));
   }
 
-  void _onMoveLast(MoveLast event, Emitter<InputToolDisplayState> emit) {
+  void _onMoveLast(
+      InputToolDisplayMoveLast event, Emitter<InputToolDisplayState> emit) {
     event.scrollController
         .jumpTo(event.scrollController.position.maxScrollExtent);
   }

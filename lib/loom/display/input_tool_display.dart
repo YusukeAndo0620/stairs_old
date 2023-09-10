@@ -65,9 +65,9 @@ class InputToolDisplay extends StatelessWidget {
                 child: Icon(theme.icons.add),
                 onPressed: () {
                   context.read<InputToolDisplayBloc>().add(AddToolItem());
-                  context
-                      .read<InputToolDisplayBloc>()
-                      .add(MoveLast(scrollController: scrollController));
+                  context.read<InputToolDisplayBloc>().add(
+                      InputToolDisplayMoveLast(
+                          scrollController: scrollController));
                 },
               ),
               body: Padding(
@@ -83,16 +83,14 @@ class InputToolDisplay extends StatelessWidget {
                               controller: scrollController,
                               child: Column(
                                 children: [
-                                  for (final info
-                                      in (state as InputToolDisplayGetInfoState)
-                                          .toolList)
+                                  for (final info in state.toolList)
                                     InputListItem(
                                       id: info.id,
                                       inputValue: info.labelName,
                                       hintText: _kToolHintTxt,
                                       onTextSubmitted: (value, id) => context
                                           .read<InputToolDisplayBloc>()
-                                          .add(UpdateInputValue(
+                                          .add(InputToolDisplayUpdateInputValue(
                                               id: id, inputValue: value)),
                                       onDeleteItem: (inputValue) {
                                         context

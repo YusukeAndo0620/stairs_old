@@ -1,13 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stairs/loom/loom_package.dart';
+
 import '../../../model/model.dart';
-import '../../../loom/theme.dart';
-import '../../../loom/component/modal/select_item_modal.dart';
-import '../../../loom/component/input/text_input.dart';
-import '../../../loom/component/item/tap_action.dart';
-import '../../../loom/component/label_tip.dart';
-import '../../../loom/component/item/icon_badge.dart';
-import 'input_task_item_bloc.dart';
+import '../task_item_bloc.dart';
 
 const _kBorderWidth = 1.0;
 const _kLabelTxt = 'ラベル';
@@ -35,8 +29,8 @@ class InputTaskItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = LoomTheme.of(context);
-
-    return BlocBuilder<InputTaskItemBloc, InputTaskItemBlocState>(
+    context.read<TaskItemBloc>().add(const TaskItemInit(workBoardId: ''));
+    return BlocBuilder<TaskItemBloc, TaskItemBlocState>(
       builder: (context, state) {
         return Container(
           width: double.infinity,
@@ -54,13 +48,14 @@ class InputTaskItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextInput(
-                textController: TextEditingController(text: state.inputValue),
+                textController:
+                    TextEditingController(text: state.taskItemInfo.title),
                 hintText: _kTaskHintTxt,
                 maxLength: _kTaskMaxLength,
                 autoFocus: true,
                 onSubmitted: (value) => context
-                    .read<InputTaskItemBloc>()
-                    .add(UpdateInputValue(inputValue: value)),
+                    .read<TaskItemBloc>()
+                    .add(TaskItemUpdateTitle(title: value)),
               ),
               const SizedBox(
                 height: _kTitleAndLabelSpace,
@@ -72,20 +67,22 @@ class InputTaskItem extends StatelessWidget {
                     child: TapAction(
                       widget: LabelTip(
                         type: LabelTipType.square,
-                        label: _getFormattedDate(state.dueDate),
-                        textColor:
-                            state.dueDate.difference(DateTime.now()).inDays < 3
-                                ? theme.colorDangerBgDefault
-                                : theme.colorFgDefault,
+                        label: _getFormattedDate(state.taskItemInfo.endDate),
+                        textColor: state.taskItemInfo.endDate
+                                    .difference(DateTime.now())
+                                    .inDays <
+                                3
+                            ? theme.colorDangerBgDefault
+                            : theme.colorFgDefault,
                         themeColor: theme.colorDisabled,
                         iconData: Icons.date_range,
                       ),
                       tappedColor: themeColor,
                       onTap: () async {
-                        final bloc = context.read<InputTaskItemBloc>();
+                        final bloc = context.read<TaskItemBloc>();
                         DateTime? targetDate = await showDatePicker(
                           context: context,
-                          initialDate: state.dueDate,
+                          initialDate: state.taskItemInfo.endDate,
                           firstDate: DateTime.now(),
                           lastDate:
                               DateTime.now().add(const Duration(days: 365)),
@@ -106,7 +103,7 @@ class InputTaskItem extends StatelessWidget {
                           },
                         );
                         if (targetDate != null) {
-                          bloc.add(UpdateDueDate(dueDate: targetDate));
+                          bloc.add(TaskItemUpdateEndDate(endDate: targetDate));
                         }
                       },
                     ),
@@ -119,7 +116,7 @@ class InputTaskItem extends StatelessWidget {
                     ),
                     badgeColor: themeColor,
                     tappedColor: themeColor,
-                    count: state.labelList.length,
+                    count: state.taskItemInfo.labelList.length,
                     onTap: () => showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
@@ -131,10 +128,11 @@ class InputTaskItem extends StatelessWidget {
                           title: _kLabelTxt,
                           height: MediaQuery.of(context).size.height * 0.7,
                           labelList: labelList,
-                          selectedLabelList: state.labelList,
+                          selectedLabelList: state.taskItemInfo.labelList,
                           onTapListItem: (linkLabelList) {
-                            context.read<InputTaskItemBloc>().add(
-                                  UpdateLabelList(labelList: linkLabelList),
+                            context.read<TaskItemBloc>().add(
+                                  TaskItemUpdateLabelList(
+                                      labelList: linkLabelList),
                                 );
                           },
                         );

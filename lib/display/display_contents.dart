@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart' hide Theme;
-import '../loom/theme.dart';
+import 'package:stairs/loom/loom_package.dart';
+
 import '../app/enum/screen_id.dart';
 
 const _kFooterButtons = [

@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../loom/theme.dart';
+import 'package:stairs/loom/loom_package.dart';
+
 import '../work_board_bloc.dart';
 import '../work_board_position_bloc.dart';
 import '../component/carousel_display_bloc.dart';

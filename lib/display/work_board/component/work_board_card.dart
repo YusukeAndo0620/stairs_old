@@ -1,13 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stairs/loom/loom_package.dart';
 
-import '../../../loom/theme.dart';
-import '../../../loom/component/item/tap_action.dart';
-import '../../../loom/component/button/custom_text_button.dart';
 import '../../../display/board/board_detail_bloc.dart' hide Init;
 import '../../../model/model.dart';
 import '../component/task_list_item.dart';
-import '../component/input_task_item_bloc.dart';
+import '../task_item_bloc.dart';
 import '../component/shrink_list_item.dart';
 import '../work_board_position_bloc.dart';
 import '../work_board_bloc.dart';
@@ -104,7 +100,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
           },
         );
 
-        return BlocBuilder<InputTaskItemBloc, InputTaskItemBlocState>(
+        return BlocBuilder<TaskItemBloc, TaskItemBlocState>(
           builder: (context, state) {
             return DragTarget(
               key: ValueKey(widget.workBoardId),
@@ -202,17 +198,19 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                             ),
                             AbsorbPointer(
                               absorbing: context
-                                  .read<InputTaskItemBloc>()
+                                  .read<TaskItemBloc>()
                                   .state
-                                  .inputValue
+                                  .taskItemInfo
+                                  .title
                                   .isEmpty,
                               child: CustomTextButton(
                                 title: _kAddBtnTxt,
                                 themeColor: widget.themeColor,
                                 disabled: context
-                                    .read<InputTaskItemBloc>()
+                                    .read<TaskItemBloc>()
                                     .state
-                                    .inputValue
+                                    .taskItemInfo
+                                    .title
                                     .isEmpty,
                                 onTap: () {
                                   setState(
@@ -222,18 +220,20 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                                     },
                                   );
                                   final taskItemBloc =
-                                      context.read<InputTaskItemBloc>();
+                                      context.read<TaskItemBloc>();
                                   context.read<WorkBoardBloc>().add(
                                         WorkBoardAddTaskItem(
                                           workBoardId: widget.workBoardId,
-                                          inputValue:
-                                              taskItemBloc.state.inputValue,
-                                          dueDate: taskItemBloc.state.dueDate,
-                                          labelList:
-                                              taskItemBloc.state.labelList,
+                                          inputValue: taskItemBloc
+                                              .state.taskItemInfo.title,
+                                          dueDate: taskItemBloc
+                                              .state.taskItemInfo.endDate,
+                                          labelList: taskItemBloc
+                                              .state.taskItemInfo.labelList,
                                         ),
                                       );
-                                  taskItemBloc.add(const Init());
+                                  taskItemBloc.add(TaskItemInit(
+                                      workBoardId: widget.workBoardId));
                                 },
                               ),
                             ),

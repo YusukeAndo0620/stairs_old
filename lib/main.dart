@@ -1,12 +1,10 @@
 import 'dart:ui';
+import 'loom/loom_package.dart';
 
-import 'package:flutter/material.dart' hide Theme;
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app/app.dart';
 import 'package:meta/meta.dart';
-import 'package:provider/single_child_widget.dart';
-import 'loom/theme.dart';
 
 const _kAppName = 'Stairs';
 

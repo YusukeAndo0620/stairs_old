@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'dart:async';
+import 'package:stairs/loom/loom_package.dart';
 
-import '../../../loom/theme.dart';
+import 'dart:async';
 import 'carousel_display_bloc.dart';
 
 const _kCircleWidth = 12.0;

@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart' hide Theme;
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../loom/theme.dart';
+import 'package:stairs/loom/loom_package.dart';
 import '../board_list_bloc.dart';
 
 const _kBoardListItemContentPadding =

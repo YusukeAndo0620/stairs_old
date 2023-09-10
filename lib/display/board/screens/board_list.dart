@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart' hide Theme;
-import '../../../loom/theme.dart';
+import 'package:stairs/loom/loom_package.dart';
 import '../../../model/model.dart';
 import '../component/board_list_item.dart';
 import '../../work_board/screen/work_board_screen.dart';

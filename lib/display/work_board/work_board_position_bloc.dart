@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stairs/loom/loom_package.dart';
+
 import 'package:equatable/equatable.dart';
 
 class PositionInfo {

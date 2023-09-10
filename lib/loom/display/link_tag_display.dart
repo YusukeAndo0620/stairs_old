@@ -121,7 +121,7 @@ class _Frame extends StatelessWidget {
           context.read<LinkTagDisplayBloc>().add(AddLinkTag());
           context
               .read<LinkTagDisplayBloc>()
-              .add(MoveLast(scrollController: scrollController));
+              .add(LinkTagDisplayMoveLast(scrollController: scrollController));
         },
       ),
     );
@@ -168,7 +168,8 @@ class _Content extends StatelessWidget {
                 ),
                 onTextSubmitted: (value, id) => context
                     .read<LinkTagDisplayBloc>()
-                    .add(UpdateInputValue(id: id, inputValue: value)),
+                    .add(LinkTagDisplayUpdateInputValue(
+                        id: id, inputValue: value)),
                 onTap: (id) => onTap(id),
                 onDeleteItem: (inputValue) {
                   context

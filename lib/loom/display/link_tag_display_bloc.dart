@@ -13,8 +13,8 @@ class LinkTagDisplayInit extends LinkTagDisplayEvent {
   final List<LinkTagInfo> linkTagList;
 }
 
-class UpdateInputValue extends LinkTagDisplayEvent {
-  UpdateInputValue({required this.id, required this.inputValue});
+class LinkTagDisplayUpdateInputValue extends LinkTagDisplayEvent {
+  LinkTagDisplayUpdateInputValue({required this.id, required this.inputValue});
   final String id;
   final String inputValue;
 }
@@ -34,8 +34,8 @@ class DeleteLinkTag extends LinkTagDisplayEvent {
   final String id;
 }
 
-class MoveLast extends LinkTagDisplayEvent {
-  MoveLast({required this.scrollController});
+class LinkTagDisplayMoveLast extends LinkTagDisplayEvent {
+  LinkTagDisplayMoveLast({required this.scrollController});
   final ScrollController scrollController;
 }
 
@@ -76,11 +76,11 @@ class LinkTagDisplayBloc
           const LinkTagDisplayInitialState(),
         ) {
     on<LinkTagDisplayInit>(_onInit);
-    on<UpdateInputValue>(_onUpdateInputValue);
+    on<LinkTagDisplayUpdateInputValue>(_onUpdateInputValue);
     on<UpdateLinkLabelList>(_onUpdateLinkTag);
     on<AddLinkTag>(_onTapAdd);
     on<DeleteLinkTag>(_onTapDelete);
-    on<MoveLast>(_onMoveLast);
+    on<LinkTagDisplayMoveLast>(_onMoveLast);
   }
 
   void _onInit(LinkTagDisplayInit event, Emitter<LinkTagDisplayState> emit) {
@@ -88,7 +88,7 @@ class LinkTagDisplayBloc
   }
 
   void _onUpdateInputValue(
-      UpdateInputValue event, Emitter<LinkTagDisplayState> emit) {
+      LinkTagDisplayUpdateInputValue event, Emitter<LinkTagDisplayState> emit) {
     emit(
       (state as LinkTagDisplayGetInfoState).copyWith(
         linkTagList: getReplacedList(
@@ -134,7 +134,8 @@ class LinkTagDisplayBloc
         linkTagList: emitDevLangList.whereType<LinkTagInfo>().toList()));
   }
 
-  void _onMoveLast(MoveLast event, Emitter<LinkTagDisplayState> emit) {
+  void _onMoveLast(
+      LinkTagDisplayMoveLast event, Emitter<LinkTagDisplayState> emit) {
     event.scrollController
         .jumpTo(event.scrollController.position.maxScrollExtent);
   }
