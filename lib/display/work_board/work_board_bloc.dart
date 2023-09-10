@@ -2,7 +2,6 @@ import 'package:stairs/loom/loom_package.dart';
 import 'package:collection/collection.dart';
 
 import 'package:equatable/equatable.dart';
-import '../../loom/loom_theme_data.dart';
 import '../../model/model.dart';
 import '../../model/dummy.dart';
 
@@ -79,7 +78,7 @@ class WorkBoardSetDraggingItem extends WorkBoardBlocEvent {
   const WorkBoardSetDraggingItem({
     required this.draggingItem,
   });
-  final WorkBoardItemInfo draggingItem;
+  final TaskItemInfo draggingItem;
 }
 
 /// Replace dragging item to shrink item.
@@ -118,8 +117,8 @@ class WorkBoardBlocState extends Equatable {
   });
 
   final List<WorkBoard> workBoardList;
-  final WorkBoardItemInfo? draggingItem;
-  final WorkBoardItemInfo? shrinkItem;
+  final TaskItemInfo? draggingItem;
+  final TaskItemInfo? shrinkItem;
 
   @override
   List<Object?> get props => [
@@ -130,8 +129,8 @@ class WorkBoardBlocState extends Equatable {
 
   WorkBoardBlocState copyWith({
     List<WorkBoard>? workBoardList,
-    WorkBoardItemInfo? draggingItem,
-    WorkBoardItemInfo? shrinkItem,
+    TaskItemInfo? draggingItem,
+    TaskItemInfo? shrinkItem,
   }) =>
       WorkBoardBlocState(
         workBoardList: workBoardList ?? this.workBoardList,
@@ -145,7 +144,7 @@ class WorkBoardBlocState extends Equatable {
       (element) => element.workBoardId == workBoardId,
     );
     if (targetWorkBoard == null) return false;
-    return targetWorkBoard.workBoardItemList.firstWhereOrNull(
+    return targetWorkBoard.taskItemList.firstWhereOrNull(
             (element) => element.workBoardItemId == kShrinkId) !=
         null;
   }
@@ -196,7 +195,7 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
       WorkBoard(
         workBoardId: uuid.v4(),
         title: event.title,
-        workBoardItemList: <WorkBoardItemInfo>[],
+        taskItemList: <TaskItemInfo>[],
       ),
     );
     emit(state.copyWith(workBoardList: emitList));
@@ -209,8 +208,8 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
         .indexWhere((element) => element.workBoardId == event.workBoardId);
     if (targetWorkBoardIndex < 0) return;
 
-    emitWorkBoardList[targetWorkBoardIndex].workBoardItemList.add(
-          WorkBoardItemInfo(
+    emitWorkBoardList[targetWorkBoardIndex].taskItemList.add(
+          TaskItemInfo(
             workBoardId: event.workBoardId,
             workBoardItemId: uuid.v4(),
             title: event.inputValue,
@@ -244,11 +243,11 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
       (element) => element.workBoardId == event.workBoardId,
     );
     final deleteWorkBoardItemIndex =
-        targetList[deleteWorkBoardIndex].workBoardItemList.indexWhere(
+        targetList[deleteWorkBoardIndex].taskItemList.indexWhere(
               (element) => element.workBoardItemId == event.workBoardItemId,
             );
     targetList[deleteWorkBoardIndex]
-        .workBoardItemList
+        .taskItemList
         .removeAt(deleteWorkBoardItemIndex);
     emit(state.copyWith(workBoardList: targetList));
   }
@@ -279,11 +278,10 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
       (element) => element.workBoardId == event.workBoardId,
     );
     final workBoardItemIndex =
-        targetList[workBoardIndex].workBoardItemList.indexWhere(
+        targetList[workBoardIndex].taskItemList.indexWhere(
               (element) => element.workBoardItemId == event.workBoardItemId,
             );
-    targetList[workBoardIndex].workBoardItemList[workBoardItemIndex] =
-        shrinkItem;
+    targetList[workBoardIndex].taskItemList[workBoardItemIndex] = shrinkItem;
 
     emit(state.copyWith(workBoardList: targetList, shrinkItem: shrinkItem));
   }
@@ -300,7 +298,7 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
     final currentShrinkItemWBItemIndex = targetList
         .firstWhere(
             (element) => element.workBoardId == state.shrinkItem!.workBoardId)
-        .workBoardItemList
+        .taskItemList
         .indexWhere((element) =>
             element.workBoardItemId == state.shrinkItem!.workBoardItemId);
 
@@ -310,28 +308,28 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
     );
     final targetWorkBoard = targetList[workBoardIndex];
 
-    if (targetList[workBoardIndex].workBoardItemList.isEmpty) {
+    if (targetList[workBoardIndex].taskItemList.isEmpty) {
       final replaceWorkBoard = WorkBoard(
           workBoardId: targetWorkBoard.workBoardId,
           title: targetWorkBoard.title,
-          workBoardItemList: [shrinkItem]);
+          taskItemList: [shrinkItem]);
       targetList
           .replaceRange(workBoardIndex, workBoardIndex + 1, [replaceWorkBoard]);
     } else {
-      targetWorkBoard.workBoardItemList.insert(
-          targetWorkBoard.workBoardItemList.isEmpty ? 1 : event.insertingIndex,
+      targetWorkBoard.taskItemList.insert(
+          targetWorkBoard.taskItemList.isEmpty ? 1 : event.insertingIndex,
           shrinkItem);
     }
 
     //同じワークボード内で移動した場合、それぞれのindexで削除対象を判定
     if (shrinkItem.workBoardId == state.shrinkItem!.workBoardId) {
-      targetWorkBoard.workBoardItemList.removeAt(
+      targetWorkBoard.taskItemList.removeAt(
           currentShrinkItemWBItemIndex < event.insertingIndex
               ? currentShrinkItemWBItemIndex
               : currentShrinkItemWBItemIndex + 1);
     } else {
       targetList[currentShrinkItemWBIndex]
-          .workBoardItemList
+          .taskItemList
           .removeAt(currentShrinkItemWBItemIndex);
     }
 
@@ -348,42 +346,20 @@ class WorkBoardBloc extends Bloc<WorkBoardBlocEvent, WorkBoardBlocState> {
       (element) => element.workBoardId == state.shrinkItem!.workBoardId,
     );
     final workBoardItemIndex =
-        targetList[workBoardIndex].workBoardItemList.indexWhere(
+        targetList[workBoardIndex].taskItemList.indexWhere(
               (element) =>
                   element.workBoardItemId == state.shrinkItem!.workBoardItemId,
             );
-    targetList[workBoardIndex].workBoardItemList[workBoardItemIndex] =
+    targetList[workBoardIndex].taskItemList[workBoardItemIndex] =
         state.draggingItem!;
 
     emit(state.copyWith(workBoardList: targetList));
     add(const WorkBoardInitDragging());
   }
 
-  /// shrink itemを削除したList<WorkBoard>を取得
-  List<WorkBoard> _getDeletedShrinkItemList() {
-    final targetList = [...state.workBoardList];
-    if (state.shrinkItem == null) return targetList;
-
-    final deleteWorkBoardIndex = targetList.indexWhere(
-      (element) => element.workBoardId == state.shrinkItem!.workBoardId,
-    );
-    final deleteWorkBoardItemIndex =
-        targetList[deleteWorkBoardIndex].workBoardItemList.indexWhere(
-              (element) =>
-                  element.workBoardItemId == state.shrinkItem!.workBoardItemId,
-            );
-    if (deleteWorkBoardItemIndex == -1) {
-      return targetList;
-    }
-    targetList[deleteWorkBoardIndex]
-        .workBoardItemList
-        .removeAt(deleteWorkBoardItemIndex);
-    return targetList;
-  }
-
   /// shrink itemを生成。取得。
-  WorkBoardItemInfo getShrinkItem({required String workBoardId}) {
-    return WorkBoardItemInfo(
+  TaskItemInfo getShrinkItem({required String workBoardId}) {
+    return TaskItemInfo(
       workBoardId: workBoardId,
       workBoardItemId: kShrinkId,
       title: '',

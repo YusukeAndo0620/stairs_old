@@ -87,8 +87,8 @@ final dummyWorkBoardList = [
   WorkBoard(
     workBoardId: '1',
     title: '作業中',
-    workBoardItemList: [
-      WorkBoardItemInfo(
+    taskItemList: [
+      TaskItemInfo(
         workBoardId: '1',
         workBoardItemId: uuid.v4(),
         title: 'アカウント作成画面設計修正',
@@ -97,7 +97,7 @@ final dummyWorkBoardList = [
         endDate: DateTime.now().add(const Duration(days: 5)),
         labelList: tagList,
       ),
-      WorkBoardItemInfo(
+      TaskItemInfo(
         workBoardId: '1',
         workBoardItemId: uuid.v4(),
         title: '【TODO】',
@@ -106,7 +106,7 @@ final dummyWorkBoardList = [
         endDate: DateTime.now(),
         labelList: tagList,
       ),
-      WorkBoardItemInfo(
+      TaskItemInfo(
         workBoardId: '1',
         workBoardItemId: uuid.v4(),
         title: 'ワークフロー一覧実装',
@@ -120,8 +120,8 @@ final dummyWorkBoardList = [
   WorkBoard(
     workBoardId: '2',
     title: '完了',
-    workBoardItemList: [
-      WorkBoardItemInfo(
+    taskItemList: [
+      TaskItemInfo(
         workBoardId: '2',
         workBoardItemId: uuid.v4(),
         title: 'Audio設定画面',
@@ -130,7 +130,7 @@ final dummyWorkBoardList = [
         endDate: DateTime.now(),
         labelList: tagList,
       ),
-      WorkBoardItemInfo(
+      TaskItemInfo(
         workBoardId: '2',
         workBoardItemId: uuid.v4(),
         title: 'Voice & Search設定',

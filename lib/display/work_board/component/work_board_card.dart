@@ -38,7 +38,7 @@ class WorkBoardCard extends StatefulWidget {
     required this.displayedWorkBoardId,
     required this.title,
     required this.themeColor,
-    required this.workBoardItemList,
+    required this.taskItemList,
     required this.onPageChanged,
   });
   final String boardId;
@@ -46,7 +46,7 @@ class WorkBoardCard extends StatefulWidget {
   final String displayedWorkBoardId;
   final String title;
   final Color themeColor;
-  final List<WorkBoardItemInfo> workBoardItemList;
+  final List<TaskItemInfo> taskItemList;
   final Function(PageAction) onPageChanged;
 
   @override
@@ -121,7 +121,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                       _Header(
                         key: widget.key,
                         title: widget.title,
-                        listSize: widget.workBoardItemList.length,
+                        listSize: widget.taskItemList.length,
                       ),
                       Expanded(
                         key: workBoardCardKey,
@@ -131,7 +131,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                           controller: _scrollController,
                           child: Column(
                             children: [
-                              for (final item in widget.workBoardItemList)
+                              for (final item in widget.taskItemList)
                                 if (item.workBoardItemId == kShrinkId)
                                   ShrinkTaskListItem(
                                     key: widget.key,
@@ -258,7 +258,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                 if (context.read<WorkBoardBloc>().state.draggingItem == null) {
                   context.read<WorkBoardBloc>().add(
                         WorkBoardSetDraggingItem(
-                          draggingItem: widget.workBoardItemList.firstWhere(
+                          draggingItem: widget.taskItemList.firstWhere(
                               (element) =>
                                   element.workBoardItemId == details.data),
                         ),
@@ -359,14 +359,14 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
         currentDraggingItemDy < shrinkItemPosition + (kDraggedItemHeight / 2)) {
       return;
     }
-    for (final item in widget.workBoardItemList) {
+    for (final item in widget.taskItemList) {
       if (positionState.workBoardItemPositionMap[item.workBoardItemId] ==
           null) {
         return;
       }
       if (positionState.workBoardItemPositionMap[item.workBoardItemId]!.dy >=
           currentDraggingItemDy) {
-        final insertingShrinkItemIndex = widget.workBoardItemList.indexWhere(
+        final insertingShrinkItemIndex = widget.taskItemList.indexWhere(
             (element) => element.workBoardItemId == item.workBoardItemId);
         context.read<WorkBoardBloc>().add(
               WorkBoardDeleteAndAddShrinkItem(
@@ -380,7 +380,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
     context.read<WorkBoardBloc>().add(
           WorkBoardDeleteAndAddShrinkItem(
             workBoardId: widget.workBoardId,
-            insertingIndex: widget.workBoardItemList.length,
+            insertingIndex: widget.taskItemList.length,
           ),
         );
   }

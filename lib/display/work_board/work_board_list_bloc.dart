@@ -94,7 +94,7 @@ class WorkBoardListCompleteDraggedItem extends WorkBoardListBlocEvent {
   const WorkBoardListCompleteDraggedItem({
     required this.draggingItem,
   });
-  final WorkBoardItemInfo draggingItem;
+  final TaskItemInfo draggingItem;
 }
 
 // State
@@ -102,32 +102,32 @@ class WorkBoardListCompleteDraggedItem extends WorkBoardListBlocEvent {
 class WorkBoardListBlocState extends Equatable {
   WorkBoardListBlocState({
     required this.workBoardId,
-    required this.workBoardItemList,
+    required this.taskItemList,
   });
 
   final String workBoardId;
-  final List<WorkBoardItemInfo> workBoardItemList;
+  final List<TaskItemInfo> taskItemList;
   final ScrollController scrollController = ScrollController();
 
   @override
   List<Object?> get props => [
         workBoardId,
-        workBoardItemList,
+        taskItemList,
         scrollController,
       ];
 
   WorkBoardListBlocState copyWith({
     String? workBoardId,
-    List<WorkBoardItemInfo>? workBoardItemList,
+    List<TaskItemInfo>? taskItemList,
   }) =>
       WorkBoardListBlocState(
         workBoardId: workBoardId ?? this.workBoardId,
-        workBoardItemList: workBoardItemList ?? this.workBoardItemList,
+        taskItemList: taskItemList ?? this.taskItemList,
       );
 
   ///Check shrink item is included in target work board card list.
   bool get hasShrinkItem =>
-      workBoardItemList.firstWhereOrNull(
+      taskItemList.firstWhereOrNull(
         (element) => element.workBoardItemId == kShrinkId,
       ) !=
       null;
@@ -138,7 +138,7 @@ class WorkBoardListBloc
     extends Bloc<WorkBoardListBlocEvent, WorkBoardListBlocState> {
   WorkBoardListBloc()
       : super(
-          WorkBoardListBlocState(workBoardId: '', workBoardItemList: []),
+          WorkBoardListBlocState(workBoardId: '', taskItemList: []),
         ) {
     on<_Init>(_onInit);
     on<WorkBoardListGetList>(_onGetList);
@@ -154,16 +154,16 @@ class WorkBoardListBloc
   }
 
   void _onInit(_Init event, Emitter<WorkBoardListBlocState> emit) {
-    emit(WorkBoardListBlocState(workBoardId: '', workBoardItemList: const []));
+    emit(WorkBoardListBlocState(workBoardId: '', taskItemList: const []));
   }
 
   Future<void> _onGetList(
       WorkBoardListGetList event, Emitter<WorkBoardListBlocState> emit) async {
     final dummyWorkBoardItemList = dummyWorkBoardList
         .firstWhere((element) => element.workBoardId == event.workBoardId)
-        .workBoardItemList;
+        .taskItemList;
 
-    emit(state.copyWith(workBoardItemList: dummyWorkBoardItemList));
+    emit(state.copyWith(taskItemList: dummyWorkBoardItemList));
   }
 
   Future<void> _onTapListItem(WorkBoardListTapListItem event,
@@ -174,10 +174,10 @@ class WorkBoardListBloc
 
   Future<void> _onAddTaskItem(WorkBoardListAddTaskItem event,
       Emitter<WorkBoardListBlocState> emit) async {
-    final emitWorkBoardItemList = [...state.workBoardItemList];
+    final emitWorkBoardItemList = [...state.taskItemList];
 
     emitWorkBoardItemList.add(
-      WorkBoardItemInfo(
+      TaskItemInfo(
         workBoardId: event.workBoardId,
         workBoardItemId: uuid.v4(),
         title: event.inputValue,
@@ -188,7 +188,7 @@ class WorkBoardListBloc
       ),
     );
     emit(
-      state.copyWith(workBoardItemList: emitWorkBoardItemList),
+      state.copyWith(taskItemList: emitWorkBoardItemList),
     );
   }
 
@@ -206,18 +206,18 @@ class WorkBoardListBloc
 
   Future<void> _onDeleteListItem(WorkBoardListDeleteListItem event,
       Emitter<WorkBoardListBlocState> emit) async {
-    final targetList = [...state.workBoardItemList];
+    final targetList = [...state.taskItemList];
 
     final deleteWorkBoardListItemIndex = targetList.indexWhere(
       (element) => element.workBoardItemId == event.workBoardItemId,
     );
     targetList.removeAt(deleteWorkBoardListItemIndex);
-    emit(state.copyWith(workBoardItemList: targetList));
+    emit(state.copyWith(taskItemList: targetList));
   }
 
   Future<void> _onDeleteShrinkItem(WorkBoardListDeleteShrinkItem event,
       Emitter<WorkBoardListBlocState> emit) async {
-    final targetList = [...state.workBoardItemList];
+    final targetList = [...state.taskItemList];
     if (!state.hasShrinkItem) return;
 
     final deleteWorkBoardItemIndex = targetList.indexWhere(
@@ -227,26 +227,26 @@ class WorkBoardListBloc
       return;
     }
     targetList.removeAt(deleteWorkBoardItemIndex);
-    emit(state.copyWith(workBoardItemList: targetList));
+    emit(state.copyWith(taskItemList: targetList));
   }
 
   Future<void> _onReplaceShrinkItem(WorkBoardListReplaceShrinkItem event,
       Emitter<WorkBoardListBlocState> emit) async {
     final shrinkItem = getShrinkItem(workBoardId: state.workBoardId);
-    final targetList = [...state.workBoardItemList];
+    final targetList = [...state.taskItemList];
     final workBoardListItemIndex = targetList.indexWhere(
       (element) => element.workBoardItemId == event.workBoardItemId,
     );
     targetList[workBoardListItemIndex] = shrinkItem;
 
-    emit(state.copyWith(workBoardItemList: targetList));
+    emit(state.copyWith(taskItemList: targetList));
   }
 
   Future<void> _onDeleteAndAddShrinkItem(
       WorkBoardListDeleteAndAddShrinkItem event,
       Emitter<WorkBoardListBlocState> emit) async {
     final shrinkItem = getShrinkItem(workBoardId: event.workBoardId);
-    final targetList = [...state.workBoardItemList];
+    final targetList = [...state.taskItemList];
 
     if (!state.hasShrinkItem) return;
     final currentShrinkItemWBItemIndex = targetList
@@ -256,23 +256,23 @@ class WorkBoardListBloc
         ? currentShrinkItemWBItemIndex
         : currentShrinkItemWBItemIndex + 1);
 
-    emit(state.copyWith(workBoardItemList: targetList));
+    emit(state.copyWith(taskItemList: targetList));
   }
 
   Future<void> _onReplaceDraggedItem(WorkBoardListCompleteDraggedItem event,
       Emitter<WorkBoardListBlocState> emit) async {
-    final targetList = [...state.workBoardItemList];
+    final targetList = [...state.taskItemList];
     final workBoardListItemIndex = targetList.indexWhere(
       (element) => element.workBoardItemId == kShrinkId,
     );
     if (workBoardListItemIndex < 0) return;
     targetList[workBoardListItemIndex] = event.draggingItem;
-    emit(state.copyWith(workBoardItemList: targetList));
+    emit(state.copyWith(taskItemList: targetList));
   }
 
   /// shrink itemを生成。取得。
-  WorkBoardItemInfo getShrinkItem({required String workBoardId}) {
-    return WorkBoardItemInfo(
+  TaskItemInfo getShrinkItem({required String workBoardId}) {
+    return TaskItemInfo(
       workBoardId: workBoardId,
       workBoardItemId: kShrinkId,
       title: '',

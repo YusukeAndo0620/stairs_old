@@ -83,7 +83,7 @@ class WorkBoardScreen extends StatelessWidget {
                           .workBoardId,
                       title: item.title,
                       themeColor: themeColor,
-                      workBoardItemList: item.workBoardItemList,
+                      taskItemList: item.taskItemList,
                       onPageChanged: (pageAction) {
                         final carouselDisplayState =
                             context.read<CarouselDisplayBloc>().state;

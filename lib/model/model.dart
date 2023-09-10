@@ -56,17 +56,17 @@ class WorkBoard {
   WorkBoard({
     required this.workBoardId,
     required this.title,
-    required this.workBoardItemList,
+    required this.taskItemList,
   });
 
   final String workBoardId;
   final String title;
-  final List<WorkBoardItemInfo> workBoardItemList;
+  final List<TaskItemInfo> taskItemList;
 }
 
 // TODO: Delete
-class WorkBoardItemInfo {
-  WorkBoardItemInfo({
+class TaskItemInfo {
+  TaskItemInfo({
     required this.workBoardId,
     required this.workBoardItemId,
     required this.title,

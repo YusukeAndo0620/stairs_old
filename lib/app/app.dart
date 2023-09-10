@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/single_child_widget.dart';
 import 'app_function.dart';
-import '../display/board/screens/board_screen.dart';
+import '../display/board/screen/board_screen.dart';
 import '../display/board/board_list_bloc.dart';
 import '../display/board/board_detail_bloc.dart';
 import '../display/work_board/task_item_bloc.dart';

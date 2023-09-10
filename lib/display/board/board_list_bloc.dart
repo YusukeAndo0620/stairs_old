@@ -1,6 +1,6 @@
 import 'package:stairs/loom/loom_package.dart';
 import 'package:equatable/equatable.dart';
-import '../board/screens/board_modal.dart';
+import 'screen/board_edit_modal.dart';
 import '../../loom/loom_theme_data.dart';
 import '../../model/model.dart';
 import '../../model/dummy.dart';
@@ -72,7 +72,7 @@ class BoardListBloc extends Bloc<BoardListBlocEvent, BoardListBlocState> {
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (context) {
-          return BoardModal(boardId: event.boardId);
+          return BoardEditModal(boardId: event.boardId);
         });
   }
 
