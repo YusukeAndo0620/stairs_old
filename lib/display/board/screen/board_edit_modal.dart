@@ -32,8 +32,8 @@ const _kIconSize = 24.0;
 
 const _kProjectAndBoardSpace = 30.0;
 
-class BoardModal extends Modal {
-  const BoardModal({
+class BoardEditModal extends Modal {
+  const BoardEditModal({
     super.key,
     required this.boardId,
   });

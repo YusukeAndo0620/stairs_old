@@ -2,7 +2,7 @@ import 'package:stairs/loom/loom_package.dart';
 import '../../../model/model.dart';
 import '../component/board_list_item.dart';
 import '../../work_board/screen/work_board_screen.dart';
-import 'board_modal.dart';
+import 'board_edit_modal.dart';
 
 const _kBoardTitleTxt = 'ボード一覧';
 const _kBoardListTitlePadding =
@@ -26,7 +26,7 @@ class BoardList extends StatelessWidget {
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
             builder: (context) {
-              return const BoardModal(
+              return const BoardEditModal(
                 boardId: '',
               );
             },

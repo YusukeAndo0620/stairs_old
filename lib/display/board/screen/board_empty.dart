@@ -1,6 +1,6 @@
 import 'package:stairs/loom/loom_package.dart';
 
-import 'board_modal.dart';
+import 'board_edit_modal.dart';
 
 const _kBoardEmptyTxt = '表示可能なボードがありません。\nボードを作成してください。';
 
@@ -31,7 +31,7 @@ class BoardEmpty extends StatelessWidget {
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,
                   builder: (context) {
-                    return const BoardModal(
+                    return const BoardEditModal(
                       boardId: '',
                     );
                   },
