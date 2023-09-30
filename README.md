@@ -12,5 +12,6 @@ clone が完了したら、ターミナルで以下のコマンドを実施し�
    export PATH=~/xxxxxx/flutter/bin:$PATH
    source ~/.bash_profile
    1.3 「flutter doctor」をコマンドで実施し、開発に必要なパッケージを確認。
-2. flutter get pub (flutter packages get)
+2. flutter pub get (flutter packages get)
 3. flutter clean
+4. flutter run
