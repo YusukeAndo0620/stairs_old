@@ -38,97 +38,102 @@ class WorkBoardScreen extends StatelessWidget {
           create: (_) => CarouselDisplayBloc(),
         ),
       ],
-      child: BlocBuilder<WorkBoardBloc, WorkBoardBlocState>(
+      child: BlocBuilder<WorkBoardBloc, WorkBoardState>(
         builder: (context, state) {
-          context.read<WorkBoardBloc>().add(WorkBoardGetList(boardId: boardId));
-          context
-              .read<WorkBoardPositionBloc>()
-              .add(WorkBoardPositionInit(boardId: boardId));
-          context.read<CarouselDisplayBloc>().add(
-                CarouselDisplayInit(
-                  maxPage: state.workBoardList.length,
-                ),
-              );
+          if (state is WorkBoardInitialState) {
+            context
+                .read<WorkBoardBloc>()
+                .add(WorkBoardGetList(boardId: boardId));
+            return const SizedBox.shrink();
+          } else {
+            context
+                .read<WorkBoardPositionBloc>()
+                .add(WorkBoardPositionInit(boardId: boardId));
+            context.read<CarouselDisplayBloc>().add(
+                  CarouselDisplayInit(
+                    maxPage: (state as WorkBoardListState).workBoardList.length,
+                  ),
+                );
 
-          final theme = LoomTheme.of(context);
-          return Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                icon: Icon(
-                  theme.icons.back,
-                  color: theme.colorFgDefault,
+            final theme = LoomTheme.of(context);
+            return Scaffold(
+              appBar: AppBar(
+                leading: IconButton(
+                  icon: Icon(
+                    theme.icons.back,
+                    color: theme.colorFgDefault,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
-                onPressed: () => Navigator.of(context).pop(),
+                backgroundColor: theme.colorBgLayer1,
+                title: Text(
+                  title,
+                  style: theme.textStyleHeading
+                      .copyWith(color: theme.colorFgDefault.withOpacity(0.9)),
+                ),
               ),
-              backgroundColor: theme.colorBgLayer1,
-              title: Text(
-                title,
-                style: theme.textStyleHeading
-                    .copyWith(color: theme.colorFgDefault.withOpacity(0.9)),
-              ),
-            ),
-            body: Container(
-              color: themeColor.withOpacity(0.1),
-              child: CarouselDisplay(
-                pages: [
-                  for (final item in state.workBoardList)
-                    WorkBoardCard(
-                      boardId: boardId,
-                      workBoardId: item.workBoardId,
-                      displayedWorkBoardId: state
-                          .workBoardList[context
-                              .read<CarouselDisplayBloc>()
-                              .state
-                              .currentPage]
-                          .workBoardId,
-                      title: item.title,
-                      themeColor: themeColor,
-                      taskItemList: item.taskItemList,
-                      onPageChanged: (pageAction) {
-                        final carouselDisplayState =
-                            context.read<CarouselDisplayBloc>().state;
-                        //すでにページ番号が更新されていた場合、処理を行わない
-                        if (state
-                                .workBoardList[context
+              body: Container(
+                color: themeColor.withOpacity(0.1),
+                child: CarouselDisplay(
+                  pages: [
+                    for (final item in state.workBoardList)
+                      WorkBoardCard(
+                        boardId: boardId,
+                        workBoardId: item.workBoardId,
+                        displayedWorkBoardId: state
+                            .workBoardList[context
+                                .read<CarouselDisplayBloc>()
+                                .state
+                                .currentPage]
+                            .workBoardId,
+                        title: item.title,
+                        themeColor: themeColor,
+                        taskItemList: item.taskItemList,
+                        onPageChanged: (pageAction) {
+                          final carouselDisplayState =
+                              context.read<CarouselDisplayBloc>().state;
+                          //すでにページ番号が更新されていた場合、処理を行わない
+                          if (state
+                                  .workBoardList[context
+                                      .read<CarouselDisplayBloc>()
+                                      .state
+                                      .currentPage]
+                                  .workBoardId !=
+                              item.workBoardId) {
+                            return;
+                          }
+                          switch (pageAction) {
+                            case PageAction.next:
+                              if (carouselDisplayState.currentPage <
+                                  state.workBoardList.length - 1) {
+                                context
                                     .read<CarouselDisplayBloc>()
-                                    .state
-                                    .currentPage]
-                                .workBoardId !=
-                            item.workBoardId) {
-                          return;
-                        }
-                        switch (pageAction) {
-                          case PageAction.next:
-                            if (carouselDisplayState.currentPage <
-                                state.workBoardList.length - 1) {
-                              context
-                                  .read<CarouselDisplayBloc>()
-                                  .add(const CarouselDisplayMoveNextPage());
-                            }
-                          case PageAction.previous:
-                            if (carouselDisplayState.currentPage > 0) {
-                              context
-                                  .read<CarouselDisplayBloc>()
-                                  .add(const CarouselDisplayMovePreviousPage());
-                            }
-                        }
+                                    .add(const CarouselDisplayMoveNextPage());
+                              }
+                            case PageAction.previous:
+                              if (carouselDisplayState.currentPage > 0) {
+                                context.read<CarouselDisplayBloc>().add(
+                                    const CarouselDisplayMovePreviousPage());
+                              }
+                          }
+                        },
+                      ),
+                    WorkBoardAddingCard(
+                      themeColor: themeColor,
+                      onOpenCard: () => context.read<CarouselDisplayBloc>().add(
+                            const CarouselDisplayMoveLastPage(),
+                          ),
+                      onTapAddingBtn: (inputValue) {
+                        context.read<WorkBoardBloc>().add(
+                              WorkBoardAddCard(title: inputValue),
+                            );
                       },
                     ),
-                  WorkBoardAddingCard(
-                    themeColor: themeColor,
-                    onOpenCard: () => context.read<CarouselDisplayBloc>().add(
-                          const CarouselDisplayMoveLastPage(),
-                        ),
-                    onTapAddingBtn: (inputValue) {
-                      context.read<WorkBoardBloc>().add(
-                            WorkBoardAddCard(title: inputValue),
-                          );
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+          }
         },
       ),
     );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart' hide Theme, Badge;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/single_child_widget.dart';
 import 'package:badges/badges.dart';
 
 import '../../theme.dart';
@@ -20,47 +19,27 @@ const _kContentMargin = EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0);
 enum DisplayType { list, tile }
 
 /// アイテム選択リスト画面(カラーボックス+タイトル)
-class SelectItemModal extends Modal {
+class SelectItemModal extends StatelessWidget {
   const SelectItemModal({
     super.key,
     required this.id,
     this.type = DisplayType.list,
     required this.title,
-    super.height,
+    required this.height,
     required this.labelList,
     required this.selectedLabelList,
     required this.onTapListItem,
   });
   final String id;
   final DisplayType type;
-  @override
   final String title;
+  final double height;
   final List<ColorLabelInfo> labelList;
   final List<ColorLabelInfo> selectedLabelList;
   final Function(List<ColorLabelInfo>) onTapListItem;
 
   @override
-  List<SingleChildWidget> getPageProviders() {
-    return [];
-  }
-
-  @override
-  Widget buildLeadingContent(BuildContext context) {
-    final theme = LoomTheme.of(context);
-    return IconButton(
-      icon: Icon(
-        theme.icons.back,
-        color: theme.colorFgDefault,
-      ),
-      onPressed: () => Navigator.pop(context),
-    );
-  }
-
-  @override
-  Widget? buildTrailingContent(BuildContext context) => null;
-
-  @override
-  Widget buildMainContent(BuildContext context) {
+  Widget build(BuildContext context) {
     return BlocBuilder<SelectItemModalBloc, SelectItemModalState>(
       buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
@@ -70,17 +49,27 @@ class SelectItemModal extends Modal {
               id: id,
               labelList: labelList,
               selectedLabelList: selectedLabelList));
-          return const SizedBox.shrink();
-        } else {
-          return _Frame(
-            key: key,
+          return Modal(
+            height: height,
             title: title,
-            type: type,
-            checkList: state.checkList,
-            onTapListItem: (_) => onTapListItem((context
-                    .read<SelectItemModalBloc>()
-                    .state as SelectItemGetCheckListState)
-                .selectedList),
+            isShowTrailing: false,
+            buildMainContent: const SizedBox.shrink(),
+          );
+        } else {
+          return Modal(
+            height: height,
+            title: title,
+            isShowTrailing: false,
+            buildMainContent: _Frame(
+              key: key,
+              title: title,
+              type: type,
+              checkList: state.checkList,
+              onTapListItem: (_) => onTapListItem((context
+                      .read<SelectItemModalBloc>()
+                      .state as SelectItemGetCheckListState)
+                  .selectedList),
+            ),
           );
         }
       },

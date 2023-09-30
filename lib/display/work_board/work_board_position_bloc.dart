@@ -42,10 +42,10 @@ class WorkBoardSetCardPosition extends WorkBoardPositionBlocEvent {
 /// Set WorkBoard card item position
 class WorkBoardSetCardItemPosition extends WorkBoardPositionBlocEvent {
   const WorkBoardSetCardItemPosition({
-    required this.workBoardItemId,
+    required this.taskItemId,
     required this.key,
   });
-  final String workBoardItemId;
+  final String taskItemId;
   final GlobalKey key;
 }
 
@@ -63,7 +63,7 @@ class WorkBoardPositionBlocState extends Equatable {
   /// key: workBoardId
   final Map<String, PositionInfo> workBoardPositionMap;
 
-  /// key: workBoardItemId
+  /// key: taskItemId
   final Map<String, PositionInfo> workBoardItemPositionMap;
 
   @override
@@ -144,11 +144,11 @@ class WorkBoardPositionBloc
       dy: position.localToGlobal(Offset.zero).dy,
     );
 
-    if (targetMap.containsKey(event.workBoardItemId)) {
-      targetMap[event.workBoardItemId] = positionInfo;
+    if (targetMap.containsKey(event.taskItemId)) {
+      targetMap[event.taskItemId] = positionInfo;
     } else {
       targetMap.addAll(
-        {event.workBoardItemId: positionInfo},
+        {event.taskItemId: positionInfo},
       );
     }
     emit(state.copyWith(workBoardItemPositionMap: targetMap));

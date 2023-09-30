@@ -1,7 +1,7 @@
 import 'package:stairs/loom/loom_package.dart';
 
 import '../../../model/model.dart';
-import '../task_item_bloc.dart';
+import 'input_task_item_bloc.dart';
 
 const _kBorderWidth = 1.0;
 const _kLabelTxt = 'ラベル';
@@ -29,8 +29,10 @@ class InputTaskItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = LoomTheme.of(context);
-    context.read<TaskItemBloc>().add(const TaskItemInit(workBoardId: ''));
-    return BlocBuilder<TaskItemBloc, TaskItemBlocState>(
+    context
+        .read<InputTaskItemBloc>()
+        .add(const InputTaskItemInit(workBoardId: ''));
+    return BlocBuilder<InputTaskItemBloc, InputTaskItemState>(
       builder: (context, state) {
         return Container(
           width: double.infinity,
@@ -52,10 +54,10 @@ class InputTaskItem extends StatelessWidget {
                     TextEditingController(text: state.taskItemInfo.title),
                 hintText: _kTaskHintTxt,
                 maxLength: _kTaskMaxLength,
-                autoFocus: true,
+                autoFocus: false,
                 onSubmitted: (value) => context
-                    .read<TaskItemBloc>()
-                    .add(TaskItemUpdateTitle(title: value)),
+                    .read<InputTaskItemBloc>()
+                    .add(InputTaskItemUpdateTitle(title: value)),
               ),
               const SizedBox(
                 height: _kTitleAndLabelSpace,
@@ -79,7 +81,7 @@ class InputTaskItem extends StatelessWidget {
                       ),
                       tappedColor: themeColor,
                       onTap: () async {
-                        final bloc = context.read<TaskItemBloc>();
+                        final bloc = context.read<InputTaskItemBloc>();
                         DateTime? targetDate = await showDatePicker(
                           context: context,
                           initialDate: state.taskItemInfo.endDate,
@@ -103,7 +105,8 @@ class InputTaskItem extends StatelessWidget {
                           },
                         );
                         if (targetDate != null) {
-                          bloc.add(TaskItemUpdateEndDate(endDate: targetDate));
+                          bloc.add(
+                              InputTaskItemUpdateEndDate(endDate: targetDate));
                         }
                       },
                     ),
@@ -130,8 +133,8 @@ class InputTaskItem extends StatelessWidget {
                           labelList: labelList,
                           selectedLabelList: state.taskItemInfo.labelList,
                           onTapListItem: (linkLabelList) {
-                            context.read<TaskItemBloc>().add(
-                                  TaskItemUpdateLabelList(
+                            context.read<InputTaskItemBloc>().add(
+                                  InputTaskItemUpdateLabelList(
                                       labelList: linkLabelList),
                                 );
                           },

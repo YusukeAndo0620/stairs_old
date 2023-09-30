@@ -68,7 +68,7 @@ class WorkBoard {
 class TaskItemInfo {
   TaskItemInfo({
     required this.workBoardId,
-    required this.workBoardItemId,
+    required this.taskItemId,
     required this.title,
     required this.description,
     required this.startDate,
@@ -77,7 +77,7 @@ class TaskItemInfo {
   });
 
   final String workBoardId;
-  final String workBoardItemId;
+  final String taskItemId;
   final String title;
   final String description;
   final DateTime startDate;

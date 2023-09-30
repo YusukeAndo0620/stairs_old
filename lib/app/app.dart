@@ -6,6 +6,7 @@ import '../display/board/screen/board_screen.dart';
 import '../display/board/board_list_bloc.dart';
 import '../display/board/board_detail_bloc.dart';
 import '../display/work_board/task_item_bloc.dart';
+import '../display/work_board/component/input_task_item_bloc.dart';
 import '../loom/component/modal/select_item_modal_bloc.dart';
 import '../loom/display/link_tag_display_bloc.dart';
 import '../loom/display/select_color_display_bloc.dart';
@@ -22,6 +23,7 @@ class App extends AppFunction {
       ..add(BlocProvider(create: (_) => BoardDetailBloc()))
       ..add(BlocProvider(create: (_) => SelectItemModalBloc()))
       ..add(BlocProvider(create: (_) => TaskItemBloc()))
+      ..add(BlocProvider(create: (_) => InputTaskItemBloc()))
       ..add(BlocProvider(create: (_) => InputTagDisplayBloc()))
       ..add(BlocProvider(create: (_) => LinkTagDisplayBloc()));
   }

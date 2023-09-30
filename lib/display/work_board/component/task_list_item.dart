@@ -60,8 +60,9 @@ class _TaskListItemState extends State<TaskListItem> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<WorkBoardPositionBloc>().add(
-        WorkBoardSetCardItemPosition(workBoardItemId: widget.id, key: itemKey));
+    context
+        .read<WorkBoardPositionBloc>()
+        .add(WorkBoardSetCardItemPosition(taskItemId: widget.id, key: itemKey));
 
     final theme = LoomTheme.of(context);
     return Draggable(
@@ -90,7 +91,7 @@ class _TaskListItemState extends State<TaskListItem> {
           width: _kBorderWidth,
         ),
         borderRadius: BorderRadius.circular(5.0),
-        onTap: () {},
+        onTap: widget.onTap,
         widget: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,

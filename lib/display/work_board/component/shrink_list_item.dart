@@ -18,7 +18,7 @@ class ShrinkTaskListItem extends StatelessWidget {
 
     context
         .read<WorkBoardPositionBloc>()
-        .add(WorkBoardSetCardItemPosition(workBoardItemId: id, key: itemKey));
+        .add(WorkBoardSetCardItemPosition(taskItemId: id, key: itemKey));
     return Container(
       key: itemKey,
       width: MediaQuery.of(context).size.width * 0.7,

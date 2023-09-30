@@ -11,11 +11,21 @@ abstract class TaskItemEvent {
 class TaskItemInit extends TaskItemEvent {
   const TaskItemInit({
     required this.workBoardId,
-    this.workBoardItemId,
+    this.taskItemId,
+    this.title,
+    this.description,
+    this.startDate,
+    this.endDate,
+    this.labelList,
   });
 
   final String workBoardId;
-  final String? workBoardItemId;
+  final String? taskItemId;
+  final String? title;
+  final String? description;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final List<ColorLabelInfo>? labelList;
 }
 
 class TaskItemUpdateTitle extends TaskItemEvent {
@@ -64,7 +74,7 @@ class TaskItemBlocState extends Equatable {
 
   TaskItemBlocState copyWith({
     String? workBoardId,
-    String? workBoardItemId,
+    String? taskItemId,
     String? title,
     String? description,
     DateTime? startDate,
@@ -74,7 +84,7 @@ class TaskItemBlocState extends Equatable {
       TaskItemBlocState(
         taskItemInfo: TaskItemInfo(
           workBoardId: workBoardId ?? taskItemInfo.workBoardId,
-          workBoardItemId: workBoardItemId ?? taskItemInfo.workBoardItemId,
+          taskItemId: taskItemId ?? taskItemInfo.taskItemId,
           title: title ?? taskItemInfo.title,
           description: description ?? taskItemInfo.description,
           startDate: startDate ?? taskItemInfo.startDate,
@@ -91,7 +101,7 @@ class TaskItemBloc extends Bloc<TaskItemEvent, TaskItemBlocState> {
           TaskItemBlocState(
             taskItemInfo: TaskItemInfo(
               workBoardId: '',
-              workBoardItemId: '',
+              taskItemId: '',
               title: '',
               description: '',
               startDate: DateTime.now(),
@@ -113,14 +123,12 @@ class TaskItemBloc extends Bloc<TaskItemEvent, TaskItemBlocState> {
       TaskItemBlocState(
         taskItemInfo: TaskItemInfo(
           workBoardId: event.workBoardId,
-          workBoardItemId: event.workBoardItemId == null
-              ? uuid.v4()
-              : event.workBoardItemId!,
-          title: '',
-          description: '',
-          startDate: DateTime.now(),
-          endDate: DateTime.now().add(const Duration(days: 7)),
-          labelList: <ColorLabelInfo>[],
+          taskItemId: event.taskItemId == null ? uuid.v4() : event.taskItemId!,
+          title: event.title ?? '',
+          description: event.description ?? '',
+          startDate: event.startDate ?? DateTime.now(),
+          endDate: event.endDate ?? DateTime.now().add(const Duration(days: 7)),
+          labelList: event.labelList ?? <ColorLabelInfo>[],
         ),
       ),
     );
@@ -136,7 +144,7 @@ class TaskItemBloc extends Bloc<TaskItemEvent, TaskItemBlocState> {
   Future<void> _onUpdateDescription(
       TaskItemUpdateDescription event, Emitter<TaskItemBlocState> emit) async {
     emit(
-      state.copyWith(title: event.description),
+      state.copyWith(description: event.description),
     );
   }
 

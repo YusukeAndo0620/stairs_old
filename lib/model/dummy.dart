@@ -90,7 +90,7 @@ final dummyWorkBoardList = [
     taskItemList: [
       TaskItemInfo(
         workBoardId: '1',
-        workBoardItemId: uuid.v4(),
+        taskItemId: uuid.v4(),
         title: 'アカウント作成画面設計修正',
         description: 'アカウント作成画面の修正を行う。',
         startDate: DateTime.parse('2023-07-30 00:00:00'),
@@ -99,7 +99,7 @@ final dummyWorkBoardList = [
       ),
       TaskItemInfo(
         workBoardId: '1',
-        workBoardItemId: uuid.v4(),
+        taskItemId: uuid.v4(),
         title: '【TODO】',
         description: 'アカウント作成画面の修正を行う。',
         startDate: DateTime.parse('2023-07-30 00:00:00'),
@@ -108,7 +108,7 @@ final dummyWorkBoardList = [
       ),
       TaskItemInfo(
         workBoardId: '1',
-        workBoardItemId: uuid.v4(),
+        taskItemId: uuid.v4(),
         title: 'ワークフロー一覧実装',
         description: 'ワークフロー一覧の新規実装',
         startDate: DateTime.parse('2023-07-30 00:00:00'),
@@ -123,7 +123,7 @@ final dummyWorkBoardList = [
     taskItemList: [
       TaskItemInfo(
         workBoardId: '2',
-        workBoardItemId: uuid.v4(),
+        taskItemId: uuid.v4(),
         title: 'Audio設定画面',
         description: 'アカウント作成画面の修正を行う。',
         startDate: DateTime.parse('2023-07-30 00:00:00'),
@@ -132,7 +132,7 @@ final dummyWorkBoardList = [
       ),
       TaskItemInfo(
         workBoardId: '2',
-        workBoardItemId: uuid.v4(),
+        taskItemId: uuid.v4(),
         title: 'Voice & Search設定',
         description: 'ワークフロー一覧の新規実装',
         startDate: DateTime.parse('2023-07-30 00:00:00'),

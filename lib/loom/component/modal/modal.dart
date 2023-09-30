@@ -1,44 +1,71 @@
 import 'package:flutter/material.dart' hide Theme;
-import 'package:provider/provider.dart';
-import 'package:provider/single_child_widget.dart';
 
 import '../../theme.dart';
 
 const _kModalPadding = EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0);
+const _kTrailingWidth = 30.0;
+const _kIconSize = 24.0;
 
-abstract class Modal extends StatelessWidget {
+class Modal extends StatefulWidget {
   const Modal({
     super.key,
+    this.title,
     this.height,
+    required this.buildMainContent,
+    this.isShowTrailing = true,
+    this.leadingIcon,
+    this.trailingIcon,
+    this.iconSize,
+    this.trailingWidth,
+    this.onClose,
   });
-  String? get title;
+  final String? title;
   final double? height;
+  final Icon? leadingIcon;
+  final bool isShowTrailing;
+  final Icon? trailingIcon;
+  final double? iconSize;
+  final double? trailingWidth;
+  final Function? onClose;
 
-  List<SingleChildWidget> getPageProviders();
-  Widget buildLeadingContent(BuildContext context);
-  Widget? buildTrailingContent(BuildContext context);
-  Widget buildMainContent(BuildContext context);
+  final Widget buildMainContent;
+
+  @override
+  State<StatefulWidget> createState() => ModalState();
+}
+
+class ModalState extends State<Modal> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // widget.onClose!();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return getPageProviders().isEmpty
-        ? ModalContent(
-            title: title,
-            height: height,
-            leadingContent: buildLeadingContent(context),
-            mainContent: buildMainContent(context),
-            trailContent: buildTrailingContent(context),
-          )
-        : MultiProvider(
-            key: ValueKey<int>(buildMainContent(context).hashCode),
-            providers: getPageProviders(),
-            child: ModalContent(
-              title: title,
-              height: height,
-              leadingContent: buildLeadingContent(context),
-              mainContent: buildMainContent(context),
-              trailContent: buildTrailingContent(context),
-            ));
+    return ModalContent(
+      title: widget.title,
+      height: widget.height,
+      leadingContent: _LeadingContent(
+        key: widget.key,
+        icon: widget.leadingIcon,
+        iconSize: widget.iconSize,
+      ),
+      mainContent: widget.buildMainContent,
+      trailContent: widget.isShowTrailing
+          ? _TrailingContent(
+              key: widget.key,
+              icon: widget.trailingIcon,
+              iconSize: widget.iconSize,
+              trailingWidth: widget.trailingWidth,
+            )
+          : null,
+    );
   }
 }
 
@@ -97,6 +124,61 @@ class ModalContent extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LeadingContent extends StatelessWidget {
+  const _LeadingContent({
+    super.key,
+    this.icon,
+    this.iconSize,
+  });
+  final Icon? icon;
+  final double? iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = LoomTheme.of(context);
+    return IconButton(
+      icon: icon ??
+          Icon(
+            theme.icons.close,
+            color: theme.colorFgDefault,
+          ),
+      iconSize: iconSize ?? _kIconSize,
+      onPressed: () => Navigator.pop(context),
+    );
+  }
+}
+
+class _TrailingContent extends StatelessWidget {
+  const _TrailingContent({
+    super.key,
+    this.icon,
+    this.iconSize,
+    this.trailingWidth,
+  });
+  final Icon? icon;
+  final double? iconSize;
+  final double? trailingWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = LoomTheme.of(context);
+    return SizedBox(
+      width: trailingWidth ?? _kTrailingWidth,
+      child: IconButton(
+        icon: icon ??
+            Icon(
+              theme.icons.done,
+            ),
+        color: theme.colorPrimary,
+        iconSize: iconSize ?? _kIconSize,
+        onPressed: () {
+          Navigator.pop(context);
+        },
       ),
     );
   }
