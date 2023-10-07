@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:stairs/loom/loom_package.dart';
 
 import '../../../model/model.dart';
-import '../work_board_position_bloc.dart';
+import '../board_position_bloc.dart';
 
 const _kEllipsisTxt = '...';
 const _kBorderWidth = 1.0;
@@ -61,8 +61,8 @@ class _TaskListItemState extends State<TaskListItem> {
   @override
   Widget build(BuildContext context) {
     context
-        .read<WorkBoardPositionBloc>()
-        .add(WorkBoardSetCardItemPosition(taskItemId: widget.id, key: itemKey));
+        .read<BoardPositionBloc>()
+        .add(BoardSetCardItemPosition(taskItemId: widget.id, key: itemKey));
 
     final theme = LoomTheme.of(context);
     return Draggable(

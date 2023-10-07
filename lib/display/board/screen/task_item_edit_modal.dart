@@ -29,7 +29,7 @@ class TaskItemEditModal extends StatelessWidget {
   Widget build(BuildContext context) {
     context.read<TaskItemBloc>().add(
           TaskItemInit(
-            workBoardId: taskItem.workBoardId,
+            boardId: taskItem.boardId,
             taskItemId: taskItem.taskItemId,
             title: taskItem.title,
             description: taskItem.description,

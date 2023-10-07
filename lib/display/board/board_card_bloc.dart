@@ -17,30 +17,32 @@ class _Init extends BoardCardEvent {
 
 class BoardCardGetList extends BoardCardEvent {
   const BoardCardGetList({
-    required this.workBoardId,
+    required this.projectId,
+    required this.boardId,
     required this.title,
     required this.taskItemList,
   });
-  final String workBoardId;
+  final String projectId;
+  final String boardId;
   final String title;
   final List<TaskItemInfo> taskItemList;
 }
 
 class BoardCardUpdate extends BoardCardEvent {
   const BoardCardUpdate({
-    required this.workBoardId,
+    required this.boardId,
     required this.context,
     required this.theme,
   });
 
-  final String workBoardId;
+  final String boardId;
   final BuildContext context;
   final LoomThemeData theme;
 }
 
 class BoardCardAddTaskItem extends BoardCardEvent {
   const BoardCardAddTaskItem({
-    required this.workBoardId,
+    required this.boardId,
     required this.taskItemId,
     required this.title,
     required this.dueDate,
@@ -48,7 +50,7 @@ class BoardCardAddTaskItem extends BoardCardEvent {
   });
 
   final String taskItemId;
-  final String workBoardId;
+  final String boardId;
   final String title;
   final DateTime dueDate;
   final List<ColorLabelInfo> labelList;
@@ -56,7 +58,7 @@ class BoardCardAddTaskItem extends BoardCardEvent {
 
 class BoardCardUpdateTaskItem extends BoardCardEvent {
   const BoardCardUpdateTaskItem({
-    required this.workBoardId,
+    required this.boardId,
     required this.taskItemId,
     required this.title,
     required this.description,
@@ -65,8 +67,8 @@ class BoardCardUpdateTaskItem extends BoardCardEvent {
     required this.labelList,
   });
 
+  final String boardId;
   final String taskItemId;
-  final String workBoardId;
   final String title;
   final String description;
   final DateTime startDate;
@@ -82,10 +84,10 @@ class BoardCardTapListItem extends BoardCardEvent {
 
 class BoardCardDeleteTaskItem extends BoardCardEvent {
   const BoardCardDeleteTaskItem({
-    required this.workBoardId,
+    required this.boardId,
     required this.taskItemId,
   });
-  final String workBoardId;
+  final String boardId;
   final String taskItemId;
 }
 
@@ -105,21 +107,21 @@ class BoardCardSetDraggingItem extends BoardCardEvent {
 /// Replace dragging item to shrink item.
 class BoardCardReplaceShrinkItem extends BoardCardEvent {
   const BoardCardReplaceShrinkItem({
-    required this.workBoardId,
+    required this.boardId,
     required this.taskItemId,
   });
-  final String workBoardId;
+  final String boardId;
   final String taskItemId;
 }
 
 // Delete and Add shrink item when item is dragging.
 class BoardCardDeleteAndAddShrinkItem extends BoardCardEvent {
   const BoardCardDeleteAndAddShrinkItem({
-    required this.workBoardId,
+    required this.boardId,
     required this.insertingIndex,
   });
 
-  final String workBoardId;
+  final String boardId;
   final int insertingIndex;
 }
 
@@ -132,36 +134,36 @@ class BoardCardCompleteDraggedItem extends BoardCardEvent {
 @immutable
 class BoardCardState extends Equatable {
   const BoardCardState({
-    required this.workBoard,
+    required this.boardInfo,
     this.draggingItem,
     this.shrinkItem,
   });
 
-  final WorkBoard workBoard;
+  final BoardInfo boardInfo;
   final TaskItemInfo? draggingItem;
   final TaskItemInfo? shrinkItem;
 
   @override
   List<Object?> get props => [
-        workBoard,
+        boardInfo,
         draggingItem,
         shrinkItem,
       ];
 
   BoardCardState copyWith({
-    WorkBoard? workBoard,
+    BoardInfo? boardInfo,
     TaskItemInfo? draggingItem,
     TaskItemInfo? shrinkItem,
   }) =>
       BoardCardState(
-        workBoard: workBoard ?? this.workBoard,
+        boardInfo: boardInfo ?? this.boardInfo,
         draggingItem: draggingItem ?? this.draggingItem,
         shrinkItem: shrinkItem ?? this.shrinkItem,
       );
 
   ///Check shrink item is included in target work board card list.
-  bool hasShrinkItem(String workBoardId) {
-    return workBoard.taskItemList
+  bool hasShrinkItem(String boardId) {
+    return boardInfo.taskItemList
             .firstWhereOrNull((element) => element.taskItemId == kShrinkId) !=
         null;
   }
@@ -172,8 +174,9 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
   BoardCardBloc()
       : super(
           BoardCardState(
-            workBoard: WorkBoard(
-              workBoardId: '',
+            boardInfo: BoardInfo(
+              projectId: '',
+              boardId: '',
               title: '',
               taskItemList: [],
             ),
@@ -196,8 +199,9 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
   void _onInit(_Init event, Emitter<BoardCardState> emit) {
     emit(
       BoardCardState(
-        workBoard: WorkBoard(
-          workBoardId: '',
+        boardInfo: BoardInfo(
+          projectId: '',
+          boardId: '',
           title: '',
           taskItemList: [],
         ),
@@ -209,8 +213,9 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
       BoardCardGetList event, Emitter<BoardCardState> emit) async {
     emit(
       BoardCardState(
-        workBoard: WorkBoard(
-          workBoardId: event.workBoardId,
+        boardInfo: BoardInfo(
+          projectId: event.projectId,
+          boardId: event.boardId,
           title: event.title,
           taskItemList: event.taskItemList,
         ),
@@ -225,11 +230,11 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
 
   Future<void> _onAddTaskItem(
       BoardCardAddTaskItem event, Emitter<BoardCardState> emit) async {
-    final emitWorkBoard = state.workBoard;
+    final emitBoardInfo = state.boardInfo;
 
-    emitWorkBoard.taskItemList.add(
+    emitBoardInfo.taskItemList.add(
       TaskItemInfo(
-        workBoardId: event.workBoardId,
+        boardId: event.boardId,
         taskItemId: event.taskItemId,
         title: event.title,
         description: '',
@@ -239,18 +244,18 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
       ),
     );
     emit(
-      state.copyWith(workBoard: emitWorkBoard),
+      state.copyWith(boardInfo: emitBoardInfo),
     );
   }
 
   Future<void> _onUpdateTaskItem(
       BoardCardUpdateTaskItem event, Emitter<BoardCardState> emit) async {
-    final emitWorkBoard = state.workBoard;
-    final targetTaskItemIndex = state.workBoard.taskItemList
+    final emitBoardInfo = state.boardInfo;
+    final targetTaskItemIndex = state.boardInfo.taskItemList
         .indexWhere((element) => element.taskItemId == event.taskItemId);
 
     final replaceTaskItem = TaskItemInfo(
-      workBoardId: event.workBoardId,
+      boardId: event.boardId,
       taskItemId: event.taskItemId,
       title: event.title,
       description: event.description,
@@ -259,29 +264,29 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
       labelList: event.labelList,
     );
 
-    emitWorkBoard.taskItemList.replaceRange(
+    emitBoardInfo.taskItemList.replaceRange(
         targetTaskItemIndex, targetTaskItemIndex + 1, [replaceTaskItem]);
 
     emit(
-      state.copyWith(workBoard: emitWorkBoard),
+      state.copyWith(boardInfo: emitBoardInfo),
     );
   }
 
   Future<void> _onDeleteTaskItem(
       BoardCardDeleteTaskItem event, Emitter<BoardCardState> emit) async {
-    final emitWorkBoard = state.workBoard;
+    final emitBoardInfo = state.boardInfo;
 
-    final targetTaskItemIndex = emitWorkBoard.taskItemList
+    final targetTaskItemIndex = emitBoardInfo.taskItemList
         .indexWhere((element) => element.taskItemId == event.taskItemId);
 
-    emitWorkBoard.taskItemList.removeAt(targetTaskItemIndex);
-    emit(state.copyWith(workBoard: emitWorkBoard));
+    emitBoardInfo.taskItemList.removeAt(targetTaskItemIndex);
+    emit(state.copyWith(boardInfo: emitBoardInfo));
   }
 
   Future<void> _onInitDragging(
       BoardCardInitDragging event, Emitter<BoardCardState> emit) async {
     emit(
-      BoardCardState(workBoard: state.workBoard),
+      BoardCardState(boardInfo: state.boardInfo),
     );
   }
 
@@ -293,53 +298,53 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
   // Drag時、対象要素をShrink Itemに置き換える
   Future<void> _onReplaceShrinkItem(
       BoardCardReplaceShrinkItem event, Emitter<BoardCardState> emit) async {
-    final shrinkItem = getShrinkItem(workBoardId: event.workBoardId);
-    final emitWorkBoard = state.workBoard;
+    final shrinkItem = getShrinkItem(boardId: event.boardId);
+    final emitBoardInfo = state.boardInfo;
 
-    final targetTaskItemIndex = emitWorkBoard.taskItemList.indexWhere(
+    final targetTaskItemIndex = emitBoardInfo.taskItemList.indexWhere(
       (element) => element.taskItemId == event.taskItemId,
     );
-    emitWorkBoard.taskItemList[targetTaskItemIndex] = shrinkItem;
+    emitBoardInfo.taskItemList[targetTaskItemIndex] = shrinkItem;
 
-    emit(state.copyWith(workBoard: emitWorkBoard, shrinkItem: shrinkItem));
+    emit(state.copyWith(boardInfo: emitBoardInfo, shrinkItem: shrinkItem));
   }
 
   Future<void> _onDeleteAndAddShrinkItem(BoardCardDeleteAndAddShrinkItem event,
       Emitter<BoardCardState> emit) async {
-    final shrinkItem = getShrinkItem(workBoardId: event.workBoardId);
-    final emitWorkBoard = state.workBoard;
+    final shrinkItem = getShrinkItem(boardId: event.boardId);
+    final emitBoardInfo = state.boardInfo;
     // Task Item Listが空の場合
-    if (emitWorkBoard.taskItemList.isEmpty) {
-      emitWorkBoard.taskItemList.add(shrinkItem);
+    if (emitBoardInfo.taskItemList.isEmpty) {
+      emitBoardInfo.taskItemList.add(shrinkItem);
     } else {
-      final currentShrinkItemIndex = emitWorkBoard.taskItemList.indexWhere(
+      final currentShrinkItemIndex = emitBoardInfo.taskItemList.indexWhere(
           (element) => element.taskItemId == state.shrinkItem!.taskItemId);
 
       // Shrink Item追加
-      emitWorkBoard.taskItemList.insert(event.insertingIndex, shrinkItem);
+      emitBoardInfo.taskItemList.insert(event.insertingIndex, shrinkItem);
 
       //indexで削除対象を判定
-      emitWorkBoard.taskItemList.removeAt(
+      emitBoardInfo.taskItemList.removeAt(
           currentShrinkItemIndex < event.insertingIndex
               ? currentShrinkItemIndex
               : currentShrinkItemIndex + 1);
     }
-    emit(state.copyWith(workBoard: emitWorkBoard, shrinkItem: shrinkItem));
+    emit(state.copyWith(boardInfo: emitBoardInfo, shrinkItem: shrinkItem));
   }
 
   //Shrink Item削除時、他Cardに移動しているため、Dragging Itemも初期化
   Future<void> _onDeleteShrinkItem(BoardCardDeleteAndAddShrinkItem event,
       Emitter<BoardCardState> emit) async {
-    final emitWorkBoard = state.workBoard;
+    final emitBoardInfo = state.boardInfo;
 
-    final currentShrinkItemIndex = emitWorkBoard.taskItemList.indexWhere(
+    final currentShrinkItemIndex = emitBoardInfo.taskItemList.indexWhere(
         (element) => element.taskItemId == state.shrinkItem!.taskItemId);
 
     //indexで削除対象を判定
-    emitWorkBoard.taskItemList.removeAt(currentShrinkItemIndex);
+    emitBoardInfo.taskItemList.removeAt(currentShrinkItemIndex);
 
     emit(
-      BoardCardState(workBoard: emitWorkBoard),
+      BoardCardState(boardInfo: emitBoardInfo),
     );
   }
 
@@ -348,20 +353,20 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
     if (state.draggingItem == null || state.shrinkItem == null) {
       return;
     }
-    final emitWorkBoard = state.workBoard;
-    final targetTaskItemIndex = emitWorkBoard.taskItemList.indexWhere(
+    final emitBoardInfo = state.boardInfo;
+    final targetTaskItemIndex = emitBoardInfo.taskItemList.indexWhere(
       (element) => element.taskItemId == state.shrinkItem!.taskItemId,
     );
-    emitWorkBoard.taskItemList[targetTaskItemIndex] = state.draggingItem!;
+    emitBoardInfo.taskItemList[targetTaskItemIndex] = state.draggingItem!;
 
-    emit(state.copyWith(workBoard: emitWorkBoard));
+    emit(state.copyWith(boardInfo: emitBoardInfo));
     add(const BoardCardInitDragging());
   }
 
   /// shrink itemを生成。取得。
-  TaskItemInfo getShrinkItem({required String workBoardId}) {
+  TaskItemInfo getShrinkItem({required String boardId}) {
     return TaskItemInfo(
-      workBoardId: workBoardId,
+      boardId: boardId,
       taskItemId: kShrinkId,
       title: '',
       description: '',

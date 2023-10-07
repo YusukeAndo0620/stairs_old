@@ -1,6 +1,6 @@
 import 'package:stairs/loom/loom_package.dart';
 
-import '../board_detail_bloc.dart';
+import '../project_detail_bloc.dart';
 import '../../../model/model.dart';
 
 const _kProjectTitleTxt = 'プロジェクト';
@@ -29,23 +29,25 @@ const _kLabelHintTxt = 'ラベルを設定';
 
 const _kProjectAndBoardSpace = 30.0;
 
-class BoardEditModal extends StatelessWidget {
-  const BoardEditModal({
+class ProjectEditModal extends StatelessWidget {
+  const ProjectEditModal({
     super.key,
-    required this.boardId,
+    required this.projectId,
   });
 
-  final String boardId;
+  final String projectId;
 
   @override
   Widget build(BuildContext context) {
     final theme = LoomTheme.of(context);
-    if (boardId.isEmpty) {
-      context.read<BoardDetailBloc>().add(const Init());
+    if (projectId.isEmpty) {
+      context.read<ProjectDetailBloc>().add(const Init());
     } else {
-      context.read<BoardDetailBloc>().add(BoardGetDetail(boardId: boardId));
+      context
+          .read<ProjectDetailBloc>()
+          .add(ProjectGetDetail(projectId: projectId));
     }
-    return BlocBuilder<BoardDetailBloc, BoardDetailBlocState>(
+    return BlocBuilder<ProjectDetailBloc, ProjectDetailBlocState>(
       builder: (context, state) {
         return Modal(
           buildMainContent: Column(
@@ -66,8 +68,8 @@ class BoardEditModal extends StatelessWidget {
                 inputValue: state.projectName,
                 hintText: _kProjectHintTxt,
                 onSubmitted: (projectName) => context
-                    .read<BoardDetailBloc>()
-                    .add(BoardChangeProjectName(projectName: projectName)),
+                    .read<ProjectDetailBloc>()
+                    .add(ProjectChangeProjectName(projectName: projectName)),
               ),
               // 色,
               CardLstItem.labeWithIcon(
@@ -88,8 +90,8 @@ class BoardEditModal extends StatelessWidget {
                         selectedColorInfo: state.colorInfo,
                         onTap: (id) {},
                         onTapBackIcon: (colorInfo) {
-                          context.read<BoardDetailBloc>().add(
-                                BoardChangThemeColor(colorInfo: colorInfo),
+                          context.read<ProjectDetailBloc>().add(
+                                ProjectChangeThemeColor(colorInfo: colorInfo),
                               );
                         },
                       );
@@ -106,8 +108,8 @@ class BoardEditModal extends StatelessWidget {
                 inputValue: state.industry,
                 hintText: _kIndustryHintTxt,
                 onSubmitted: (industry) => context
-                    .read<BoardDetailBloc>()
-                    .add(BoardChangIndustry(industry: industry)),
+                    .read<ProjectDetailBloc>()
+                    .add(ProjectChangeIndustry(industry: industry)),
               ),
               // 期日
               CardLstItem.labeWithIcon(
@@ -122,7 +124,7 @@ class BoardEditModal extends StatelessWidget {
                   )
                 ],
                 onTap: () async {
-                  final bloc = context.read<BoardDetailBloc>();
+                  final bloc = context.read<ProjectDetailBloc>();
                   DateTimeRange? range = await showDateRangePicker(
                     context: context,
                     initialDateRange: DateTimeRange(
@@ -151,7 +153,7 @@ class BoardEditModal extends StatelessWidget {
 
                   if (range != null) {
                     bloc.add(
-                      BoardChangeDueDate(
+                      ProjectChangeDueDate(
                         startDate: range.start,
                         endDate: range.end,
                       ),
@@ -169,8 +171,8 @@ class BoardEditModal extends StatelessWidget {
                 hintText: _kContentHintTxt,
                 maxLength: _kContentMaxLength,
                 onSubmitted: (description) => context
-                    .read<BoardDetailBloc>()
-                    .add(BoardChangDescription(description: description)),
+                    .read<ProjectDetailBloc>()
+                    .add(ProjectChangeDescription(description: description)),
               ),
               // OS
               CardLstItem.input(
@@ -181,8 +183,8 @@ class BoardEditModal extends StatelessWidget {
                   inputValue: state.os,
                   hintText: _kOsHintTxt,
                   onSubmitted: (os) => context
-                      .read<BoardDetailBloc>()
-                      .add(BoardChangeOs(os: os))),
+                      .read<ProjectDetailBloc>()
+                      .add(ProjectChangeOs(os: os))),
               // DB
               CardLstItem.input(
                 icon: Icon(
@@ -191,8 +193,9 @@ class BoardEditModal extends StatelessWidget {
                 ),
                 inputValue: state.db,
                 hintText: _kDbHintTxt,
-                onSubmitted: (db) =>
-                    context.read<BoardDetailBloc>().add(BoardChangeDb(db: db)),
+                onSubmitted: (db) => context
+                    .read<ProjectDetailBloc>()
+                    .add(ProjectChangeDb(db: db)),
               ),
               // 開発言語
               CardLstItem.labeWithIcon(
@@ -201,8 +204,10 @@ class BoardEditModal extends StatelessWidget {
                 iconData: theme.icons.resume,
                 hintText: _kDevLangHintTxt,
                 itemList: [
-                  for (final item
-                      in context.read<BoardDetailBloc>().state.devLanguageList)
+                  for (final item in context
+                      .read<ProjectDetailBloc>()
+                      .state
+                      .devLanguageList)
                     LabelTip(
                       label: item.inputValue,
                       themeColor: theme.colorFgDisabled,
@@ -228,7 +233,7 @@ class BoardEditModal extends StatelessWidget {
                                 height:
                                     MediaQuery.of(context).size.height * 0.7,
                                 labelList: context
-                                    .read<BoardDetailBloc>()
+                                    .read<ProjectDetailBloc>()
                                     .state
                                     .tagList,
                                 selectedLabelList: getDevLangSelectedLabelList(
@@ -245,8 +250,8 @@ class BoardEditModal extends StatelessWidget {
                           );
                         },
                         onTapBack: (data) {
-                          context.read<BoardDetailBloc>().add(
-                                BoardChangDevLanguageList(
+                          context.read<ProjectDetailBloc>().add(
+                                ProjectChangeDevLanguageList(
                                     devLanguageList:
                                         (data as List<LinkTagInfo>)),
                               );
@@ -264,7 +269,7 @@ class BoardEditModal extends StatelessWidget {
                 hintText: _kToolHintTxt,
                 itemList: [
                   for (final item
-                      in context.read<BoardDetailBloc>().state.toolList)
+                      in context.read<ProjectDetailBloc>().state.toolList)
                     LabelTip(
                       label: item.labelName,
                       themeColor: theme.colorFgDisabled,
@@ -277,8 +282,8 @@ class BoardEditModal extends StatelessWidget {
                         title: _kToolTxt,
                         toolList: state.toolList,
                         onTapBack: (data) {
-                          context.read<BoardDetailBloc>().add(
-                                BoardChangeToolList(
+                          context.read<ProjectDetailBloc>().add(
+                                ProjectChangeToolList(
                                     toolList: (data as List<Label>)),
                               );
                         },
@@ -294,8 +299,10 @@ class BoardEditModal extends StatelessWidget {
                 iconData: theme.icons.resume,
                 hintText: _kProgressHintTxt,
                 itemList: [
-                  for (final item
-                      in context.read<BoardDetailBloc>().state.devProgressList)
+                  for (final item in context
+                      .read<ProjectDetailBloc>()
+                      .state
+                      .devProgressList)
                     LabelTip(
                       label: item.labelName,
                       themeColor: theme.colorFgDisabled,
@@ -307,13 +314,13 @@ class BoardEditModal extends StatelessWidget {
                       return SelectLabelDisplay(
                         title: _kProgressTxt,
                         selectedLabelList: context
-                            .read<BoardDetailBloc>()
+                            .read<ProjectDetailBloc>()
                             .state
                             .devProgressList,
                         onTap: (id) {},
                         onTapBackIcon: (labelList) {
-                          context.read<BoardDetailBloc>().add(
-                                BoardChangeDevProgressList(
+                          context.read<ProjectDetailBloc>().add(
+                                ProjectChangeDevProgressList(
                                     devProgressList: labelList),
                               );
                         },
@@ -332,8 +339,8 @@ class BoardEditModal extends StatelessWidget {
                   ),
                   hintText: _kDevSizeHintTxt,
                   onSubmitted: (devSize) => context
-                      .read<BoardDetailBloc>()
-                      .add(BoardChangeDevSize(devSize: devSize))),
+                      .read<ProjectDetailBloc>()
+                      .add(ProjectChangeDevSize(devSize: devSize))),
               const SizedBox(
                 height: _kProjectAndBoardSpace,
               ),
@@ -341,7 +348,7 @@ class BoardEditModal extends StatelessWidget {
                 title: _kBoardTitleTxt,
                 bgColor: theme.colorBgLayer1,
               ),
-              // ラベル
+              // ラベル,
               CardLstItem.labeWithIcon(
                 label: _kLabelTxt,
                 iconColor: theme.colorPrimary,
@@ -349,7 +356,7 @@ class BoardEditModal extends StatelessWidget {
                 hintText: _kLabelHintTxt,
                 itemList: [
                   for (final item
-                      in context.read<BoardDetailBloc>().state.tagList)
+                      in context.read<ProjectDetailBloc>().state.tagList)
                     LabelTip(
                       label: item.labelName,
                       themeColor: item.themeColor,
@@ -362,8 +369,8 @@ class BoardEditModal extends StatelessWidget {
                         title: _kLabelTxt,
                         tagList: state.tagList,
                         onTapBack: (data) {
-                          context.read<BoardDetailBloc>().add(
-                                BoardChangeTagList(
+                          context.read<ProjectDetailBloc>().add(
+                                ProjectChangeTagList(
                                     tagList: (data as List<ColorLabelInfo>)),
                               );
                         },

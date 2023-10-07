@@ -1,14 +1,14 @@
 import 'package:stairs/loom/loom_package.dart';
 
-import 'board_edit_modal.dart';
+import 'project_edit_modal.dart';
 
-const _kBoardEmptyTxt = '表示可能なボードがありません。\nボードを作成してください。';
+const _kProjectEmptyTxt = '表示可能なボードがありません。\nボードを作成してください。';
 
-const _kBoardEmptyContentPadding =
+const _kProjectEmptyContentPadding =
     EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0);
 
-class BoardEmpty extends StatelessWidget {
-  const BoardEmpty({super.key});
+class ProjectEmpty extends StatelessWidget {
+  const ProjectEmpty({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +18,9 @@ class BoardEmpty extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: _kBoardEmptyContentPadding,
+          padding: _kProjectEmptyContentPadding,
           child: Text(
-            _kBoardEmptyTxt,
+            _kProjectEmptyTxt,
             style: theme.textStyleBody,
             textAlign: TextAlign.center,
           ),
@@ -31,8 +31,8 @@ class BoardEmpty extends StatelessWidget {
                   isScrollControlled: true,
                   backgroundColor: Colors.transparent,
                   builder: (context) {
-                    return const BoardEditModal(
-                      boardId: '',
+                    return const ProjectEditModal(
+                      projectId: '',
                     );
                   },
                 ),

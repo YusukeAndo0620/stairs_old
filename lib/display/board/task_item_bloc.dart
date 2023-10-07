@@ -10,7 +10,7 @@ abstract class TaskItemEvent {
 
 class TaskItemInit extends TaskItemEvent {
   const TaskItemInit({
-    required this.workBoardId,
+    required this.boardId,
     this.taskItemId,
     this.title,
     this.description,
@@ -19,7 +19,7 @@ class TaskItemInit extends TaskItemEvent {
     this.labelList,
   });
 
-  final String workBoardId;
+  final String boardId;
   final String? taskItemId;
   final String? title;
   final String? description;
@@ -73,7 +73,7 @@ class TaskItemBlocState extends Equatable {
       ];
 
   TaskItemBlocState copyWith({
-    String? workBoardId,
+    String? boardId,
     String? taskItemId,
     String? title,
     String? description,
@@ -83,7 +83,7 @@ class TaskItemBlocState extends Equatable {
   }) =>
       TaskItemBlocState(
         taskItemInfo: TaskItemInfo(
-          workBoardId: workBoardId ?? taskItemInfo.workBoardId,
+          boardId: boardId ?? taskItemInfo.boardId,
           taskItemId: taskItemId ?? taskItemInfo.taskItemId,
           title: title ?? taskItemInfo.title,
           description: description ?? taskItemInfo.description,
@@ -100,7 +100,7 @@ class TaskItemBloc extends Bloc<TaskItemEvent, TaskItemBlocState> {
       : super(
           TaskItemBlocState(
             taskItemInfo: TaskItemInfo(
-              workBoardId: '',
+              boardId: '',
               taskItemId: '',
               title: '',
               description: '',
@@ -122,7 +122,7 @@ class TaskItemBloc extends Bloc<TaskItemEvent, TaskItemBlocState> {
     emit(
       TaskItemBlocState(
         taskItemInfo: TaskItemInfo(
-          workBoardId: event.workBoardId,
+          boardId: event.boardId,
           taskItemId: event.taskItemId == null ? uuid.v4() : event.taskItemId!,
           title: event.title ?? '',
           description: event.description ?? '',

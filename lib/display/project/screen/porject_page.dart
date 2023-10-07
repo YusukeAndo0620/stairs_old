@@ -3,7 +3,7 @@
 // import 'package:provider/single_child_widget.dart';
 // import 'board_screen.dart';
 
-// class BoardPage extends TransitionPage {
+// class ProjectPage extends TransitionPage {
 //   @override
 //   List<SingleChildWidget> getPageProviders() {
 //     return [];

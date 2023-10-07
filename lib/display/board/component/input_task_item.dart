@@ -29,9 +29,7 @@ class InputTaskItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = LoomTheme.of(context);
-    context
-        .read<InputTaskItemBloc>()
-        .add(const InputTaskItemInit(workBoardId: ''));
+    context.read<InputTaskItemBloc>().add(const InputTaskItemInit(boardId: ''));
     return BlocBuilder<InputTaskItemBloc, InputTaskItemState>(
       builder: (context, state) {
         return Container(

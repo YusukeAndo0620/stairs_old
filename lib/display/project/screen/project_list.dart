@@ -1,18 +1,18 @@
 import 'package:stairs/loom/loom_package.dart';
 import '../../../model/model.dart';
-import '../component/board_list_item.dart';
-import '../../work_board/screen/work_board_screen.dart';
-import 'board_edit_modal.dart';
+import '../component/project_list_item.dart';
+import '../../board/screen/board_screen.dart';
+import 'project_edit_modal.dart';
 
-const _kBoardTitleTxt = 'ボード一覧';
-const _kBoardListTitlePadding =
+const _kProjectTitleTxt = 'プロジェクト一覧';
+const _kProjectListTitlePadding =
     EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0);
-const _kBoardListItemBorder = 1.0;
+const _kProjectListItemBorder = 1.0;
 
-class BoardList extends StatelessWidget {
-  const BoardList({super.key, required this.boardList});
+class ProjectList extends StatelessWidget {
+  const ProjectList({super.key, required this.projectList});
 
-  final List<BoardListItemInfo> boardList;
+  final List<ProjectListItemInfo> projectList;
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +26,8 @@ class BoardList extends StatelessWidget {
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
             builder: (context) {
-              return const BoardEditModal(
-                boardId: '',
+              return const ProjectEditModal(
+                projectId: '',
               );
             },
           );
@@ -39,18 +39,18 @@ class BoardList extends StatelessWidget {
         children: [
           Container(
             width: double.infinity,
-            padding: _kBoardListTitlePadding,
+            padding: _kProjectListTitlePadding,
             decoration: BoxDecoration(
               color: theme.colorFgDefaultWhite,
               border: Border(
                 bottom: BorderSide(
                   color: theme.colorFgDefault,
-                  width: _kBoardListItemBorder,
+                  width: _kProjectListItemBorder,
                 ),
               ),
             ),
             child: Text(
-              _kBoardTitleTxt,
+              _kProjectTitleTxt,
               style: theme.textStyleSubHeading,
             ),
           ),
@@ -59,16 +59,16 @@ class BoardList extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  for (final listItem in boardList)
-                    BoardListItem(
-                      boardId: listItem.boardId,
+                  for (final listItem in projectList)
+                    ProjectListItem(
+                      projectId: listItem.projectId,
                       projectName: listItem.projectName,
                       themeColor: listItem.themeColor,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) {
-                            return WorkBoardScreen(
-                              boardId: listItem.boardId,
+                            return BoardScreen(
+                              projectId: listItem.projectId,
                               title: listItem.projectName,
                               themeColor: listItem.themeColor,
                             );

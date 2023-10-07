@@ -1,23 +1,23 @@
 import 'package:stairs/loom/loom_package.dart';
 
-import '../../../display/board/board_detail_bloc.dart' hide Init;
+import '../../project/project_detail_bloc.dart' hide Init;
 import '../../../model/model.dart';
 import '../component/task_list_item.dart';
 import '../task_item_bloc.dart';
 import '../component/shrink_list_item.dart';
-import '../work_board_position_bloc.dart';
-import '../work_board_bloc.dart';
-import '../screen/work_board_screen.dart';
+import '../board_position_bloc.dart';
+import '../board_bloc.dart';
+import '../screen/board_screen.dart';
 import 'input_task_item.dart';
 import 'input_task_item_bloc.dart';
 import '../screen/task_item_edit_modal.dart';
 
 const _kBorderWidth = 1.0;
-const _kWorkBoardAddBtnSpace = 16.0;
+const _kBoardAddBtnSpace = 16.0;
 const _kListAndAddBtnSpace = 16.0;
 const _kMovingDownHeight = 150.0;
 const _kPageStorageKeyPrefixTxt = 'PageStorageKey_';
-const _kWorkBoardAddBtnTxt = 'タスクを追加';
+const _kBoardAddBtnTxt = 'タスクを追加';
 const _kCancelBtnTxt = 'キャンセル';
 const _kAddBtnTxt = '追加';
 
@@ -31,31 +31,31 @@ const _kContentMargin = EdgeInsets.only(
   right: 40.0,
 );
 
-///ワークボードカード
-class WorkBoardCard extends StatefulWidget {
-  const WorkBoardCard({
+///ボードカード
+class BoardCard extends StatefulWidget {
+  const BoardCard({
     super.key,
+    required this.projectId,
     required this.boardId,
-    required this.workBoardId,
-    required this.displayedWorkBoardId,
+    required this.displayedBoardId,
     required this.title,
     required this.themeColor,
     required this.taskItemList,
     required this.onPageChanged,
   });
+  final String projectId;
   final String boardId;
-  final String workBoardId;
-  final String displayedWorkBoardId;
+  final String displayedBoardId;
   final String title;
   final Color themeColor;
   final List<TaskItemInfo> taskItemList;
   final Function(PageAction) onPageChanged;
 
   @override
-  State<StatefulWidget> createState() => _WorkBoardCardState();
+  State<StatefulWidget> createState() => _BoardCardState();
 }
 
-class _WorkBoardCardState extends State<WorkBoardCard> {
+class _BoardCardState extends State<BoardCard> {
   bool _isAddedNewTask = false;
   bool _isMovingLast = false;
   final _scrollController = ScrollController();
@@ -72,13 +72,13 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WorkBoardPositionBloc, WorkBoardPositionBlocState>(
+    return BlocBuilder<BoardPositionBloc, BoardPositionBlocState>(
       builder: (context, state) {
         final theme = LoomTheme.of(context);
-        final workBoardCardKey = GlobalKey();
+        final boardCardKey = GlobalKey();
 
-        context.read<WorkBoardPositionBloc>().add(WorkBoardSetCardPosition(
-            workBoardId: widget.workBoardId, key: workBoardCardKey));
+        context.read<BoardPositionBloc>().add(
+            BoardSetCardPosition(boardId: widget.boardId, key: boardCardKey));
 
         WidgetsBinding.instance.addPostFrameCallback(
           (_) async {
@@ -103,7 +103,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
         );
 
         return DragTarget(
-          key: ValueKey(widget.workBoardId),
+          key: ValueKey(widget.boardId),
           builder: (context, accepted, rejected) {
             return Container(
               padding: _kContentPadding,
@@ -124,10 +124,10 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                     listSize: widget.taskItemList.length,
                   ),
                   Expanded(
-                    key: workBoardCardKey,
+                    key: boardCardKey,
                     child: SingleChildScrollView(
                       key: PageStorageKey(
-                          _kPageStorageKeyPrefixTxt + widget.workBoardId),
+                          _kPageStorageKeyPrefixTxt + widget.boardId),
                       controller: _scrollController,
                       child: Column(
                         children: [
@@ -145,8 +145,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                                 themeColor: widget.themeColor,
                                 labelList: item.labelList,
                                 onTap: () async {
-                                  final workBoardBloc =
-                                      context.read<WorkBoardBloc>();
+                                  final boardBloc = context.read<BoardBloc>();
                                   final taskItemBloc =
                                       context.read<TaskItemBloc>();
 
@@ -163,9 +162,9 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                                     },
                                   );
                                   if (result == null) {
-                                    workBoardBloc.add(WorkBoardUpdateTaskItem(
-                                      workBoardId: taskItemBloc
-                                          .state.taskItemInfo.workBoardId,
+                                    boardBloc.add(BoardUpdateTaskItem(
+                                      boardId: taskItemBloc
+                                          .state.taskItemInfo.boardId,
                                       taskItemId: taskItemBloc
                                           .state.taskItemInfo.taskItemId,
                                       title:
@@ -182,31 +181,32 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                                   }
                                 },
                                 onDragStarted: () {
-                                  context.read<WorkBoardBloc>().add(
-                                        WorkBoardSetDraggingItem(
+                                  context.read<BoardBloc>().add(
+                                        BoardSetDraggingItem(
                                           draggingItem: item,
                                         ),
                                       );
-                                  context.read<WorkBoardBloc>().add(
-                                        WorkBoardReplaceShrinkItem(
-                                            workBoardId: widget.workBoardId,
+                                  context.read<BoardBloc>().add(
+                                        BoardReplaceShrinkItem(
+                                            boardId: widget.boardId,
                                             taskItemId: item.taskItemId),
                                       );
                                 },
                                 onDragUpdate: (detail) {},
                                 onDragCompleted: () {},
                                 onDraggableCanceled: (velocity, offset) {
-                                  context.read<WorkBoardBloc>().add(
-                                      const WorkBoardCompleteDraggedItem());
+                                  context
+                                      .read<BoardBloc>()
+                                      .add(const BoardCompleteDraggedItem());
                                 },
                               ),
                           if (_isAddedNewTask) ...[
                             InputTaskItem(
-                              id: '${widget.workBoardId}_${uuid.v4()}',
+                              id: '${widget.boardId}_${uuid.v4()}',
                               themeColor: widget.themeColor,
                               labelList: context
-                                  .read<BoardDetailBloc>()
-                                  .getLabelList(boardId: widget.boardId),
+                                  .read<ProjectDetailBloc>()
+                                  .getLabelList(projectId: widget.projectId),
                             ),
                           ]
                         ],
@@ -246,9 +246,9 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                                       _isMovingLast = true;
                                     },
                                   );
-                                  context.read<WorkBoardBloc>().add(
-                                        WorkBoardAddTaskItem(
-                                          workBoardId: widget.workBoardId,
+                                  context.read<BoardBloc>().add(
+                                        BoardAddTaskItem(
+                                          boardId: widget.boardId,
                                           taskItemId:
                                               state.taskItemInfo.taskItemId,
                                           title: state.taskItemInfo.title,
@@ -259,7 +259,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
                                       );
                                   context.read<InputTaskItemBloc>().add(
                                       InputTaskItemInit(
-                                          workBoardId: widget.workBoardId));
+                                          boardId: widget.boardId));
                                 },
                               ),
                             ),
@@ -283,11 +283,11 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
             );
           },
           onMove: (details) async {
-            final workBoardState =
-                context.read<WorkBoardBloc>().state as WorkBoardListState;
-            if (workBoardState.draggingItem == null) {
-              context.read<WorkBoardBloc>().add(
-                    WorkBoardSetDraggingItem(
+            final boardState =
+                context.read<BoardBloc>().state as BoardListState;
+            if (boardState.draggingItem == null) {
+              context.read<BoardBloc>().add(
+                    BoardSetDraggingItem(
                       draggingItem: widget.taskItemList.firstWhere(
                           (element) => element.taskItemId == details.data),
                     ),
@@ -296,7 +296,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
 
             await onMove(
               context: context,
-              workBoardCardKey: workBoardCardKey,
+              boardCardKey: boardCardKey,
               details: details,
             );
           },
@@ -310,29 +310,25 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
 
   Future<void> onMove({
     required BuildContext context,
-    required GlobalKey workBoardCardKey,
+    required GlobalKey boardCardKey,
     required DragTargetDetails details,
   }) async {
-    final workBoardState =
-        context.read<WorkBoardBloc>().state as WorkBoardListState;
-    final positionState = context.read<WorkBoardPositionBloc>().state;
+    final boardState = context.read<BoardBloc>().state as BoardListState;
+    final positionState = context.read<BoardPositionBloc>().state;
 
-    if (workBoardState.shrinkItem == null ||
-        positionState.workBoardItemPositionMap[kShrinkId] == null) {
+    if (boardState.shrinkItem == null ||
+        positionState.boardItemPositionMap[kShrinkId] == null) {
       return;
     }
     final currentDraggingItemDx = details.offset.dx;
     final currentDraggingItemDy = details.offset.dy;
-    final workBoardPosition =
-        positionState.workBoardPositionMap[widget.workBoardId];
+    final boardPosition = positionState.boardPositionMap[widget.boardId];
 
-    if (workBoardPosition == null) return;
-    final criteriaMovingPrevious =
-        workBoardPosition.dx - workBoardPosition.width / 6;
-    final criteriaMovingNext =
-        workBoardPosition.dx + workBoardPosition.width / 4;
+    if (boardPosition == null) return;
+    final criteriaMovingPrevious = boardPosition.dx - boardPosition.width / 6;
+    final criteriaMovingNext = boardPosition.dx + boardPosition.width / 4;
 
-    if (widget.displayedWorkBoardId == widget.workBoardId) {
+    if (widget.displayedBoardId == widget.boardId) {
       // カード内移動
       if (currentDraggingItemDx < criteriaMovingNext &&
           criteriaMovingPrevious < currentDraggingItemDx) {
@@ -340,7 +336,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
         //下に移動
         if (_scrollController.offset <
                 _scrollController.position.maxScrollExtent &&
-            workBoardCardKey.currentContext!.size!.height / 2 + 125 <
+            boardCardKey.currentContext!.size!.height / 2 + 125 <
                 currentDraggingItemDy) {
           _scrollController.animateTo(
             _scrollController.offset + _kMovingDownHeight,
@@ -349,7 +345,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
           );
           //上に移動
         } else if (_scrollController.offset > 0 &&
-            workBoardCardKey.currentContext!.size!.height / 2 - 100 >
+            boardCardKey.currentContext!.size!.height / 2 - 100 >
                 currentDraggingItemDy) {
           _scrollController.animateTo(
             _scrollController.offset - _kMovingDownHeight,
@@ -377,36 +373,36 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
   }
 
   void replaceShrinkItem({
-    required WorkBoardPositionBlocState positionState,
+    required BoardPositionBlocState positionState,
     required double currentDraggingItemDy,
   }) {
-    if (positionState.workBoardItemPositionMap[kShrinkId] == null) return;
+    if (positionState.boardItemPositionMap[kShrinkId] == null) return;
     final shrinkItemPosition =
-        positionState.workBoardItemPositionMap[kShrinkId]!.dy;
+        positionState.boardItemPositionMap[kShrinkId]!.dy;
     if (shrinkItemPosition - (kDraggedItemHeight / 2) < currentDraggingItemDy &&
         currentDraggingItemDy < shrinkItemPosition + (kDraggedItemHeight / 2)) {
       return;
     }
     for (final item in widget.taskItemList) {
-      if (positionState.workBoardItemPositionMap[item.taskItemId] == null) {
+      if (positionState.boardItemPositionMap[item.taskItemId] == null) {
         return;
       }
-      if (positionState.workBoardItemPositionMap[item.taskItemId]!.dy >=
+      if (positionState.boardItemPositionMap[item.taskItemId]!.dy >=
           currentDraggingItemDy) {
         final insertingShrinkItemIndex = widget.taskItemList
             .indexWhere((element) => element.taskItemId == item.taskItemId);
-        context.read<WorkBoardBloc>().add(
-              WorkBoardDeleteAndAddShrinkItem(
-                workBoardId: widget.workBoardId,
+        context.read<BoardBloc>().add(
+              BoardDeleteAndAddShrinkItem(
+                boardId: widget.boardId,
                 insertingIndex: insertingShrinkItemIndex,
               ),
             );
         return;
       }
     }
-    context.read<WorkBoardBloc>().add(
-          WorkBoardDeleteAndAddShrinkItem(
-            workBoardId: widget.workBoardId,
+    context.read<BoardBloc>().add(
+          BoardDeleteAndAddShrinkItem(
+            boardId: widget.boardId,
             insertingIndex: widget.taskItemList.length,
           ),
         );
@@ -416,7 +412,7 @@ class _WorkBoardCardState extends State<WorkBoardCard> {
     required BuildContext context,
     required DragTargetDetails details,
   }) {
-    context.read<WorkBoardBloc>().add(const WorkBoardCompleteDraggedItem());
+    context.read<BoardBloc>().add(const BoardCompleteDraggedItem());
   }
 }
 
@@ -489,10 +485,10 @@ class _AddingItemButton extends StatelessWidget {
             color: themeColor,
           ),
           const SizedBox(
-            width: _kWorkBoardAddBtnSpace,
+            width: _kBoardAddBtnSpace,
           ),
           Text(
-            _kWorkBoardAddBtnTxt,
+            _kBoardAddBtnTxt,
             style: theme.textStyleBody,
           ),
         ],

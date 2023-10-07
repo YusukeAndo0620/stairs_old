@@ -20,9 +20,9 @@ const _kContentMargin = EdgeInsets.only(
   right: 40.0,
 );
 
-///ワークボード追加カード画面
-class WorkBoardAddingCard extends StatefulWidget {
-  const WorkBoardAddingCard({
+///ボード追加カード画面
+class BoardAddingCard extends StatefulWidget {
+  const BoardAddingCard({
     super.key,
     required this.themeColor,
     required this.onOpenCard,
@@ -33,10 +33,10 @@ class WorkBoardAddingCard extends StatefulWidget {
   final Function(String) onTapAddingBtn;
 
   @override
-  State<StatefulWidget> createState() => _WorkBoardAddingCardState();
+  State<StatefulWidget> createState() => _BoardAddingCardState();
 }
 
-class _WorkBoardAddingCardState extends State<WorkBoardAddingCard> {
+class _BoardAddingCardState extends State<BoardAddingCard> {
   bool _isAddedNewCard = false;
   final textController = TextEditingController(text: '');
 

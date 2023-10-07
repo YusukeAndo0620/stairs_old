@@ -1,6 +1,6 @@
 import 'package:stairs/loom/loom_package.dart';
 
-import '../work_board_position_bloc.dart';
+import '../board_position_bloc.dart';
 
 const _kItemHeight = 120.0;
 
@@ -17,8 +17,8 @@ class ShrinkTaskListItem extends StatelessWidget {
     final theme = LoomTheme.of(context);
 
     context
-        .read<WorkBoardPositionBloc>()
-        .add(WorkBoardSetCardItemPosition(taskItemId: id, key: itemKey));
+        .read<BoardPositionBloc>()
+        .add(BoardSetCardItemPosition(taskItemId: id, key: itemKey));
     return Container(
       key: itemKey,
       width: MediaQuery.of(context).size.width * 0.7,

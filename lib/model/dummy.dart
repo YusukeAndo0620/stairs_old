@@ -1,22 +1,22 @@
 import 'package:collection/collection.dart';
 import 'model.dart';
 
-List<BoardListItemInfo> dummyBoardList = [
-  BoardListItemInfo(
-    boardId: '1',
+List<ProjectListItemInfo> dummyProjectList = [
+  ProjectListItemInfo(
+    projectId: '1',
     projectName: '某生命保険リプレース案件',
     themeColor: colorList[0].themeColor,
   ),
-  BoardListItemInfo(
-    boardId: '2',
+  ProjectListItemInfo(
+    projectId: '2',
     projectName: '某小売業顧客管理システムリニューアル案件',
     themeColor: colorList[3].themeColor,
   ),
 ];
 
-List<BoardDetailItemInfo> dummyBoardDetailList = [
-  BoardDetailItemInfo(
-    boardId: '1',
+List<ProjectDetailItemInfo> dummyProjectDetailList = [
+  ProjectDetailItemInfo(
+    projectId: '1',
     projectName: '某生命保険リプレース案件',
     themeColorId: colorList[0].id,
     industry: '保険業',
@@ -48,8 +48,8 @@ List<BoardDetailItemInfo> dummyBoardDetailList = [
     devSize: '50',
     tagList: tagList,
   ),
-  BoardDetailItemInfo(
-    boardId: '2',
+  ProjectDetailItemInfo(
+    projectId: '2',
     projectName: '某小売業顧客管理システムリニューアル案件',
     themeColorId: colorList[3].id,
     industry: '小売業',
@@ -83,13 +83,14 @@ List<BoardDetailItemInfo> dummyBoardDetailList = [
   ),
 ];
 
-final dummyWorkBoardList = [
-  WorkBoard(
-    workBoardId: '1',
+final dummyBoardList = [
+  BoardInfo(
+    projectId: '1',
+    boardId: '1',
     title: '作業中',
     taskItemList: [
       TaskItemInfo(
-        workBoardId: '1',
+        boardId: '1',
         taskItemId: uuid.v4(),
         title: 'アカウント作成画面設計修正',
         description: 'アカウント作成画面の修正を行う。',
@@ -98,7 +99,7 @@ final dummyWorkBoardList = [
         labelList: tagList,
       ),
       TaskItemInfo(
-        workBoardId: '1',
+        boardId: '1',
         taskItemId: uuid.v4(),
         title: '【TODO】',
         description: 'アカウント作成画面の修正を行う。',
@@ -107,7 +108,7 @@ final dummyWorkBoardList = [
         labelList: tagList,
       ),
       TaskItemInfo(
-        workBoardId: '1',
+        boardId: '1',
         taskItemId: uuid.v4(),
         title: 'ワークフロー一覧実装',
         description: 'ワークフロー一覧の新規実装',
@@ -117,12 +118,13 @@ final dummyWorkBoardList = [
       ),
     ],
   ),
-  WorkBoard(
-    workBoardId: '2',
+  BoardInfo(
+    projectId: '1',
+    boardId: '2',
     title: '完了',
     taskItemList: [
       TaskItemInfo(
-        workBoardId: '2',
+        boardId: '2',
         taskItemId: uuid.v4(),
         title: 'Audio設定画面',
         description: 'アカウント作成画面の修正を行う。',
@@ -131,7 +133,7 @@ final dummyWorkBoardList = [
         labelList: tagList,
       ),
       TaskItemInfo(
-        workBoardId: '2',
+        boardId: '2',
         taskItemId: uuid.v4(),
         title: 'Voice & Search設定',
         description: 'ワークフロー一覧の新規実装',

@@ -4,12 +4,12 @@ import 'package:equatable/equatable.dart';
 import '../../model/model.dart';
 import '../../model/dummy.dart';
 
-final initialState = BoardDetailBlocState(
-    boardId: uuid.v4(),
+final initialState = ProjectDetailBlocState(
+    projectId: uuid.v4(),
     projectName: '',
     colorInfo: ColorInfo(
       id: uuid.v4(),
-      themeColor: Color.fromARGB(255, 10, 241, 161),
+      themeColor: const Color.fromARGB(255, 10, 241, 161),
     ),
     industry: '',
     startDate: DateTime(2010, 1, 1),
@@ -26,123 +26,123 @@ final initialState = BoardDetailBlocState(
     tagList: tagList);
 
 // Event
-abstract class BoardDetailBlocEvent {
-  const BoardDetailBlocEvent();
+abstract class ProjectDetailBlocEvent {
+  const ProjectDetailBlocEvent();
 }
 
 //Init
-class Init extends BoardDetailBlocEvent {
+class Init extends ProjectDetailBlocEvent {
   const Init();
 }
 
 // Get detail info
-class BoardGetDetail extends BoardDetailBlocEvent {
-  const BoardGetDetail({required this.boardId});
+class ProjectGetDetail extends ProjectDetailBlocEvent {
+  const ProjectGetDetail({required this.projectId});
 
-  final String boardId;
+  final String projectId;
 }
 
-// Request of creating board
-class BoardCreate extends BoardDetailBlocEvent {}
+// Request of creating project
+class ProjectCreate extends ProjectDetailBlocEvent {}
 
-// Request of editing board
-class BoarEdit extends BoardDetailBlocEvent {
-  const BoarEdit({required this.boardId});
+// Request of editing project
+class BoarEdit extends ProjectDetailBlocEvent {
+  const BoarEdit({required this.projectId});
 
-  final String boardId;
+  final String projectId;
 }
 
 /// State change event
 // Change project name and set state
-class BoardChangeProjectName extends BoardDetailBlocEvent {
-  const BoardChangeProjectName({required this.projectName});
+class ProjectChangeProjectName extends ProjectDetailBlocEvent {
+  const ProjectChangeProjectName({required this.projectName});
 
   final String projectName;
 }
 
 // Change theme color and set state
-class BoardChangThemeColor extends BoardDetailBlocEvent {
-  const BoardChangThemeColor({required this.colorInfo});
+class ProjectChangeThemeColor extends ProjectDetailBlocEvent {
+  const ProjectChangeThemeColor({required this.colorInfo});
 
   final ColorInfo colorInfo;
 }
 
 // Change industry and set state
-class BoardChangIndustry extends BoardDetailBlocEvent {
-  const BoardChangIndustry({required this.industry});
+class ProjectChangeIndustry extends ProjectDetailBlocEvent {
+  const ProjectChangeIndustry({required this.industry});
 
   final String industry;
 }
 
 // Change due date and set state
-class BoardChangeDueDate extends BoardDetailBlocEvent {
-  const BoardChangeDueDate({required this.startDate, required this.endDate});
+class ProjectChangeDueDate extends ProjectDetailBlocEvent {
+  const ProjectChangeDueDate({required this.startDate, required this.endDate});
 
   final DateTime startDate;
   final DateTime endDate;
 }
 
 // Change description and set state
-class BoardChangDescription extends BoardDetailBlocEvent {
-  const BoardChangDescription({required this.description});
+class ProjectChangeDescription extends ProjectDetailBlocEvent {
+  const ProjectChangeDescription({required this.description});
 
   final String description;
 }
 
 // Change os and set state
-class BoardChangeOs extends BoardDetailBlocEvent {
-  const BoardChangeOs({required this.os});
+class ProjectChangeOs extends ProjectDetailBlocEvent {
+  const ProjectChangeOs({required this.os});
 
   final String os;
 }
 
 // Change db and set state
-class BoardChangeDb extends BoardDetailBlocEvent {
-  const BoardChangeDb({required this.db});
+class ProjectChangeDb extends ProjectDetailBlocEvent {
+  const ProjectChangeDb({required this.db});
 
   final String db;
 }
 
 // Change development language and set state
-class BoardChangDevLanguageList extends BoardDetailBlocEvent {
-  const BoardChangDevLanguageList({required this.devLanguageList});
+class ProjectChangeDevLanguageList extends ProjectDetailBlocEvent {
+  const ProjectChangeDevLanguageList({required this.devLanguageList});
 
   final List<LinkTagInfo> devLanguageList;
 }
 
 // Change toolList and set state
-class BoardChangeToolList extends BoardDetailBlocEvent {
-  const BoardChangeToolList({required this.toolList});
+class ProjectChangeToolList extends ProjectDetailBlocEvent {
+  const ProjectChangeToolList({required this.toolList});
 
   final List<Label> toolList;
 }
 
 // Change development Progress and set state
-class BoardChangeDevProgressList extends BoardDetailBlocEvent {
-  const BoardChangeDevProgressList({required this.devProgressList});
+class ProjectChangeDevProgressList extends ProjectDetailBlocEvent {
+  const ProjectChangeDevProgressList({required this.devProgressList});
 
   final List<Label> devProgressList;
 }
 
 // Change development Size and set state
-class BoardChangeDevSize extends BoardDetailBlocEvent {
-  const BoardChangeDevSize({required this.devSize});
+class ProjectChangeDevSize extends ProjectDetailBlocEvent {
+  const ProjectChangeDevSize({required this.devSize});
 
   final String devSize;
 }
 
 // Change label and set state
-class BoardChangeTagList extends BoardDetailBlocEvent {
-  const BoardChangeTagList({required this.tagList});
+class ProjectChangeTagList extends ProjectDetailBlocEvent {
+  const ProjectChangeTagList({required this.tagList});
 
   final List<ColorLabelInfo> tagList;
 }
 
 // State
 @immutable
-class BoardDetailBlocState extends Equatable {
-  const BoardDetailBlocState({
-    required this.boardId,
+class ProjectDetailBlocState extends Equatable {
+  const ProjectDetailBlocState({
+    required this.projectId,
     required this.projectName,
     required this.colorInfo,
     required this.industry,
@@ -158,7 +158,7 @@ class BoardDetailBlocState extends Equatable {
     this.tagList = const [],
   });
 
-  final String boardId;
+  final String projectId;
   final String projectName;
   final ColorInfo colorInfo;
   final String industry;
@@ -175,7 +175,7 @@ class BoardDetailBlocState extends Equatable {
 
   @override
   List<Object?> get props => [
-        boardId,
+        projectId,
         projectName,
         colorInfo,
         industry,
@@ -190,8 +190,8 @@ class BoardDetailBlocState extends Equatable {
         devSize,
         tagList,
       ];
-  BoardDetailBlocState copyWith({
-    String? boardId,
+  ProjectDetailBlocState copyWith({
+    String? projectId,
     String? projectName,
     ColorInfo? colorInfo,
     String? industry,
@@ -206,8 +206,8 @@ class BoardDetailBlocState extends Equatable {
     String? devSize,
     List<ColorLabelInfo>? tagList,
   }) =>
-      BoardDetailBlocState(
-        boardId: boardId ?? this.boardId,
+      ProjectDetailBlocState(
+        projectId: projectId ?? this.projectId,
         projectName: projectName ?? this.projectName,
         colorInfo: colorInfo ?? this.colorInfo,
         industry: industry ?? this.industry,
@@ -225,44 +225,45 @@ class BoardDetailBlocState extends Equatable {
 }
 
 // Bloc
-class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
-  BoardDetailBloc() : super(initialState) {
+class ProjectDetailBloc
+    extends Bloc<ProjectDetailBlocEvent, ProjectDetailBlocState> {
+  ProjectDetailBloc() : super(initialState) {
     on<Init>(_onInit);
-    on<BoardGetDetail>(_onGetDetail);
-    on<BoardCreate>(_onCreate);
+    on<ProjectGetDetail>(_onGetDetail);
+    on<ProjectCreate>(_onCreate);
     on<BoarEdit>(_onEdit);
 
     /// Change state
-    on<BoardChangeProjectName>(_onChangeProjectName);
-    on<BoardChangThemeColor>(_onChangeThemeColor);
-    on<BoardChangIndustry>(_onChangeIndustry);
-    on<BoardChangeDueDate>(_onChangeDueDate);
-    on<BoardChangDescription>(_onChangeDescription);
-    on<BoardChangeOs>(_onChangeOs);
-    on<BoardChangeDb>(_onChangeDb);
-    on<BoardChangDevLanguageList>(_onChangeDevLanguageList);
-    on<BoardChangeToolList>(_onChangeToolList);
-    on<BoardChangeDevProgressList>(_onChangeDevProgressList);
-    on<BoardChangeDevSize>(_onChangeDevSize);
-    on<BoardChangeTagList>(_onChangeTagList);
+    on<ProjectChangeProjectName>(_onChangeProjectName);
+    on<ProjectChangeThemeColor>(_onChangeThemeColor);
+    on<ProjectChangeIndustry>(_onChangeIndustry);
+    on<ProjectChangeDueDate>(_onChangeDueDate);
+    on<ProjectChangeDescription>(_onChangeDescription);
+    on<ProjectChangeOs>(_onChangeOs);
+    on<ProjectChangeDb>(_onChangeDb);
+    on<ProjectChangeDevLanguageList>(_onChangeDevLanguageList);
+    on<ProjectChangeToolList>(_onChangeToolList);
+    on<ProjectChangeDevProgressList>(_onChangeDevProgressList);
+    on<ProjectChangeDevSize>(_onChangeDevSize);
+    on<ProjectChangeTagList>(_onChangeTagList);
   }
 
-  void _onInit(Init event, Emitter<BoardDetailBlocState> emit) {
+  void _onInit(Init event, Emitter<ProjectDetailBlocState> emit) {
     emit(initialState);
   }
 
   Future<void> _onGetDetail(
-      BoardGetDetail event, Emitter<BoardDetailBlocState> emit) async {
-    if (event.boardId.isEmpty) {
+      ProjectGetDetail event, Emitter<ProjectDetailBlocState> emit) async {
+    if (event.projectId.isEmpty) {
       emit(initialState);
     } else {
-      final detailInfo = dummyBoardDetailList
-          .firstWhereOrNull((item) => item.boardId == event.boardId);
+      final detailInfo = dummyProjectDetailList
+          .firstWhereOrNull((item) => item.projectId == event.projectId);
       if (detailInfo == null) {
         emit(initialState);
       } else {
-        emit(BoardDetailBlocState(
-          boardId: detailInfo.boardId,
+        emit(ProjectDetailBlocState(
+          projectId: detailInfo.projectId,
           projectName: detailInfo.projectName,
           colorInfo: colorList
               .firstWhere((element) => element.id == detailInfo.themeColorId),
@@ -283,47 +284,49 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
   }
 
   Future<void> _onCreate(
-      BoardCreate event, Emitter<BoardDetailBlocState> emit) async {}
+      ProjectCreate event, Emitter<ProjectDetailBlocState> emit) async {}
 
   Future<void> _onEdit(
-      BoarEdit event, Emitter<BoardDetailBlocState> emit) async {}
+      BoarEdit event, Emitter<ProjectDetailBlocState> emit) async {}
 
   // state change event
   void _onChangeProjectName(
-      BoardChangeProjectName event, Emitter<BoardDetailBlocState> emit) {
+      ProjectChangeProjectName event, Emitter<ProjectDetailBlocState> emit) {
     emit(state.copyWith(projectName: event.projectName));
   }
 
   void _onChangeThemeColor(
-      BoardChangThemeColor event, Emitter<BoardDetailBlocState> emit) {
+      ProjectChangeThemeColor event, Emitter<ProjectDetailBlocState> emit) {
     emit(state.copyWith(colorInfo: event.colorInfo));
   }
 
   void _onChangeIndustry(
-      BoardChangIndustry event, Emitter<BoardDetailBlocState> emit) {
+      ProjectChangeIndustry event, Emitter<ProjectDetailBlocState> emit) {
     emit(state.copyWith(industry: event.industry));
   }
 
   void _onChangeDueDate(
-      BoardChangeDueDate event, Emitter<BoardDetailBlocState> emit) {
+      ProjectChangeDueDate event, Emitter<ProjectDetailBlocState> emit) {
     emit(state.copyWith(startDate: event.startDate, endDate: event.endDate));
   }
 
   void _onChangeDescription(
-      BoardChangDescription event, Emitter<BoardDetailBlocState> emit) {
+      ProjectChangeDescription event, Emitter<ProjectDetailBlocState> emit) {
     emit(state.copyWith(description: event.description));
   }
 
-  void _onChangeOs(BoardChangeOs event, Emitter<BoardDetailBlocState> emit) {
+  void _onChangeOs(
+      ProjectChangeOs event, Emitter<ProjectDetailBlocState> emit) {
     emit(state.copyWith(os: event.os));
   }
 
-  void _onChangeDb(BoardChangeDb event, Emitter<BoardDetailBlocState> emit) {
+  void _onChangeDb(
+      ProjectChangeDb event, Emitter<ProjectDetailBlocState> emit) {
     emit(state.copyWith(db: event.db));
   }
 
-  void _onChangeDevLanguageList(
-      BoardChangDevLanguageList event, Emitter<BoardDetailBlocState> emit) {
+  void _onChangeDevLanguageList(ProjectChangeDevLanguageList event,
+      Emitter<ProjectDetailBlocState> emit) {
     final emitDevLangList = event.devLanguageList
         .where((item) => item.inputValue.isNotEmpty)
         .toList();
@@ -331,35 +334,35 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
   }
 
   void _onChangeToolList(
-      BoardChangeToolList event, Emitter<BoardDetailBlocState> emit) {
+      ProjectChangeToolList event, Emitter<ProjectDetailBlocState> emit) {
     final emitToolList =
         event.toolList.where((item) => item.labelName.isNotEmpty).toList();
     emit(state.copyWith(toolList: emitToolList));
   }
 
-  void _onChangeDevProgressList(
-      BoardChangeDevProgressList event, Emitter<BoardDetailBlocState> emit) {
+  void _onChangeDevProgressList(ProjectChangeDevProgressList event,
+      Emitter<ProjectDetailBlocState> emit) {
     emit(state.copyWith(devProgressList: event.devProgressList));
   }
 
   void _onChangeDevSize(
-      BoardChangeDevSize event, Emitter<BoardDetailBlocState> emit) {
+      ProjectChangeDevSize event, Emitter<ProjectDetailBlocState> emit) {
     emit(state.copyWith(devSize: event.devSize));
   }
 
   void _onChangeTagList(
-      BoardChangeTagList event, Emitter<BoardDetailBlocState> emit) {
+      ProjectChangeTagList event, Emitter<ProjectDetailBlocState> emit) {
     emit(state.copyWith(tagList: event.tagList));
   }
 
 // ボードで設定したラベル（開発言語＋タグ）リスト取得
-  List<ColorLabelInfo> getLabelList({required String boardId}) {
+  List<ColorLabelInfo> getLabelList({required String projectId}) {
     //TODO: API使用予定
-    final boardDetail = dummyBoardDetailList
-        .firstWhere((element) => element.boardId == boardId);
+    final projectDetail = dummyProjectDetailList
+        .firstWhere((element) => element.projectId == projectId);
     final labelList = <ColorLabelInfo>[];
 
-    for (final devItem in boardDetail.devLanguageList) {
+    for (final devItem in projectDetail.devLanguageList) {
       final targetList = devItem.linkLabelList
           .map(
             (item) => ColorLabelInfo(
@@ -371,6 +374,6 @@ class BoardDetailBloc extends Bloc<BoardDetailBlocEvent, BoardDetailBlocState> {
           .toList();
       labelList.addAll(targetList);
     }
-    return [...boardDetail.tagList, ...labelList];
+    return [...projectDetail.tagList, ...labelList];
   }
 }

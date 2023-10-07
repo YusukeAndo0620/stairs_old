@@ -4,22 +4,22 @@ import 'package:uuid/uuid.dart';
 const uuid = Uuid();
 
 // TODO: Delete
-class BoardListItemInfo {
-  BoardListItemInfo({
-    required this.boardId,
+class ProjectListItemInfo {
+  ProjectListItemInfo({
+    required this.projectId,
     required this.projectName,
     required this.themeColor,
   });
 
-  final String boardId;
+  final String projectId;
   final String projectName;
   final Color themeColor;
 }
 
 // TODO: Delete
-class BoardDetailItemInfo {
-  BoardDetailItemInfo({
-    required this.boardId,
+class ProjectDetailItemInfo {
+  ProjectDetailItemInfo({
+    required this.projectId,
     required this.projectName,
     required this.themeColorId,
     required this.industry,
@@ -35,7 +35,7 @@ class BoardDetailItemInfo {
     this.tagList = const [],
   });
 
-  final String boardId;
+  final String projectId;
   final String projectName;
   final String themeColorId;
   final String industry;
@@ -52,14 +52,16 @@ class BoardDetailItemInfo {
 }
 
 // TODO: Delete
-class WorkBoard {
-  WorkBoard({
-    required this.workBoardId,
+class BoardInfo {
+  BoardInfo({
+    required this.projectId,
+    required this.boardId,
     required this.title,
     required this.taskItemList,
   });
 
-  final String workBoardId;
+  final String projectId;
+  final String boardId;
   final String title;
   final List<TaskItemInfo> taskItemList;
 }
@@ -67,7 +69,7 @@ class WorkBoard {
 // TODO: Delete
 class TaskItemInfo {
   TaskItemInfo({
-    required this.workBoardId,
+    required this.boardId,
     required this.taskItemId,
     required this.title,
     required this.description,
@@ -76,7 +78,7 @@ class TaskItemInfo {
     required this.labelList,
   });
 
-  final String workBoardId;
+  final String boardId;
   final String taskItemId;
   final String title;
   final String description;
@@ -136,63 +138,63 @@ class Label {
 final colorList = [
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 255, 31, 31),
+    themeColor: const Color.fromARGB(255, 255, 31, 31),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 7, 77, 255),
+    themeColor: const Color.fromARGB(255, 7, 77, 255),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 239, 255, 8),
+    themeColor: const Color.fromARGB(255, 239, 255, 8),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 11, 255, 3),
+    themeColor: const Color.fromARGB(255, 11, 255, 3),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 10, 241, 161),
+    themeColor: const Color.fromARGB(255, 10, 241, 161),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 0, 253, 249),
+    themeColor: const Color.fromARGB(255, 0, 253, 249),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 255, 162, 1),
+    themeColor: const Color.fromARGB(255, 255, 162, 1),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 228, 50, 255),
+    themeColor: const Color.fromARGB(255, 228, 50, 255),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 255, 146, 146),
+    themeColor: const Color.fromARGB(255, 255, 146, 146),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(246, 255, 182, 93),
+    themeColor: const Color.fromARGB(246, 255, 182, 93),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(250, 247, 229, 118),
+    themeColor: const Color.fromARGB(250, 247, 229, 118),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 133, 255, 120),
+    themeColor: const Color.fromARGB(255, 133, 255, 120),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 123, 246, 252),
+    themeColor: const Color.fromARGB(255, 123, 246, 252),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 121, 145, 254),
+    themeColor: const Color.fromARGB(255, 121, 145, 254),
   ),
   ColorInfo(
     id: uuid.v4(),
-    themeColor: Color.fromARGB(255, 255, 136, 243),
+    themeColor: const Color.fromARGB(255, 255, 136, 243),
   ),
 ];
 

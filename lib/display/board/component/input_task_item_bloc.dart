@@ -10,13 +10,13 @@ abstract class InputTaskItemEvent {
 
 class InputTaskItemInit extends InputTaskItemEvent {
   const InputTaskItemInit({
-    required this.workBoardId,
+    required this.boardId,
     this.title,
     this.endDate,
     this.labelList,
   });
 
-  final String workBoardId;
+  final String boardId;
 
   final String? title;
 
@@ -57,7 +57,7 @@ class InputTaskItemState extends Equatable {
       ];
 
   InputTaskItemState copyWith({
-    String? workBoardId,
+    String? boardId,
     String? taskItemId,
     String? title,
     String? description,
@@ -67,7 +67,7 @@ class InputTaskItemState extends Equatable {
   }) =>
       InputTaskItemState(
         taskItemInfo: TaskItemInfo(
-          workBoardId: workBoardId ?? taskItemInfo.workBoardId,
+          boardId: boardId ?? taskItemInfo.boardId,
           taskItemId: taskItemId ?? taskItemInfo.taskItemId,
           title: title ?? taskItemInfo.title,
           description: description ?? taskItemInfo.description,
@@ -84,7 +84,7 @@ class InputTaskItemBloc extends Bloc<InputTaskItemEvent, InputTaskItemState> {
       : super(
           InputTaskItemState(
             taskItemInfo: TaskItemInfo(
-              workBoardId: '',
+              boardId: '',
               taskItemId: '',
               title: '',
               description: '',
@@ -104,7 +104,7 @@ class InputTaskItemBloc extends Bloc<InputTaskItemEvent, InputTaskItemState> {
     emit(
       InputTaskItemState(
         taskItemInfo: TaskItemInfo(
-          workBoardId: event.workBoardId,
+          boardId: event.boardId,
           taskItemId: uuid.v4(),
           title: event.title ?? '',
           description: '',

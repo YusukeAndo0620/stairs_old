@@ -1,31 +1,31 @@
 import 'package:stairs/loom/loom_package.dart';
-import '../board_list_bloc.dart';
+import '../project_list_bloc.dart';
 
-const _kBoardListItemContentPadding =
+const _kProjectListItemContentPadding =
     EdgeInsets.symmetric(vertical: 24.0, horizontal: 16.0);
-const _kBoardListItemTitleMaxLine = 1;
-const _kBoardListItemReaderIconSize = 24.0;
-const _kBoardListItemBorder = 1.0;
+const _kProjectListItemTitleMaxLine = 1;
+const _kProjectListItemReaderIconSize = 24.0;
+const _kProjectListItemBorder = 1.0;
 
-class BoardListItem extends StatefulWidget {
-  const BoardListItem({
+class ProjectListItem extends StatefulWidget {
+  const ProjectListItem({
     super.key,
-    required this.boardId,
+    required this.projectId,
     required this.projectName,
     required this.themeColor,
     required this.onTap,
   });
 
-  final String boardId;
+  final String projectId;
   final String projectName;
   final Color themeColor;
   final VoidCallback onTap;
 
   @override
-  State<StatefulWidget> createState() => _BoardListItemState();
+  State<StatefulWidget> createState() => _ProjectListItemState();
 }
 
-class _BoardListItemState extends State<BoardListItem> {
+class _ProjectListItemState extends State<ProjectListItem> {
   bool _pressed = false;
 
   @override
@@ -38,11 +38,11 @@ class _BoardListItemState extends State<BoardListItem> {
         size: 45,
       ),
       title: Container(
-        padding: _kBoardListItemContentPadding,
+        padding: _kProjectListItemContentPadding,
         child: Text(
           widget.projectName,
           style: theme.textStyleBody,
-          maxLines: _kBoardListItemTitleMaxLine,
+          maxLines: _kProjectListItemTitleMaxLine,
           overflow: TextOverflow.ellipsis,
           selectionColor: _pressed ? theme.colorFgDisabled : null,
         ),
@@ -52,7 +52,7 @@ class _BoardListItemState extends State<BoardListItem> {
           icon: Icon(
             theme.icons.reader,
           ),
-          iconSize: _kBoardListItemReaderIconSize,
+          iconSize: _kProjectListItemReaderIconSize,
           onPressed: () {},
         ),
         onTapDown: (details) {
@@ -81,9 +81,9 @@ class _BoardListItemState extends State<BoardListItem> {
             debugPrint('menuItem $value tapped');
             switch (value) {
               case 1:
-                context.read<BoardListBloc>().add(
-                      BoardTapEdit(
-                        boardId: widget.boardId,
+                context.read<ProjectListBloc>().add(
+                      ProjectTapEdit(
+                        projectId: widget.projectId,
                         context: context,
                         theme: theme,
                       ),
@@ -99,7 +99,7 @@ class _BoardListItemState extends State<BoardListItem> {
       shape: Border(
         bottom: BorderSide(
           color: theme.colorFgDefault,
-          width: _kBoardListItemBorder,
+          width: _kProjectListItemBorder,
         ),
       ),
       onFocusChange: (_) {

@@ -1,27 +1,140 @@
 import 'package:stairs/loom/loom_package.dart';
 
-import 'package:stairs/app/enum/screen_id.dart';
-import '../../display_contents.dart';
-import '../board_list_bloc.dart';
-import 'board_empty.dart';
-import 'board_list.dart';
+import '../board_bloc.dart';
+import '../board_position_bloc.dart';
+import '../component/carousel_display_bloc.dart';
+import '../component/carousel_display.dart';
+import '../component/board_card.dart';
+import '../component/board_adding_card.dart';
 
-class Board extends DisplayContents {
-  const Board({super.key});
+enum PageAction {
+  next,
+  previous,
+}
+
+class BoardScreen extends StatelessWidget {
+  const BoardScreen({
+    super.key,
+    required this.projectId,
+    required this.title,
+    required this.themeColor,
+  });
+
+  final String projectId;
+  final String title;
+  final Color themeColor;
 
   @override
-  ScreenId get selectScreenId => ScreenId.board;
-
-  @override
-  Widget buildContent(BuildContext context) {
-    return BlocBuilder<BoardListBloc, BoardListBlocState>(
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => BoardBloc(),
+        ),
+        BlocProvider(
+          create: (_) => BoardPositionBloc(),
+        ),
+        BlocProvider(
+          create: (_) => CarouselDisplayBloc(),
+        ),
+      ],
+      child: BlocBuilder<BoardBloc, BoardState>(
         builder: (context, state) {
-      context.read<BoardListBloc>().add(const BoardGetList());
-      return state.boardList.isEmpty
-          ? const BoardEmpty()
-          : BoardList(
-              boardList: state.boardList,
+          if (state is BoardInitialState) {
+            context.read<BoardBloc>().add(BoardGetList(projectId: projectId));
+            return const SizedBox.shrink();
+          } else {
+            context
+                .read<BoardPositionBloc>()
+                .add(BoardPositionInit(projectId: projectId));
+            context.read<CarouselDisplayBloc>().add(
+                  CarouselDisplayInit(
+                    maxPage: (state as BoardListState).boardList.length,
+                  ),
+                );
+
+            final theme = LoomTheme.of(context);
+            return Scaffold(
+              appBar: AppBar(
+                leading: IconButton(
+                  icon: Icon(
+                    theme.icons.back,
+                    color: theme.colorFgDefault,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                backgroundColor: theme.colorBgLayer1,
+                title: Text(
+                  title,
+                  style: theme.textStyleHeading
+                      .copyWith(color: theme.colorFgDefault.withOpacity(0.9)),
+                ),
+              ),
+              body: Container(
+                color: themeColor.withOpacity(0.1),
+                child: CarouselDisplay(
+                  pages: [
+                    for (final item in state.boardList)
+                      BoardCard(
+                        projectId: projectId,
+                        boardId: item.boardId,
+                        displayedBoardId: state
+                            .boardList[context
+                                .read<CarouselDisplayBloc>()
+                                .state
+                                .currentPage]
+                            .boardId,
+                        title: item.title,
+                        themeColor: themeColor,
+                        taskItemList: item.taskItemList,
+                        onPageChanged: (pageAction) {
+                          final carouselDisplayState =
+                              context.read<CarouselDisplayBloc>().state;
+                          //すでにページ番号が更新されていた場合、処理を行わない
+                          if (state
+                                  .boardList[context
+                                      .read<CarouselDisplayBloc>()
+                                      .state
+                                      .currentPage]
+                                  .boardId !=
+                              item.boardId) {
+                            return;
+                          }
+                          switch (pageAction) {
+                            case PageAction.next:
+                              if (carouselDisplayState.currentPage <
+                                  state.boardList.length - 1) {
+                                context
+                                    .read<CarouselDisplayBloc>()
+                                    .add(const CarouselDisplayMoveNextPage());
+                              }
+                            case PageAction.previous:
+                              if (carouselDisplayState.currentPage > 0) {
+                                context.read<CarouselDisplayBloc>().add(
+                                    const CarouselDisplayMovePreviousPage());
+                              }
+                          }
+                        },
+                      ),
+                    BoardAddingCard(
+                      themeColor: themeColor,
+                      onOpenCard: () => context.read<CarouselDisplayBloc>().add(
+                            const CarouselDisplayMoveLastPage(),
+                          ),
+                      onTapAddingBtn: (inputValue) {
+                        context.read<BoardBloc>().add(
+                              BoardAddCard(
+                                  projectId: projectId, title: inputValue),
+                            );
+                      },
+                    ),
+                  ],
+                ),
+              ),
             );
-    });
+          }
+        },
+      ),
+    );
   }
 }
