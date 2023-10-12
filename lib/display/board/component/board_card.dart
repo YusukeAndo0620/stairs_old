@@ -56,9 +56,6 @@ class BoardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = LoomTheme.of(context);
     final boardCardKey = GlobalKey();
-    context
-        .read<BoardPositionBloc>()
-        .add(BoardSetCardPosition(boardId: boardId, key: boardCardKey));
 
     return BlocProvider(
       create: (_) => BoardCardBloc(
@@ -69,35 +66,24 @@ class BoardCard extends StatelessWidget {
       ),
       child: BlocBuilder<BoardCardBloc, BoardCardState>(
         builder: (context, state) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context
+                .read<BoardPositionBloc>()
+                .add(BoardSetCardPosition(boardId: boardId, key: boardCardKey));
+          });
+          // if (state.isAddedNewTask) {
+          //   WidgetsBinding.instance.addPostFrameCallback((_) {
+          //     state.scrollController.animateTo(
+          //       state.scrollController.position.maxScrollExtent,
+          //       duration: _kAnimatedDuration,
+          //       curve: Curves.easeIn,
+          //     );
+          //   });
+          // }
+
           return DragTarget<String>(
             key: ValueKey(state.boardId),
             builder: (context, accepted, rejected) {
-              final boardCardBloc = context.read<BoardCardBloc>();
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) async {
-                  if (state.isAddedNewTask) {
-                    await Future.delayed(const Duration(milliseconds: 50)).then(
-                      (value) => state.scrollController.animateTo(
-                        state.scrollController.position.maxScrollExtent,
-                        duration: _kAnimatedDuration,
-                        curve: Curves.easeIn,
-                      ),
-                    );
-                  }
-                  if (state.isMovingLast) {
-                    await Future.delayed(const Duration(milliseconds: 50)).then(
-                      (value) => state.scrollController.jumpTo(
-                        state.scrollController.position.maxScrollExtent,
-                      ),
-                    );
-                    boardCardBloc.add(
-                      const BoardCardSetIsMovingLast(
-                        isMovingLast: false,
-                      ),
-                    );
-                  }
-                },
-              );
               return Container(
                 padding: _kContentPadding,
                 margin: _kContentMargin,
@@ -198,7 +184,7 @@ class BoardCard extends StatelessWidget {
                                     //       ),
                                     //     );
                                   },
-                                  onDragUpdate: (detail) {},
+                                  onDragUpdate: (detail) async {},
                                   onDragCompleted: () {},
                                   onDraggableCanceled: (velocity, offset) {
                                     final draggingState = context
@@ -258,11 +244,19 @@ class BoardCard extends StatelessWidget {
                                             isAddedNewTask: false,
                                           ),
                                         );
-                                    context.read<BoardCardBloc>().add(
-                                          const BoardCardSetIsMovingLast(
-                                            isMovingLast: true,
-                                          ),
-                                        );
+
+                                    // context
+                                    //     .read<BoardCardBloc>()
+                                    //     .state
+                                    //     .scrollController
+                                    //     .jumpTo(
+                                    //       context
+                                    //           .read<BoardCardBloc>()
+                                    //           .state
+                                    //           .scrollController
+                                    //           .position
+                                    //           .maxScrollExtent,
+                                    //     );
 
                                     context.read<BoardCardBloc>().add(
                                           BoardCardAddTaskItem(
@@ -298,33 +292,45 @@ class BoardCard extends StatelessWidget {
                       _AddingItemButton(
                         key: key,
                         themeColor: themeColor,
-                        onTapAddingBtn: () async =>
-                            context.read<BoardCardBloc>().add(
-                                  const BoardCardSetIsAddingNewTask(
-                                    isAddedNewTask: true,
-                                  ),
+                        onTapAddingBtn: () {
+                          context.read<BoardCardBloc>().add(
+                                const BoardCardSetIsAddingNewTask(
+                                  isAddedNewTask: true,
                                 ),
+                              );
+                        },
                       )
                   ],
                 ),
               );
             },
-            onMove: (details) {
-              final dragBloc = context.read<DragItemBloc>();
-              if (dragBloc.state is! DragItemDraggingState) {
-                dragBloc.add(
-                  DragItemSetItem(
-                    boardId: boardId,
-                    draggingItem: state.getTaskItem(details.data)!,
-                  ),
-                );
-              }
+            onMove: (details) async {
+              final boardPosition = context
+                  .read<BoardPositionBloc>()
+                  .state
+                  .boardPositionMap[boardId];
+              if (boardPosition == null) return;
+              final criteriaMovingPrevious =
+                  boardPosition.dx - boardPosition.width / 2;
+              final criteriaMovingNext =
+                  boardPosition.dx + boardPosition.width / 2;
 
-              onMove(
-                context: context,
-                boardCardKey: boardCardKey,
-                details: details,
-              );
+              // カード内移動
+              if (details.offset.dx < criteriaMovingNext &&
+                  criteriaMovingPrevious < details.offset.dx) {
+                await onMove(
+                  context: context,
+                  boardCardKey: boardCardKey,
+                  details: details,
+                );
+              } else {
+                // 横ページ移動
+                if (criteriaMovingNext < details.offset.dx) {
+                  onPageChanged(PageAction.next);
+                } else if (details.offset.dx < criteriaMovingNext) {
+                  onPageChanged(PageAction.previous);
+                }
+              }
             },
             onAcceptWithDetails: (details) {
               onAccepted(context: context, details: details);
@@ -335,67 +341,52 @@ class BoardCard extends StatelessWidget {
     );
   }
 
-  void onMove({
+  Future<void> onMove({
     required BuildContext context,
     required GlobalKey boardCardKey,
     required DragTargetDetails details,
-  }) {
+  }) async {
     final boardCardState = context.read<BoardCardBloc>().state;
     final positionState = context.read<BoardPositionBloc>().state;
 
     if (positionState.boardItemPositionMap[kShrinkId] == null) {
       return;
     }
-    final currentDraggingItemDx = details.offset.dx;
     final currentDraggingItemDy = details.offset.dy;
     final boardPosition = positionState.boardPositionMap[boardId];
-
     if (boardPosition == null) return;
-    final criteriaMovingPrevious = boardPosition.dx - boardPosition.width / 6;
-    final criteriaMovingNext = boardPosition.dx + boardPosition.width / 4;
-
     if (displayedBoardId == boardId) {
       // カード内移動
-      if (currentDraggingItemDx < criteriaMovingNext &&
-          criteriaMovingPrevious < currentDraggingItemDx) {
-        // 縦スクロール
-        //下に移動
-        if (boardCardState.scrollController.offset <
-                boardCardState.scrollController.position.maxScrollExtent &&
-            boardCardKey.currentContext!.size!.height / 2 + 125 <
-                currentDraggingItemDy) {
-          boardCardState.scrollController.animateTo(
-            boardCardState.scrollController.offset + _kMovingDownHeight,
-            duration: _kAnimatedDuration,
-            curve: Curves.linear,
-          );
-          //上に移動
-        } else if (boardCardState.scrollController.offset > 0 &&
-            boardCardKey.currentContext!.size!.height / 2 - 100 >
-                currentDraggingItemDy) {
-          boardCardState.scrollController.animateTo(
-            boardCardState.scrollController.offset - _kMovingDownHeight,
-            duration: _kAnimatedDuration,
-            curve: Curves.linear,
-          );
-        }
-        replaceShrinkItem(
-          context: context,
-          positionState: positionState,
-          currentDraggingItemDy: currentDraggingItemDy,
+      // 縦スクロール
+      //下に移動
+      if (boardCardState.scrollController.offset <
+              boardCardState.scrollController.position.maxScrollExtent &&
+          boardCardKey.currentContext!.size!.height / 2 + 125 <
+              currentDraggingItemDy) {
+        boardCardState.scrollController.animateTo(
+          boardCardState.scrollController.offset + _kMovingDownHeight,
+          duration: _kAnimatedDuration,
+          curve: Curves.linear,
         );
-        return;
+        //上に移動
+      } else if (boardCardState.scrollController.offset > 0 &&
+          boardCardKey.currentContext!.size!.height / 2 - 100 >
+              currentDraggingItemDy) {
+        boardCardState.scrollController.animateTo(
+          boardCardState.scrollController.offset - _kMovingDownHeight,
+          duration: _kAnimatedDuration,
+          curve: Curves.linear,
+        );
       }
-      // 横ページ移動
-      // if (criteriaMovingNext < currentDraggingItemDx) {
-      //   onPageChanged(PageAction.next);
-      // } else if (currentDraggingItemDx < criteriaMovingNext) {
-      //   onPageChanged(PageAction.previous);
-      // }
+      replaceShrinkItem(
+        context: context,
+        positionState: positionState,
+        currentDraggingItemDy: currentDraggingItemDy,
+      );
     }
-    context.read<BoardCardBloc>().add(
-          const BoardCardDeleteShrinkItem(),
-        );
+    // context.read<BoardCardBloc>().add(
+    //       const BoardCardDeleteShrinkItem(),
+    //     );
   }
 
   void replaceShrinkItem({

@@ -10,6 +10,7 @@ TextStyle textStyleBody(Color color) {
     height: 1.33,
     leadingDistribution: TextLeadingDistribution.even,
     color: color,
+    decoration: TextDecoration.none,
   );
 }
 
@@ -23,6 +24,7 @@ TextStyle textStyleFootnote(Color color) {
     height: 1.66,
     leadingDistribution: TextLeadingDistribution.even,
     color: color,
+    decoration: TextDecoration.none,
   );
 }
 
@@ -36,6 +38,7 @@ TextStyle textStyleTitle(Color color) {
     height: 1.33,
     leadingDistribution: TextLeadingDistribution.even,
     color: color,
+    decoration: TextDecoration.none,
   );
 }
 
@@ -49,6 +52,7 @@ TextStyle textStyleSubtitle(Color color) {
     height: 1.33,
     leadingDistribution: TextLeadingDistribution.even,
     color: color,
+    decoration: TextDecoration.none,
   );
 }
 
@@ -62,6 +66,7 @@ TextStyle textStyleHeading(Color color) {
     height: 1.33,
     leadingDistribution: TextLeadingDistribution.even,
     color: color,
+    decoration: TextDecoration.none,
   );
 }
 
@@ -75,6 +80,7 @@ TextStyle textStyleSubHeading(Color color) {
     height: 1.33,
     leadingDistribution: TextLeadingDistribution.even,
     color: color,
+    decoration: TextDecoration.none,
   );
 }
 
@@ -92,6 +98,7 @@ extension TextStyleExtension on TextStyle {
       height: height,
       leadingDistribution: leadingDistribution,
       color: newColor ?? color,
+      decoration: TextDecoration.none,
     );
   }
 }

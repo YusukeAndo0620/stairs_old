@@ -131,11 +131,6 @@ class BoardCardSetIsAddingNewTask extends BoardCardEvent {
   final bool isAddedNewTask;
 }
 
-class BoardCardSetIsMovingLast extends BoardCardEvent {
-  const BoardCardSetIsMovingLast({required this.isMovingLast});
-  final bool isMovingLast;
-}
-
 // State
 @immutable
 class BoardCardState extends Equatable {
@@ -145,7 +140,6 @@ class BoardCardState extends Equatable {
     required this.title,
     required this.taskItemList,
     required this.isAddedNewTask,
-    required this.isMovingLast,
     required this.scrollController,
   });
 
@@ -154,7 +148,6 @@ class BoardCardState extends Equatable {
   final String title;
   final List<TaskItemInfo> taskItemList;
   final bool isAddedNewTask;
-  final bool isMovingLast;
   final ScrollController scrollController;
 
   @override
@@ -164,7 +157,6 @@ class BoardCardState extends Equatable {
         title,
         taskItemList,
         isAddedNewTask,
-        isMovingLast,
         scrollController,
       ];
 
@@ -174,7 +166,6 @@ class BoardCardState extends Equatable {
     String? title,
     List<TaskItemInfo>? taskItemList,
     bool? isAddedNewTask,
-    bool? isMovingLast,
     ScrollController? scrollController,
   }) =>
       BoardCardState(
@@ -183,7 +174,6 @@ class BoardCardState extends Equatable {
         title: title ?? this.title,
         taskItemList: taskItemList ?? this.taskItemList,
         isAddedNewTask: isAddedNewTask ?? this.isAddedNewTask,
-        isMovingLast: isMovingLast ?? this.isMovingLast,
         scrollController: scrollController ?? this.scrollController,
       );
 
@@ -226,7 +216,6 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
             title: title,
             taskItemList: taskItemList,
             isAddedNewTask: false,
-            isMovingLast: false,
             scrollController: ScrollController(),
           ),
         ) {
@@ -242,7 +231,6 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
     on<BoardCardDeleteShrinkItem>(_onDeleteShrinkItem);
     on<BoardCardCompleteDraggedItem>(_onReplaceDraggedItem);
     on<BoardCardSetIsAddingNewTask>(_onSetIsAddingNewTask);
-    on<BoardCardSetIsMovingLast>(_onSetIsMovingLast);
   }
 
   void _onInit(_Init event, Emitter<BoardCardState> emit) {
@@ -253,7 +241,6 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
         title: '',
         taskItemList: const [],
         isAddedNewTask: false,
-        isMovingLast: false,
         scrollController: ScrollController(),
       ),
     );
@@ -268,7 +255,6 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
         title: event.title,
         taskItemList: event.taskItemList,
         isAddedNewTask: false,
-        isMovingLast: false,
         scrollController: ScrollController(),
       ),
     );
@@ -396,10 +382,5 @@ class BoardCardBloc extends Bloc<BoardCardEvent, BoardCardState> {
   Future<void> _onSetIsAddingNewTask(
       BoardCardSetIsAddingNewTask event, Emitter<BoardCardState> emit) async {
     emit(state.copyWith(isAddedNewTask: event.isAddedNewTask));
-  }
-
-  Future<void> _onSetIsMovingLast(
-      BoardCardSetIsMovingLast event, Emitter<BoardCardState> emit) async {
-    emit(state.copyWith(isMovingLast: event.isMovingLast));
   }
 }

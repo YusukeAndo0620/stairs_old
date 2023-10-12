@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:stairs/loom/loom_package.dart';
 
 import '../board_bloc.dart';
@@ -6,7 +5,6 @@ import '../board_position_bloc.dart';
 import '../component/carousel_display_bloc.dart';
 import '../component/carousel_display.dart';
 import '../component/board_card.dart';
-import '../board_card_bloc.dart';
 import '../drag_item_bloc.dart';
 import '../component/board_adding_card.dart';
 

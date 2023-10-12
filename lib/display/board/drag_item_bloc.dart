@@ -121,12 +121,12 @@ class DragItemBloc extends Bloc<DragItemEvent, DragItemState> {
     // 他ボードからドラッグされたことを考慮し、board idを更新
     final targetDragItem = TaskItemInfo(
       boardId: event.boardId,
-      taskItemId: draggingState.draggingItem!.taskItemId,
-      title: draggingState.draggingItem!.title,
-      description: draggingState.draggingItem!.description,
-      startDate: draggingState.draggingItem!.startDate,
-      endDate: draggingState.draggingItem!.endDate,
-      labelList: draggingState.draggingItem!.labelList,
+      taskItemId: draggingState.draggingItem.taskItemId,
+      title: draggingState.draggingItem.title,
+      description: draggingState.draggingItem.description,
+      startDate: draggingState.draggingItem.startDate,
+      endDate: draggingState.draggingItem.endDate,
+      labelList: draggingState.draggingItem.labelList,
     );
 
     emit(
