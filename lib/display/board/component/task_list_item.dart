@@ -65,7 +65,7 @@ class _TaskListItemState extends State<TaskListItem> {
         .add(BoardSetCardItemPosition(taskItemId: widget.id, key: itemKey));
 
     final theme = LoomTheme.of(context);
-    return Draggable(
+    return Draggable<String>(
       key: ValueKey(widget.id),
       data: widget.id,
       onDragStarted: widget.onDragStarted,

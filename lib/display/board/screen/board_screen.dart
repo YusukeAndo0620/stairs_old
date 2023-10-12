@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:stairs/loom/loom_package.dart';
 
 import '../board_bloc.dart';
@@ -5,6 +6,8 @@ import '../board_position_bloc.dart';
 import '../component/carousel_display_bloc.dart';
 import '../component/carousel_display.dart';
 import '../component/board_card.dart';
+import '../board_card_bloc.dart';
+import '../drag_item_bloc.dart';
 import '../component/board_adding_card.dart';
 
 enum PageAction {
@@ -32,6 +35,9 @@ class BoardScreen extends StatelessWidget {
           create: (_) => BoardBloc(),
         ),
         BlocProvider(
+          create: (_) => DragItemBloc(),
+        ),
+        BlocProvider(
           create: (_) => BoardPositionBloc(),
         ),
         BlocProvider(
@@ -41,7 +47,7 @@ class BoardScreen extends StatelessWidget {
       child: BlocBuilder<BoardBloc, BoardState>(
         builder: (context, state) {
           if (state is BoardInitialState) {
-            context.read<BoardBloc>().add(BoardGetList(projectId: projectId));
+            context.read<BoardBloc>().add(BoardSetList(projectId: projectId));
             return const SizedBox.shrink();
           } else {
             context
@@ -54,6 +60,9 @@ class BoardScreen extends StatelessWidget {
                 );
 
             final theme = LoomTheme.of(context);
+            final boardList =
+                context.read<BoardBloc>().getList(projectId: projectId);
+
             return Scaffold(
               appBar: AppBar(
                 leading: IconButton(
@@ -86,7 +95,13 @@ class BoardScreen extends StatelessWidget {
                             .boardId,
                         title: item.title,
                         themeColor: themeColor,
-                        taskItemList: item.taskItemList,
+                        taskItemList: boardList.indexWhere((element) =>
+                                    element.boardId == item.boardId) ==
+                                -1
+                            ? []
+                            : boardList[boardList.indexWhere((element) =>
+                                    element.boardId == item.boardId)]
+                                .taskItemList,
                         onPageChanged: (pageAction) {
                           final carouselDisplayState =
                               context.read<CarouselDisplayBloc>().state;
@@ -100,6 +115,10 @@ class BoardScreen extends StatelessWidget {
                               item.boardId) {
                             return;
                           }
+                          final currentBoardIdIndex = state.boardList.indexOf(
+                              state.boardList.firstWhere((element) =>
+                                  element.boardId == item.boardId));
+
                           switch (pageAction) {
                             case PageAction.next:
                               if (carouselDisplayState.currentPage <
@@ -107,11 +126,26 @@ class BoardScreen extends StatelessWidget {
                                 context
                                     .read<CarouselDisplayBloc>()
                                     .add(const CarouselDisplayMoveNextPage());
+
+                                context.read<DragItemBloc>().add(
+                                      DragItemChangeTaskItem(
+                                        boardId: state
+                                            .boardList[currentBoardIdIndex + 1]
+                                            .boardId,
+                                      ),
+                                    );
                               }
                             case PageAction.previous:
                               if (carouselDisplayState.currentPage > 0) {
                                 context.read<CarouselDisplayBloc>().add(
                                     const CarouselDisplayMovePreviousPage());
+                                context.read<DragItemBloc>().add(
+                                      DragItemChangeTaskItem(
+                                        boardId: state
+                                            .boardList[currentBoardIdIndex - 1]
+                                            .boardId,
+                                      ),
+                                    );
                               }
                           }
                         },

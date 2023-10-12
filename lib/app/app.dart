@@ -9,8 +9,8 @@ import '../display/board/task_item_bloc.dart';
 import '../display/board/component/input_task_item_bloc.dart';
 import '../loom/component/modal/select_item_modal_bloc.dart';
 import '../loom/display/link_tag_display_bloc.dart';
-import '../loom/display/select_color_display_bloc.dart';
-import '../loom/display/select_label_display_bloc.dart';
+// import '../loom/display/select_color_display_bloc.dart';
+// import '../loom/display/select_label_display_bloc.dart';
 import '../loom/display/input_tag_display_bloc.dart';
 
 class App extends AppFunction {

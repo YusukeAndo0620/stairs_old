@@ -6,11 +6,12 @@ import '../component/task_list_item.dart';
 import '../task_item_bloc.dart';
 import '../component/shrink_list_item.dart';
 import '../board_position_bloc.dart';
-import '../board_bloc.dart';
 import '../screen/board_screen.dart';
 import 'input_task_item.dart';
 import 'input_task_item_bloc.dart';
 import '../screen/task_item_edit_modal.dart';
+import '../board_card_bloc.dart';
+import '../drag_item_bloc.dart';
 
 const _kBorderWidth = 1.0;
 const _kBoardAddBtnSpace = 16.0;
@@ -21,7 +22,7 @@ const _kBoardAddBtnTxt = 'タスクを追加';
 const _kCancelBtnTxt = 'キャンセル';
 const _kAddBtnTxt = '追加';
 
-const _kAnimatedDuration = Duration(milliseconds: 100);
+const _kAnimatedDuration = Duration(milliseconds: 300);
 
 const _kContentPadding = EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0);
 const _kContentMargin = EdgeInsets.only(
@@ -32,7 +33,7 @@ const _kContentMargin = EdgeInsets.only(
 );
 
 ///ボードカード
-class BoardCard extends StatefulWidget {
+class BoardCard extends StatelessWidget {
   const BoardCard({
     super.key,
     required this.projectId,
@@ -52,327 +53,353 @@ class BoardCard extends StatefulWidget {
   final Function(PageAction) onPageChanged;
 
   @override
-  State<StatefulWidget> createState() => _BoardCardState();
-}
-
-class _BoardCardState extends State<BoardCard> {
-  bool _isAddedNewTask = false;
-  bool _isMovingLast = false;
-  final _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BoardPositionBloc, BoardPositionBlocState>(
-      builder: (context, state) {
-        final theme = LoomTheme.of(context);
-        final boardCardKey = GlobalKey();
+    final theme = LoomTheme.of(context);
+    final boardCardKey = GlobalKey();
+    context
+        .read<BoardPositionBloc>()
+        .add(BoardSetCardPosition(boardId: boardId, key: boardCardKey));
 
-        context.read<BoardPositionBloc>().add(
-            BoardSetCardPosition(boardId: widget.boardId, key: boardCardKey));
-
-        WidgetsBinding.instance.addPostFrameCallback(
-          (_) async {
-            if (_isAddedNewTask) {
-              await Future.delayed(const Duration(milliseconds: 50)).then(
-                (value) => _scrollController.animateTo(
-                  _scrollController.position.maxScrollExtent,
-                  duration: _kAnimatedDuration,
-                  curve: Curves.easeIn,
-                ),
-              );
-            }
-            if (_isMovingLast) {
-              await Future.delayed(const Duration(milliseconds: 50)).then(
-                (value) => _scrollController.jumpTo(
-                  _scrollController.position.maxScrollExtent,
-                ),
-              );
-              _isMovingLast = false;
-            }
-          },
-        );
-
-        return DragTarget(
-          key: ValueKey(widget.boardId),
-          builder: (context, accepted, rejected) {
-            return Container(
-              padding: _kContentPadding,
-              margin: _kContentMargin,
-              decoration: BoxDecoration(
-                color: theme.colorFgDefaultWhite,
-                border: Border.all(
-                  color: theme.colorFgDisabled,
-                  width: _kBorderWidth,
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _Header(
-                    key: widget.key,
-                    title: widget.title,
-                    listSize: widget.taskItemList.length,
-                  ),
-                  Expanded(
-                    key: boardCardKey,
-                    child: SingleChildScrollView(
-                      key: PageStorageKey(
-                          _kPageStorageKeyPrefixTxt + widget.boardId),
-                      controller: _scrollController,
-                      child: Column(
-                        children: [
-                          for (final item in widget.taskItemList)
-                            if (item.taskItemId == kShrinkId)
-                              ShrinkTaskListItem(
-                                key: widget.key,
-                                id: kShrinkId,
-                              )
-                            else
-                              TaskListItem(
-                                id: item.taskItemId,
-                                title: item.title,
-                                dueDate: item.endDate,
-                                themeColor: widget.themeColor,
-                                labelList: item.labelList,
-                                onTap: () async {
-                                  final boardBloc = context.read<BoardBloc>();
-                                  final taskItemBloc =
-                                      context.read<TaskItemBloc>();
-
-                                  final result = await showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    backgroundColor: Colors.transparent,
-                                    builder: (context) {
-                                      return TaskItemEditModal(
-                                        themeColor: widget.themeColor,
-                                        taskItem: item,
-                                        onChangeTaskItem: (taskItemVal) {},
-                                      );
-                                    },
-                                  );
-                                  if (result == null) {
-                                    boardBloc.add(BoardUpdateTaskItem(
-                                      boardId: taskItemBloc
-                                          .state.taskItemInfo.boardId,
-                                      taskItemId: taskItemBloc
-                                          .state.taskItemInfo.taskItemId,
-                                      title:
-                                          taskItemBloc.state.taskItemInfo.title,
-                                      description: taskItemBloc
-                                          .state.taskItemInfo.description,
-                                      startDate: taskItemBloc
-                                          .state.taskItemInfo.startDate,
-                                      dueDate: taskItemBloc
-                                          .state.taskItemInfo.endDate,
-                                      labelList: taskItemBloc
-                                          .state.taskItemInfo.labelList,
-                                    ));
-                                  }
-                                },
-                                onDragStarted: () {
-                                  context.read<BoardBloc>().add(
-                                        BoardSetDraggingItem(
-                                          draggingItem: item,
-                                        ),
-                                      );
-                                  context.read<BoardBloc>().add(
-                                        BoardReplaceShrinkItem(
-                                            boardId: widget.boardId,
-                                            taskItemId: item.taskItemId),
-                                      );
-                                },
-                                onDragUpdate: (detail) {},
-                                onDragCompleted: () {},
-                                onDraggableCanceled: (velocity, offset) {
-                                  context
-                                      .read<BoardBloc>()
-                                      .add(const BoardCompleteDraggedItem());
-                                },
-                              ),
-                          if (_isAddedNewTask) ...[
-                            InputTaskItem(
-                              id: '${widget.boardId}_${uuid.v4()}',
-                              themeColor: widget.themeColor,
-                              labelList: context
-                                  .read<ProjectDetailBloc>()
-                                  .getLabelList(projectId: widget.projectId),
-                            ),
-                          ]
-                        ],
+    return BlocProvider(
+      create: (_) => BoardCardBloc(
+        projectId: projectId,
+        boardId: boardId,
+        title: title,
+        taskItemList: taskItemList,
+      ),
+      child: BlocBuilder<BoardCardBloc, BoardCardState>(
+        builder: (context, state) {
+          return DragTarget<String>(
+            key: ValueKey(state.boardId),
+            builder: (context, accepted, rejected) {
+              final boardCardBloc = context.read<BoardCardBloc>();
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) async {
+                  if (state.isAddedNewTask) {
+                    await Future.delayed(const Duration(milliseconds: 50)).then(
+                      (value) => state.scrollController.animateTo(
+                        state.scrollController.position.maxScrollExtent,
+                        duration: _kAnimatedDuration,
+                        curve: Curves.easeIn,
                       ),
-                    ),
+                    );
+                  }
+                  if (state.isMovingLast) {
+                    await Future.delayed(const Duration(milliseconds: 50)).then(
+                      (value) => state.scrollController.jumpTo(
+                        state.scrollController.position.maxScrollExtent,
+                      ),
+                    );
+                    boardCardBloc.add(
+                      const BoardCardSetIsMovingLast(
+                        isMovingLast: false,
+                      ),
+                    );
+                  }
+                },
+              );
+              return Container(
+                padding: _kContentPadding,
+                margin: _kContentMargin,
+                decoration: BoxDecoration(
+                  color: theme.colorFgDefaultWhite,
+                  border: Border.all(
+                    color: theme.colorFgDisabled,
+                    width: _kBorderWidth,
                   ),
-                  if (_isAddedNewTask) ...[
-                    const SizedBox(
-                      height: _kListAndAddBtnSpace,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _Header(
+                      key: key,
+                      title: state.title,
+                      listSize: state.taskItemList.length,
                     ),
-                    BlocBuilder<InputTaskItemBloc, InputTaskItemState>(
-                      builder: (context, state) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Expanded(
+                      key: boardCardKey,
+                      child: SingleChildScrollView(
+                        key: PageStorageKey(
+                            _kPageStorageKeyPrefixTxt + state.boardId),
+                        controller: state.scrollController,
+                        child: Column(
                           children: [
-                            CustomTextButton(
-                              title: _kCancelBtnTxt,
-                              themeColor: widget.themeColor,
-                              onTap: () {
-                                setState(
-                                  () {
-                                    _isAddedNewTask = false;
+                            for (final item in state.taskItemList)
+                              if (item.taskItemId == kShrinkId)
+                                ShrinkTaskListItem(
+                                  key: key,
+                                  id: kShrinkId,
+                                )
+                              else
+                                TaskListItem(
+                                  id: item.taskItemId,
+                                  title: item.title,
+                                  dueDate: item.endDate,
+                                  themeColor: themeColor,
+                                  labelList: item.labelList,
+                                  onTap: () async {
+                                    final boardCardBloc =
+                                        context.read<BoardCardBloc>();
+                                    final taskItemBloc =
+                                        context.read<TaskItemBloc>();
+
+                                    final result = await showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (context) {
+                                        return TaskItemEditModal(
+                                          themeColor: themeColor,
+                                          taskItem: item,
+                                          onChangeTaskItem: (taskItemVal) {},
+                                        );
+                                      },
+                                    );
+                                    if (result == null) {
+                                      boardCardBloc.add(BoardCardUpdateTaskItem(
+                                        boardId: taskItemBloc
+                                            .state.taskItemInfo.boardId,
+                                        taskItemId: taskItemBloc
+                                            .state.taskItemInfo.taskItemId,
+                                        title: taskItemBloc
+                                            .state.taskItemInfo.title,
+                                        description: taskItemBloc
+                                            .state.taskItemInfo.description,
+                                        startDate: taskItemBloc
+                                            .state.taskItemInfo.startDate,
+                                        dueDate: taskItemBloc
+                                            .state.taskItemInfo.endDate,
+                                        labelList: taskItemBloc
+                                            .state.taskItemInfo.labelList,
+                                      ));
+                                    }
                                   },
-                                );
-                              },
-                            ),
-                            AbsorbPointer(
-                              absorbing: state.taskItemInfo.title.isEmpty,
-                              child: CustomTextButton(
-                                title: _kAddBtnTxt,
-                                themeColor: widget.themeColor,
-                                disabled: state.taskItemInfo.title.isEmpty,
+                                  onDragStarted: () {
+                                    context.read<DragItemBloc>().add(
+                                          DragItemSetItem(
+                                            boardId: item.boardId,
+                                            draggingItem: item,
+                                          ),
+                                        );
+                                    context.read<BoardCardBloc>().add(
+                                          BoardCardReplaceShrinkItem(
+                                            boardId: state.boardId,
+                                            taskItemId: item.taskItemId,
+                                            shrinkItem: context
+                                                .read<DragItemBloc>()
+                                                .getShrinkItem(
+                                                  boardId: item.boardId,
+                                                ),
+                                          ),
+                                        );
+                                    // context.read<BoardCardBloc>().add(
+                                    //       BoardCardSetDraggingItem(
+                                    //         taskItemId: item.taskItemId,
+                                    //       ),
+                                    //     );
+                                  },
+                                  onDragUpdate: (detail) {},
+                                  onDragCompleted: () {},
+                                  onDraggableCanceled: (velocity, offset) {
+                                    final draggingState = context
+                                        .read<DragItemBloc>()
+                                        .state as DragItemDraggingState;
+                                    context.read<BoardCardBloc>().add(
+                                        BoardCardCompleteDraggedItem(
+                                            draggingItem:
+                                                draggingState.draggingItem));
+                                    context.read<DragItemBloc>().add(
+                                          const DragItemComplete(),
+                                        );
+                                  },
+                                ),
+                            if (state.isAddedNewTask) ...[
+                              InputTaskItem(
+                                id: '${state.boardId}_${uuid.v4()}',
+                                themeColor: themeColor,
+                                labelList: context
+                                    .read<ProjectDetailBloc>()
+                                    .getLabelList(projectId: state.projectId),
+                              ),
+                            ]
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (state.isAddedNewTask) ...[
+                      const SizedBox(
+                        height: _kListAndAddBtnSpace,
+                      ),
+                      BlocBuilder<InputTaskItemBloc, InputTaskItemState>(
+                        builder: (context, state) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomTextButton(
+                                title: _kCancelBtnTxt,
+                                themeColor: themeColor,
                                 onTap: () {
-                                  setState(
-                                    () {
-                                      _isAddedNewTask = false;
-                                      _isMovingLast = true;
-                                    },
-                                  );
-                                  context.read<BoardBloc>().add(
-                                        BoardAddTaskItem(
-                                          boardId: widget.boardId,
-                                          taskItemId:
-                                              state.taskItemInfo.taskItemId,
-                                          title: state.taskItemInfo.title,
-                                          dueDate: state.taskItemInfo.endDate,
-                                          labelList:
-                                              state.taskItemInfo.labelList,
+                                  context.read<BoardCardBloc>().add(
+                                        const BoardCardSetIsAddingNewTask(
+                                          isAddedNewTask: false,
                                         ),
                                       );
-                                  context.read<InputTaskItemBloc>().add(
-                                      InputTaskItemInit(
-                                          boardId: widget.boardId));
                                 },
                               ),
-                            ),
-                          ],
-                        );
-                      },
-                    )
-                  ],
-                  if (!_isAddedNewTask)
-                    _AddingItemButton(
-                      key: widget.key,
-                      themeColor: widget.themeColor,
-                      onTapAddingBtn: () async => setState(
-                        () {
-                          _isAddedNewTask = true;
-                        },
-                      ),
-                    )
-                ],
-              ),
-            );
-          },
-          onMove: (details) async {
-            final boardState =
-                context.read<BoardBloc>().state as BoardListState;
-            if (boardState.draggingItem == null) {
-              context.read<BoardBloc>().add(
-                    BoardSetDraggingItem(
-                      draggingItem: widget.taskItemList.firstWhere(
-                          (element) => element.taskItemId == details.data),
-                    ),
-                  );
-            }
+                              AbsorbPointer(
+                                absorbing: state.taskItemInfo.title.isEmpty,
+                                child: CustomTextButton(
+                                  title: _kAddBtnTxt,
+                                  themeColor: themeColor,
+                                  disabled: state.taskItemInfo.title.isEmpty,
+                                  onTap: () {
+                                    context.read<BoardCardBloc>().add(
+                                          const BoardCardSetIsAddingNewTask(
+                                            isAddedNewTask: false,
+                                          ),
+                                        );
+                                    context.read<BoardCardBloc>().add(
+                                          const BoardCardSetIsMovingLast(
+                                            isMovingLast: true,
+                                          ),
+                                        );
 
-            await onMove(
-              context: context,
-              boardCardKey: boardCardKey,
-              details: details,
-            );
-          },
-          onAcceptWithDetails: (details) {
-            onAccepted(context: context, details: details);
-          },
-        );
-      },
+                                    context.read<BoardCardBloc>().add(
+                                          BoardCardAddTaskItem(
+                                            boardId: context
+                                                .read<BoardCardBloc>()
+                                                .state
+                                                .boardId,
+                                            taskItemId:
+                                                state.taskItemInfo.taskItemId,
+                                            title: state.taskItemInfo.title,
+                                            dueDate: state.taskItemInfo.endDate,
+                                            labelList:
+                                                state.taskItemInfo.labelList,
+                                          ),
+                                        );
+                                    context.read<InputTaskItemBloc>().add(
+                                          InputTaskItemInit(
+                                            boardId: context
+                                                .read<BoardCardBloc>()
+                                                .state
+                                                .boardId,
+                                          ),
+                                        );
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      )
+                    ],
+                    if (!state.isAddedNewTask)
+                      _AddingItemButton(
+                        key: key,
+                        themeColor: themeColor,
+                        onTapAddingBtn: () async =>
+                            context.read<BoardCardBloc>().add(
+                                  const BoardCardSetIsAddingNewTask(
+                                    isAddedNewTask: true,
+                                  ),
+                                ),
+                      )
+                  ],
+                ),
+              );
+            },
+            onMove: (details) {
+              final dragBloc = context.read<DragItemBloc>();
+              if (dragBloc.state is! DragItemDraggingState) {
+                dragBloc.add(
+                  DragItemSetItem(
+                    boardId: boardId,
+                    draggingItem: state.getTaskItem(details.data)!,
+                  ),
+                );
+              }
+
+              onMove(
+                context: context,
+                boardCardKey: boardCardKey,
+                details: details,
+              );
+            },
+            onAcceptWithDetails: (details) {
+              onAccepted(context: context, details: details);
+            },
+          );
+        },
+      ),
     );
   }
 
-  Future<void> onMove({
+  void onMove({
     required BuildContext context,
     required GlobalKey boardCardKey,
     required DragTargetDetails details,
-  }) async {
-    final boardState = context.read<BoardBloc>().state as BoardListState;
+  }) {
+    final boardCardState = context.read<BoardCardBloc>().state;
     final positionState = context.read<BoardPositionBloc>().state;
 
-    if (boardState.shrinkItem == null ||
-        positionState.boardItemPositionMap[kShrinkId] == null) {
+    if (positionState.boardItemPositionMap[kShrinkId] == null) {
       return;
     }
     final currentDraggingItemDx = details.offset.dx;
     final currentDraggingItemDy = details.offset.dy;
-    final boardPosition = positionState.boardPositionMap[widget.boardId];
+    final boardPosition = positionState.boardPositionMap[boardId];
 
     if (boardPosition == null) return;
     final criteriaMovingPrevious = boardPosition.dx - boardPosition.width / 6;
     final criteriaMovingNext = boardPosition.dx + boardPosition.width / 4;
 
-    if (widget.displayedBoardId == widget.boardId) {
+    if (displayedBoardId == boardId) {
       // カード内移動
       if (currentDraggingItemDx < criteriaMovingNext &&
           criteriaMovingPrevious < currentDraggingItemDx) {
         // 縦スクロール
         //下に移動
-        if (_scrollController.offset <
-                _scrollController.position.maxScrollExtent &&
+        if (boardCardState.scrollController.offset <
+                boardCardState.scrollController.position.maxScrollExtent &&
             boardCardKey.currentContext!.size!.height / 2 + 125 <
                 currentDraggingItemDy) {
-          _scrollController.animateTo(
-            _scrollController.offset + _kMovingDownHeight,
+          boardCardState.scrollController.animateTo(
+            boardCardState.scrollController.offset + _kMovingDownHeight,
             duration: _kAnimatedDuration,
             curve: Curves.linear,
           );
           //上に移動
-        } else if (_scrollController.offset > 0 &&
+        } else if (boardCardState.scrollController.offset > 0 &&
             boardCardKey.currentContext!.size!.height / 2 - 100 >
                 currentDraggingItemDy) {
-          _scrollController.animateTo(
-            _scrollController.offset - _kMovingDownHeight,
+          boardCardState.scrollController.animateTo(
+            boardCardState.scrollController.offset - _kMovingDownHeight,
             duration: _kAnimatedDuration,
             curve: Curves.linear,
           );
         }
         replaceShrinkItem(
+          context: context,
           positionState: positionState,
           currentDraggingItemDy: currentDraggingItemDy,
         );
         return;
       }
       // 横ページ移動
-      if (criteriaMovingNext < currentDraggingItemDx) {
-        widget.onPageChanged(PageAction.next);
-      } else if (currentDraggingItemDx < criteriaMovingNext) {
-        widget.onPageChanged(PageAction.previous);
-      }
+      // if (criteriaMovingNext < currentDraggingItemDx) {
+      //   onPageChanged(PageAction.next);
+      // } else if (currentDraggingItemDx < criteriaMovingNext) {
+      //   onPageChanged(PageAction.previous);
+      // }
     }
-    replaceShrinkItem(
-      positionState: positionState,
-      currentDraggingItemDy: currentDraggingItemDy,
-    );
+    context.read<BoardCardBloc>().add(
+          const BoardCardDeleteShrinkItem(),
+        );
   }
 
   void replaceShrinkItem({
+    required BuildContext context,
     required BoardPositionBlocState positionState,
     required double currentDraggingItemDy,
   }) {
@@ -383,27 +410,32 @@ class _BoardCardState extends State<BoardCard> {
         currentDraggingItemDy < shrinkItemPosition + (kDraggedItemHeight / 2)) {
       return;
     }
-    for (final item in widget.taskItemList) {
-      if (positionState.boardItemPositionMap[item.taskItemId] == null) {
-        return;
-      }
+    final boardCardState = context.read<BoardCardBloc>().state;
+    final draggingState = context.read<DragItemBloc>().state;
+    final taskItemList = boardCardState.taskItemList;
+    if (draggingState is! DragItemDraggingState) return;
+
+    for (final item in taskItemList) {
+      if (positionState.boardItemPositionMap[item.taskItemId] == null) return;
       if (positionState.boardItemPositionMap[item.taskItemId]!.dy >=
           currentDraggingItemDy) {
-        final insertingShrinkItemIndex = widget.taskItemList
+        final insertingShrinkItemIndex = taskItemList
             .indexWhere((element) => element.taskItemId == item.taskItemId);
-        context.read<BoardBloc>().add(
-              BoardDeleteAndAddShrinkItem(
-                boardId: widget.boardId,
+        context.read<BoardCardBloc>().add(
+              BoardCardDeleteAndAddShrinkItem(
+                boardId: boardCardState.boardId,
                 insertingIndex: insertingShrinkItemIndex,
+                shrinkItem: draggingState.shrinkItem,
               ),
             );
         return;
       }
     }
-    context.read<BoardBloc>().add(
-          BoardDeleteAndAddShrinkItem(
-            boardId: widget.boardId,
-            insertingIndex: widget.taskItemList.length,
+    context.read<BoardCardBloc>().add(
+          BoardCardDeleteAndAddShrinkItem(
+            boardId: boardCardState.boardId,
+            insertingIndex: taskItemList.length,
+            shrinkItem: draggingState.shrinkItem,
           ),
         );
   }
@@ -412,7 +444,13 @@ class _BoardCardState extends State<BoardCard> {
     required BuildContext context,
     required DragTargetDetails details,
   }) {
-    context.read<BoardBloc>().add(const BoardCompleteDraggedItem());
+    final draggingState =
+        context.read<DragItemBloc>().state as DragItemDraggingState;
+    context.read<BoardCardBloc>().add(
+        BoardCardCompleteDraggedItem(draggingItem: draggingState.draggingItem));
+    context.read<DragItemBloc>().add(
+          const DragItemComplete(),
+        );
   }
 }
 
