@@ -52,27 +52,16 @@ class ProjectDetailItemInfo {
 }
 
 // TODO: Delete
-class BoardBaseInfo {
-  BoardBaseInfo({
+class BoardInfo {
+  BoardInfo({
     required this.projectId,
     required this.boardId,
     required this.title,
+    required this.taskItemList,
   });
-
   final String projectId;
   final String boardId;
   final String title;
-}
-
-// TODO: Delete
-class BoardInfo extends BoardBaseInfo {
-  BoardInfo({
-    required super.projectId,
-    required super.boardId,
-    required super.title,
-    required this.taskItemList,
-  });
-
   final List<TaskItemInfo> taskItemList;
 }
 

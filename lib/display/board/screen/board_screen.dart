@@ -45,7 +45,7 @@ class BoardScreen extends StatelessWidget {
       child: BlocBuilder<BoardBloc, BoardState>(
         builder: (context, state) {
           if (state is BoardInitialState) {
-            context.read<BoardBloc>().add(BoardSetList(projectId: projectId));
+            context.read<BoardBloc>().add(BoardGetList(projectId: projectId));
             return const SizedBox.shrink();
           } else {
             context
@@ -58,9 +58,6 @@ class BoardScreen extends StatelessWidget {
                 );
 
             final theme = LoomTheme.of(context);
-            final boardList =
-                context.read<BoardBloc>().getList(projectId: projectId);
-
             return Scaffold(
               appBar: AppBar(
                 leading: IconButton(
@@ -93,13 +90,7 @@ class BoardScreen extends StatelessWidget {
                             .boardId,
                         title: item.title,
                         themeColor: themeColor,
-                        taskItemList: boardList.indexWhere((element) =>
-                                    element.boardId == item.boardId) ==
-                                -1
-                            ? []
-                            : boardList[boardList.indexWhere((element) =>
-                                    element.boardId == item.boardId)]
-                                .taskItemList,
+                        taskItemList: item.taskItemList,
                         onPageChanged: (pageAction) {
                           final carouselDisplayState =
                               context.read<CarouselDisplayBloc>().state;
