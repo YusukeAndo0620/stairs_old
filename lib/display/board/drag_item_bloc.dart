@@ -117,6 +117,7 @@ class DragItemBloc extends Bloc<DragItemEvent, DragItemState> {
 
   Future<void> _onChangeTaskItem(
       DragItemChangeTaskItem event, Emitter<DragItemState> emit) async {
+    if (state is DragItemInitialState) return;
     final draggingState = state as DragItemDraggingState;
     // 他ボードからドラッグされたことを考慮し、board idを更新
     final targetDragItem = TaskItemInfo(

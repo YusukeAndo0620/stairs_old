@@ -178,6 +178,10 @@ class BoardCard extends StatelessWidget {
                                                 ),
                                           ),
                                         );
+                                    context.read<BoardPositionBloc>().add(
+                                        BoardSetCardItemPosition(
+                                            taskItemId: kShrinkId,
+                                            key: boardCardKey));
                                     // context.read<BoardCardBloc>().add(
                                     //       BoardCardSetDraggingItem(
                                     //         taskItemId: item.taskItemId,
@@ -185,7 +189,18 @@ class BoardCard extends StatelessWidget {
                                     //     );
                                   },
                                   onDragUpdate: (detail) async {},
-                                  onDragCompleted: () {},
+                                  onDragCompleted: () {
+                                    // final draggingState = context
+                                    //     .read<DragItemBloc>()
+                                    //     .state as DragItemDraggingState;
+                                    // context.read<BoardCardBloc>().add(
+                                    //     BoardCardCompleteDraggedItem(
+                                    //         draggingItem:
+                                    //             draggingState.draggingItem));
+                                    // context.read<DragItemBloc>().add(
+                                    //       const DragItemComplete(),
+                                    //     );
+                                  },
                                   onDraggableCanceled: (velocity, offset) {
                                     final draggingState = context
                                         .read<DragItemBloc>()
@@ -324,6 +339,9 @@ class BoardCard extends StatelessWidget {
                   details: details,
                 );
               } else {
+                // ページ移動した際にpositionを更新
+                context.read<BoardPositionBloc>().add(
+                    BoardSetCardPosition(boardId: boardId, key: boardCardKey));
                 // 横ページ移動
                 if (criteriaMovingNext < details.offset.dx) {
                   onPageChanged(PageAction.next);
@@ -334,6 +352,10 @@ class BoardCard extends StatelessWidget {
             },
             onAcceptWithDetails: (details) {
               onAccepted(context: context, details: details);
+            },
+            onLeave: (data) {},
+            onWillAccept: (data) {
+              return false;
             },
           );
         },
@@ -348,7 +370,6 @@ class BoardCard extends StatelessWidget {
   }) async {
     final boardCardState = context.read<BoardCardBloc>().state;
     final positionState = context.read<BoardPositionBloc>().state;
-
     if (positionState.boardItemPositionMap[kShrinkId] == null) {
       return;
     }
