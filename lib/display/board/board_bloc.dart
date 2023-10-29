@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:stairs/loom/loom_package.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
@@ -377,8 +379,11 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
     // Shrink Itemを追加する対象のBoard
     final boardIndex =
         (state as BoardListState).getBoardIndex(boardId: event.boardId);
+    print("===_onDeleteAndAddShrinkItem==");
+    print("boardIndex:$boardIndex");
     if (boardIndex == -1) return;
     final targetBoard = targetList[boardIndex];
+    final targetShrinkItemPosition = {...listState.shrinkItemPosition};
 
     if (targetList[boardIndex].taskItemList.isEmpty) {
       final replaceBoard = BoardInfo(
@@ -393,37 +398,45 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
           event.shrinkItem);
     }
 
+    // TODO: position mapに別ボードに残っているshrink itemがないため、削除できない
+    // TODO: 一度ページ移動して戻ると、別ボードの要素が消されていく。
+
+    targetShrinkItemPosition[listState.getBoardIndex(boardId: event.boardId)] =
+        event.insertingIndex;
+
     //同じワークボード内で移動した場合、それぞれのindexで削除対象を判定
-    if (currentShrinkItemBoardIndex == -1 ||
-        currentShrinkItemTaskItemIndex == -1) return;
-    if (event.shrinkItem.boardId ==
-        targetList[currentShrinkItemBoardIndex].boardId) {
-      targetBoard.taskItemList.removeAt(
-          currentShrinkItemTaskItemIndex < event.insertingIndex
-              ? currentShrinkItemTaskItemIndex
-              : currentShrinkItemTaskItemIndex + 1);
-    } else {
-      targetList[currentShrinkItemBoardIndex]
-          .taskItemList
-          .removeAt(currentShrinkItemTaskItemIndex);
+    if (currentShrinkItemBoardIndex != -1 &&
+        currentShrinkItemTaskItemIndex != -1 &&
+        targetBoard.taskItemList.isNotEmpty) {
+      if (event.shrinkItem.boardId ==
+          targetList[currentShrinkItemBoardIndex].boardId) {
+        targetBoard.taskItemList.removeAt(
+            currentShrinkItemTaskItemIndex < event.insertingIndex
+                ? currentShrinkItemTaskItemIndex
+                : currentShrinkItemTaskItemIndex + 1);
+      } else {
+        targetList[currentShrinkItemBoardIndex]
+            .taskItemList
+            .removeAt(currentShrinkItemTaskItemIndex);
+      }
     }
 
     // 別ボード内に残っているShrink itemを削除
-    final targetBoardIndex = listState.shrinkItemPosition.keys.first;
-    if (targetList[targetBoardIndex].boardId != event.shrinkItem.boardId) {
-      final shrinkItemIndex = targetList[targetBoardIndex]
-          .taskItemList
-          .indexWhere((element) => element.taskItemId == kShrinkId);
-      if (shrinkItemIndex == -1) return;
-      targetList[targetBoardIndex].taskItemList.removeAt(shrinkItemIndex);
+    for (final item in {...targetShrinkItemPosition}.entries) {
+      if (targetList[item.key].boardId != event.shrinkItem.boardId) {
+        final shrinkItemIndex = targetList[item.key]
+            .taskItemList
+            .indexWhere((element) => element.taskItemId == kShrinkId);
+        if (shrinkItemIndex == -1) continue;
+        targetList[item.key].taskItemList.removeAt(shrinkItemIndex);
+        targetShrinkItemPosition.remove(item.key);
+      }
     }
+    print("targetShrinkItemPosition: $targetShrinkItemPosition");
 
     emit(listState.copyWith(
       boardList: targetList,
-      shrinkItemPosition: getShrinkItemPosition(
-        boardIdIndex: listState.getBoardIndex(boardId: event.boardId),
-        taskItemIndex: event.insertingIndex,
-      ),
+      shrinkItemPosition: targetShrinkItemPosition,
     ));
   }
 

@@ -123,11 +123,6 @@ class BoardScreen extends StatelessWidget {
                                             .boardId,
                                       ),
                                     );
-                                // Future.delayed(
-                                //         const Duration(milliseconds: 600))
-                                //     .then((value) => context
-                                //         .read<DragItemBloc>()
-                                //         .add(const DragItemSetReadyMoving()));
                               }
                             case PageAction.previous:
                               if (carouselDisplayState.currentPage > 0) {
@@ -140,11 +135,6 @@ class BoardScreen extends StatelessWidget {
                                             .boardId,
                                       ),
                                     );
-                                // Future.delayed(
-                                //         const Duration(milliseconds: 600))
-                                //     .then((value) => context
-                                //         .read<DragItemBloc>()
-                                //         .add(const DragItemSetReadyMoving()));
                               }
                           }
                         },

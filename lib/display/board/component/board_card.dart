@@ -12,6 +12,7 @@ import 'input_task_item_bloc.dart';
 import '../screen/task_item_edit_modal.dart';
 import '../board_bloc.dart';
 import '../drag_item_bloc.dart';
+import '../../board/component/carousel_display_bloc.dart';
 
 const _kBorderWidth = 1.0;
 const _kBoardAddBtnSpace = 16.0;
@@ -310,6 +311,7 @@ class _BoardCardState extends State<BoardCard> {
         );
       },
       onMove: (details) async {
+        if (!context.read<CarouselDisplayBloc>().state.isReady) return;
         final boardPositionState = context.read<BoardPositionBloc>().state;
         final boardPosition =
             boardPositionState.boardPositionMap[widget.boardId];
@@ -329,12 +331,6 @@ class _BoardCardState extends State<BoardCard> {
             positionState: boardPositionState,
           );
         } else {
-          // final draggingState =
-          //     context.read<DragItemBloc>().state is DragItemDraggingState
-          //         ? context.read<DragItemBloc>().state as DragItemDraggingState
-          //         : null;
-          // if (draggingState == null || !draggingState.isReady) return;
-          // context.read<DragItemBloc>().add(const DragItemSetDisableMoving());
           // // positionを更新
           // context.read<BoardPositionBloc>().add(
           //     BoardSetCardPosition(boardId: widget.boardId, key: boardCardKey));
@@ -344,7 +340,7 @@ class _BoardCardState extends State<BoardCard> {
             dx: details.offset.dx,
             dy: details.offset.dy,
             criteriaMovingNext: criteriaMovingNext,
-            positionState: boardPositionState,
+            positionState: context.read<BoardPositionBloc>().state,
           );
         }
       },

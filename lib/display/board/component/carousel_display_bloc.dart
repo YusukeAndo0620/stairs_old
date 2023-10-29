@@ -29,25 +29,33 @@ class CarouselDisplayMoveLastPage extends CarouselDisplayEvent {
   const CarouselDisplayMoveLastPage();
 }
 
+class _CarouselDisplaySetReady extends CarouselDisplayEvent {
+  const _CarouselDisplaySetReady();
+}
+
 // State
 @immutable
 class CarouselDisplayState extends Equatable {
   const CarouselDisplayState({
+    required this.isReady,
     required this.maxPage,
     required this.pageController,
   });
 
+  final bool isReady;
   final int maxPage;
   final PageController pageController;
 
   @override
-  List<Object?> get props => [maxPage, pageController];
+  List<Object?> get props => [isReady, maxPage, pageController];
 
   CarouselDisplayState copyWith({
+    bool? isReady,
     int? maxPage,
     PageController? pageController,
   }) =>
       CarouselDisplayState(
+        isReady: isReady ?? this.isReady,
         maxPage: maxPage ?? this.maxPage,
         pageController: pageController ?? this.pageController,
       );
@@ -67,6 +75,7 @@ class CarouselDisplayBloc
   CarouselDisplayBloc()
       : super(
           CarouselDisplayState(
+              isReady: true,
               maxPage: 1,
               pageController:
                   PageController(initialPage: 0, viewportFraction: 0.8)),
@@ -76,6 +85,7 @@ class CarouselDisplayBloc
     on<CarouselDisplayMoveNextPage>(_onMoveNextPage);
     on<CarouselDisplayMovePreviousPage>(_onMovePreviousPage);
     on<CarouselDisplayMoveLastPage>(_onMoveLastPage);
+    on<_CarouselDisplaySetReady>(_onSetReady);
   }
 
   void _onInit(CarouselDisplayInit event, Emitter<CarouselDisplayState> emit) {
@@ -101,34 +111,50 @@ class CarouselDisplayBloc
   Future<void> _onMoveNextPage(CarouselDisplayMoveNextPage event,
       Emitter<CarouselDisplayState> emit) async {
     if (state.pageController.positions.isEmpty) return;
-    if (state.pageController.page!.toInt() + 1 <= state.maxPage) {
+    if (state.pageController.page!.toInt() + 1 <= state.maxPage &&
+        state.isReady) {
+      emit(state.copyWith(isReady: false));
+
       state.pageController.animateToPage(
         state.pageController.page!.toInt() + 1,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeOut,
       );
+      add(const _CarouselDisplaySetReady());
     }
   }
 
   Future<void> _onMovePreviousPage(CarouselDisplayMovePreviousPage event,
       Emitter<CarouselDisplayState> emit) async {
-    if (state.pageController.positions.isEmpty) return;
+    if (state.pageController.positions.isEmpty && !state.isReady) return;
+    emit(state.copyWith(isReady: false));
+
     state.pageController.animateToPage(
       state.pageController.page!.toInt() - 1,
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeOut,
     );
+    add(const _CarouselDisplaySetReady());
   }
 
   Future<void> _onMoveLastPage(CarouselDisplayMoveLastPage event,
       Emitter<CarouselDisplayState> emit) async {
     if (state.pageController.positions.isEmpty) return;
-    if (state.pageController.page!.toInt() != state.maxPage) {
+    if (state.pageController.page!.toInt() != state.maxPage && state.isReady) {
+      emit(state.copyWith(isReady: false));
+
       state.pageController.animateToPage(
         state.maxPage,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeOut,
       );
+      add(const _CarouselDisplaySetReady());
     }
+  }
+
+  Future<void> _onSetReady(_CarouselDisplaySetReady event,
+      Emitter<CarouselDisplayState> emit) async {
+    await Future.delayed(const Duration(milliseconds: 1000))
+        .then((value) => emit(state.copyWith(isReady: true)));
   }
 }
