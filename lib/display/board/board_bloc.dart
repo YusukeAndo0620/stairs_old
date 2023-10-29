@@ -1,6 +1,7 @@
 import 'package:stairs/loom/loom_package.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'board_position_bloc.dart';
 
 import '../board/drag_item_bloc.dart';
 import '../../model/model.dart';
@@ -148,23 +149,29 @@ class BoardInitialState extends BoardState {
 class BoardListState extends BoardState {
   const BoardListState({
     required this.boardList,
+    required this.shrinkItemPosition,
   });
 
   final List<BoardInfo> boardList;
+  // key: board id, value: index of task item board card
+  final Map<int, int> shrinkItemPosition;
 
   @override
   List<Object?> get props => [
         boardList,
+        shrinkItemPosition,
       ];
 
   BoardListState copyWith({
     List<BoardInfo>? boardList,
+    Map<int, int>? shrinkItemPosition,
   }) =>
       BoardListState(
         boardList: boardList ?? this.boardList,
+        shrinkItemPosition: shrinkItemPosition ?? this.shrinkItemPosition,
       );
 
-  ///Check shrink item is included in target work board card list.
+  ///Check shrink item is included in target board card list.
   bool hasShrinkItem(String boardId) {
     final targetBoard = boardList.firstWhereOrNull(
       (element) => element.boardId == boardId,
@@ -175,14 +182,25 @@ class BoardListState extends BoardState {
         null;
   }
 
-  ///Get task item index in target work board.
+  ///get board id of shrink item is included in target board card list.
+  String? get boardIdOfHavingShrinkItem {
+    final targetBoardList = boardList
+        .map((element) => element.taskItemList
+            .firstWhereOrNull((item) => item.taskItemId == kShrinkId))
+        .whereType<TaskItemInfo>()
+        .toList();
+    if (targetBoardList.isEmpty || targetBoardList.length != 1) return null;
+    return targetBoardList.first.boardId;
+  }
+
+  ///Get task item index in target board card list.
   int getBoardIndex({required String boardId}) {
     return boardList.indexWhere(
       (element) => element.boardId == boardId,
     );
   }
 
-  ///Get task item index in target work board.
+  ///Get task item index in target board card list.
   int getTaskItemIndex({
     required String boardId,
     required String taskItemId,
@@ -214,11 +232,12 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
   }
 
   void _onInit(_Init event, Emitter<BoardState> emit) {
-    emit(const BoardListState(boardList: []));
+    emit(const BoardListState(boardList: [], shrinkItemPosition: {}));
   }
 
   Future<void> _onGetList(BoardGetList event, Emitter<BoardState> emit) async {
-    emit(BoardListState(boardList: dummyBoardList));
+    emit(BoardListState(
+        boardList: dummyBoardList, shrinkItemPosition: const {}));
   }
 
   Future<void> _onTapListItem(
@@ -320,18 +339,26 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
   Future<void> _onReplaceShrinkItem(
       BoardReplaceShrinkItem event, Emitter<BoardState> emit) async {
     if (!isListState()) return;
-    final targetList = [...(state as BoardListState).boardList];
-    final boardIndex =
-        (state as BoardListState).getBoardIndex(boardId: event.boardId);
+    final listState = (state as BoardListState);
+    final targetList = [...listState.boardList];
+    final boardIndex = listState.getBoardIndex(boardId: event.boardId);
     if (boardIndex == -1) return;
-    final boardItemIndex = (state as BoardListState).getTaskItemIndex(
+    final boardItemIndex = listState.getTaskItemIndex(
       boardId: event.boardId,
       taskItemId: event.taskItemId,
     );
 
     targetList[boardIndex].taskItemList[boardItemIndex] = event.shrinkItem;
 
-    emit((state as BoardListState).copyWith(boardList: targetList));
+    emit(
+      listState.copyWith(
+        boardList: targetList,
+        shrinkItemPosition: getShrinkItemPosition(
+          boardIdIndex: listState.getBoardIndex(boardId: event.boardId),
+          taskItemIndex: boardItemIndex,
+        ),
+      ),
+    );
   }
 
   Future<void> _onDeleteAndAddShrinkItem(
@@ -339,6 +366,7 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
     if (!isListState()) return;
     final listState = (state as BoardListState);
     var targetList = [...listState.boardList];
+    // 現在のリスト内shrink itemのindexを参照するため、ここで定義
     final currentShrinkItemBoardIndex =
         listState.getBoardIndex(boardId: event.shrinkItem.boardId);
     final currentShrinkItemTaskItemIndex = listState.getTaskItemIndex(
@@ -366,6 +394,8 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
     }
 
     //同じワークボード内で移動した場合、それぞれのindexで削除対象を判定
+    if (currentShrinkItemBoardIndex == -1 ||
+        currentShrinkItemTaskItemIndex == -1) return;
     if (event.shrinkItem.boardId ==
         targetList[currentShrinkItemBoardIndex].boardId) {
       targetBoard.taskItemList.removeAt(
@@ -378,9 +408,26 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
           .removeAt(currentShrinkItemTaskItemIndex);
     }
 
-    emit(listState.copyWith(boardList: targetList));
+    // 別ボード内に残っているShrink itemを削除
+    final targetBoardIndex = listState.shrinkItemPosition.keys.first;
+    if (targetList[targetBoardIndex].boardId != event.shrinkItem.boardId) {
+      final shrinkItemIndex = targetList[targetBoardIndex]
+          .taskItemList
+          .indexWhere((element) => element.taskItemId == kShrinkId);
+      if (shrinkItemIndex == -1) return;
+      targetList[targetBoardIndex].taskItemList.removeAt(shrinkItemIndex);
+    }
+
+    emit(listState.copyWith(
+      boardList: targetList,
+      shrinkItemPosition: getShrinkItemPosition(
+        boardIdIndex: listState.getBoardIndex(boardId: event.boardId),
+        taskItemIndex: event.insertingIndex,
+      ),
+    ));
   }
 
+  // Drag completed
   Future<void> _onReplaceDraggedItem(
       BoardCompleteDraggedItem event, Emitter<BoardState> emit) async {
     if (!isListState()) return;
@@ -393,9 +440,32 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
       boardId: event.shrinkItem.boardId,
       taskItemId: event.shrinkItem.taskItemId,
     );
-    if (boardItemIndex == -1) return;
-    targetList[boardIndex].taskItemList[boardItemIndex] = event.draggingItem;
-    emit(listState.copyWith(boardList: targetList));
+    // drag完了時に別ボードカード内にshrink itemがある場合
+    if (boardItemIndex == -1) {
+      final targetBoardId = listState.boardIdOfHavingShrinkItem;
+      if (targetBoardId == null) return;
+      final targetBoardIdIndex =
+          listState.getBoardIndex(boardId: targetBoardId);
+      final dragItem = event.draggingItem.copyWith(
+        boardId: targetList[targetBoardIdIndex].boardId,
+      );
+      final shrinkItemIndex = listState.getTaskItemIndex(
+          boardId: targetBoardId, taskItemId: event.shrinkItem.taskItemId);
+      if (shrinkItemIndex == -1) return;
+      targetList[targetBoardIdIndex].taskItemList[shrinkItemIndex] = dragItem;
+    } else {
+      targetList[boardIndex].taskItemList[boardItemIndex] = event.draggingItem;
+    }
+
+    emit(BoardListState(boardList: targetList, shrinkItemPosition: const {}));
+  }
+
+  Map<int, int>? getShrinkItemPosition(
+      {required int boardIdIndex, required int taskItemIndex}) {
+    if (!isListState()) return null;
+    final Map<int, int> targetMap = {};
+    targetMap[boardIdIndex] = taskItemIndex;
+    return targetMap;
   }
 
   bool isListState() {

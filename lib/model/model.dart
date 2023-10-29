@@ -84,6 +84,25 @@ class TaskItemInfo {
   final DateTime startDate;
   final DateTime endDate;
   final List<ColorLabelInfo> labelList;
+
+  TaskItemInfo copyWith({
+    String? boardId,
+    String? taskItemId,
+    String? title,
+    String? description,
+    DateTime? startDate,
+    DateTime? endDate,
+    List<ColorLabelInfo>? labelList,
+  }) =>
+      TaskItemInfo(
+        boardId: boardId ?? this.boardId,
+        taskItemId: taskItemId ?? this.taskItemId,
+        title: title ?? this.title,
+        description: description ?? this.description,
+        startDate: startDate ?? this.startDate,
+        endDate: endDate ?? this.endDate,
+        labelList: labelList ?? this.labelList,
+      );
 }
 
 // TODO: Delete

@@ -15,6 +15,16 @@ class _Init extends DragItemEvent {
   const _Init();
 }
 
+/// Set Moving ready.
+class DragItemSetReadyMoving extends DragItemEvent {
+  const DragItemSetReadyMoving();
+}
+
+/// Set Moving not ready.
+class DragItemSetDisableMoving extends DragItemEvent {
+  const DragItemSetDisableMoving();
+}
+
 /// Set Dragging item.
 class DragItemSetItem extends DragItemEvent {
   const DragItemSetItem({
@@ -57,28 +67,33 @@ class DragItemInitialState extends DragItemState {
 
 class DragItemDraggingState extends DragItemState {
   const DragItemDraggingState({
+    required this.isReady,
     required this.boardId,
     required this.draggingItem,
     required this.shrinkItem,
   });
 
+  final bool isReady;
   final String boardId;
   final TaskItemInfo draggingItem;
   final TaskItemInfo shrinkItem;
 
   @override
   List<Object?> get props => [
+        isReady,
         boardId,
         draggingItem,
         shrinkItem,
       ];
 
   DragItemDraggingState copyWith({
+    bool? isReady,
     String? boardId,
     TaskItemInfo? draggingItem,
     TaskItemInfo? shrinkItem,
   }) =>
       DragItemDraggingState(
+        isReady: isReady ?? this.isReady,
         boardId: boardId ?? this.boardId,
         draggingItem: draggingItem ?? this.draggingItem,
         shrinkItem: shrinkItem ?? this.shrinkItem,
@@ -92,6 +107,8 @@ class DragItemBloc extends Bloc<DragItemEvent, DragItemState> {
           const DragItemInitialState(),
         ) {
     on<_Init>(_onInit);
+    on<DragItemSetReadyMoving>(_onSetReadyMoving);
+    on<DragItemSetDisableMoving>(_onSetDisableMoving);
     on<DragItemSetItem>(_onSetItem);
     on<DragItemChangeTaskItem>(_onChangeTaskItem);
     on<DragItemComplete>(_onComplete);
@@ -102,10 +119,31 @@ class DragItemBloc extends Bloc<DragItemEvent, DragItemState> {
     emit(const DragItemInitialState());
   }
 
+  Future<void> _onSetReadyMoving(
+      DragItemSetReadyMoving event, Emitter<DragItemState> emit) async {
+    if (state is! DragItemDraggingState) return;
+    final draggingState = state as DragItemDraggingState;
+
+    emit(
+      draggingState.copyWith(isReady: true),
+    );
+  }
+
+  Future<void> _onSetDisableMoving(
+      DragItemSetDisableMoving event, Emitter<DragItemState> emit) async {
+    if (state is! DragItemDraggingState) return;
+    final draggingState = state as DragItemDraggingState;
+
+    emit(
+      draggingState.copyWith(isReady: false),
+    );
+  }
+
   Future<void> _onSetItem(
       DragItemSetItem event, Emitter<DragItemState> emit) async {
     emit(
       DragItemDraggingState(
+        isReady: true,
         boardId: event.boardId,
         draggingItem: event.draggingItem,
         shrinkItem: getShrinkItem(
@@ -117,7 +155,7 @@ class DragItemBloc extends Bloc<DragItemEvent, DragItemState> {
 
   Future<void> _onChangeTaskItem(
       DragItemChangeTaskItem event, Emitter<DragItemState> emit) async {
-    if (state is DragItemInitialState) return;
+    if (state is! DragItemDraggingState) return;
     final draggingState = state as DragItemDraggingState;
     // 他ボードからドラッグされたことを考慮し、board idを更新
     final targetDragItem = TaskItemInfo(

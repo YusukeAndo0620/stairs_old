@@ -102,7 +102,7 @@ class CarouselDisplayBloc
       Emitter<CarouselDisplayState> emit) async {
     if (state.pageController.positions.isEmpty) return;
     if (state.pageController.page!.toInt() + 1 <= state.maxPage) {
-      await state.pageController.animateToPage(
+      state.pageController.animateToPage(
         state.pageController.page!.toInt() + 1,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeOut,
@@ -113,7 +113,7 @@ class CarouselDisplayBloc
   Future<void> _onMovePreviousPage(CarouselDisplayMovePreviousPage event,
       Emitter<CarouselDisplayState> emit) async {
     if (state.pageController.positions.isEmpty) return;
-    await state.pageController.animateToPage(
+    state.pageController.animateToPage(
       state.pageController.page!.toInt() - 1,
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeOut,
@@ -124,7 +124,7 @@ class CarouselDisplayBloc
       Emitter<CarouselDisplayState> emit) async {
     if (state.pageController.positions.isEmpty) return;
     if (state.pageController.page!.toInt() != state.maxPage) {
-      await state.pageController.animateToPage(
+      state.pageController.animateToPage(
         state.maxPage,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeOut,
