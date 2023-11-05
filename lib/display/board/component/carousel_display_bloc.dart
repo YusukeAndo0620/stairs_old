@@ -154,7 +154,7 @@ class CarouselDisplayBloc
 
   Future<void> _onSetReady(_CarouselDisplaySetReady event,
       Emitter<CarouselDisplayState> emit) async {
-    await Future.delayed(const Duration(milliseconds: 1000))
+    await Future.delayed(const Duration(milliseconds: 500))
         .then((value) => emit(state.copyWith(isReady: true)));
   }
 }

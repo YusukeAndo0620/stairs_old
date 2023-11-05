@@ -112,7 +112,7 @@ class BoardPositionBloc
       BoardSetCardPosition event, Emitter<BoardPositionBlocState> emit) {
     if (event.key.currentContext == null) return;
     final position = event.key.currentContext!.findRenderObject() as RenderBox;
-    final targetMap = state.boardPositionMap;
+    final targetMap = {...state.boardPositionMap};
     final positionInfo = PositionInfo(
       height: event.key.currentContext!.size!.height,
       width: event.key.currentContext!.size!.width,
@@ -134,7 +134,7 @@ class BoardPositionBloc
       BoardSetCardItemPosition event, Emitter<BoardPositionBlocState> emit) {
     if (event.key.currentContext == null) return;
     final position = event.key.currentContext!.findRenderObject() as RenderBox;
-    final targetMap = state.boardItemPositionMap;
+    final targetMap = {...state.boardItemPositionMap};
     final positionInfo = PositionInfo(
       height: event.key.currentContext!.size!.height,
       width: event.key.currentContext!.size!.width,

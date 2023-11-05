@@ -3,6 +3,7 @@ export 'package:flutter/material.dart';
 export 'package:flutter_bloc/flutter_bloc.dart';
 export 'package:provider/single_child_widget.dart';
 
+export 'stairs_logger.dart';
 export 'theme.dart';
 export 'loom_theme_data.dart';
 export 'loom_icons.dart';

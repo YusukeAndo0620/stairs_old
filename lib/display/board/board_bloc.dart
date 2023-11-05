@@ -233,6 +233,8 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
     on<BoardCompleteDraggedItem>(_onReplaceDraggedItem);
   }
 
+  final _logger = stairsLogger(name: 'board_bloc');
+
   void _onInit(_Init event, Emitter<BoardState> emit) {
     emit(const BoardListState(boardList: [], shrinkItemPosition: {}));
   }
@@ -379,8 +381,10 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
     // Shrink Itemを追加する対象のBoard
     final boardIndex =
         (state as BoardListState).getBoardIndex(boardId: event.boardId);
-    print("===_onDeleteAndAddShrinkItem==");
-    print("boardIndex:$boardIndex");
+    _logger.d("===BoardDeleteAndAddShrinkItem===");
+    _logger.d(
+      "boardId: ${event.boardId}, shrinkItem.boardId: ${event.shrinkItem.boardId}, insertingIndex: ${event.insertingIndex}",
+    );
     if (boardIndex == -1) return;
     final targetBoard = targetList[boardIndex];
     final targetShrinkItemPosition = {...listState.shrinkItemPosition};
@@ -400,6 +404,9 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
 
     // TODO: position mapに別ボードに残っているshrink itemがないため、削除できない
     // TODO: 一度ページ移動して戻ると、別ボードの要素が消されていく。
+    // TODO: ページ移動が早い
+    //→リビルトされて detailsの値が更新。board id 1の時450px、2の時更新されて110px
+    //ビルドさせないとだめ。
 
     targetShrinkItemPosition[listState.getBoardIndex(boardId: event.boardId)] =
         event.insertingIndex;
@@ -421,6 +428,8 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
       }
     }
 
+    // print("削除前のtargetShrinkItemPosition: $targetShrinkItemPosition");
+    _logger.d("削除前のtargetShrinkItemPosition: $targetShrinkItemPosition");
     // 別ボード内に残っているShrink itemを削除
     for (final item in {...targetShrinkItemPosition}.entries) {
       if (targetList[item.key].boardId != event.shrinkItem.boardId) {
@@ -432,7 +441,7 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
         targetShrinkItemPosition.remove(item.key);
       }
     }
-    print("targetShrinkItemPosition: $targetShrinkItemPosition");
+    _logger.d("削除後のtargetShrinkItemPosition: $targetShrinkItemPosition");
 
     emit(listState.copyWith(
       boardList: targetList,
@@ -443,6 +452,8 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
   // Drag completed
   Future<void> _onReplaceDraggedItem(
       BoardCompleteDraggedItem event, Emitter<BoardState> emit) async {
+    _logger.d("===BoardCompleteDraggedItem===");
+
     if (!isListState()) return;
     final listState = (state as BoardListState);
     final targetList = [...listState.boardList];
