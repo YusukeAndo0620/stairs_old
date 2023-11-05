@@ -266,9 +266,9 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
   Future<void> _onAddTaskItem(
       BoardAddTaskItem event, Emitter<BoardState> emit) async {
     if (!isListState()) return;
-    final emitBoardList = [...(state as BoardListState).boardList];
-    final targetBoardIndex =
-        (state as BoardListState).getBoardIndex(boardId: event.boardId);
+    final listState = state as BoardListState;
+    final emitBoardList = [...listState.boardList];
+    final targetBoardIndex = listState.getBoardIndex(boardId: event.boardId);
     if (targetBoardIndex == -1) return;
 
     emitBoardList[targetBoardIndex].taskItemList.add(
@@ -283,23 +283,30 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
           ),
         );
     emit(
-      (state as BoardListState).copyWith(boardList: emitBoardList),
+      listState.copyWith(boardList: emitBoardList),
     );
   }
 
   Future<void> _onUpdateTaskItem(
       BoardUpdateTaskItem event, Emitter<BoardState> emit) async {
     if (!isListState()) return;
-    final emitBoardList = [...(state as BoardListState).boardList];
-    final targetBoardIndex =
-        (state as BoardListState).getBoardIndex(boardId: event.boardId);
+    final listState = state as BoardListState;
+    final emitBoardList = [...listState.boardList];
+    final targetBoardIndex = listState.getBoardIndex(boardId: event.boardId);
 
     if (targetBoardIndex == -1) return;
-    final targetTaskItemIndex = (state as BoardListState).getTaskItemIndex(
+    final targetTaskItemIndex = listState.getTaskItemIndex(
       boardId: event.boardId,
       taskItemId: event.taskItemId,
     );
     if (targetBoardIndex == -1) return;
+
+    final replaceBoardInfo = BoardInfo(
+      projectId: emitBoardList[targetBoardIndex].projectId,
+      boardId: emitBoardList[targetBoardIndex].boardId,
+      title: emitBoardList[targetBoardIndex].title,
+      taskItemList: emitBoardList[targetBoardIndex].taskItemList,
+    );
 
     final replaceTaskItem = TaskItemInfo(
       boardId: event.boardId,
@@ -311,11 +318,14 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
       labelList: event.labelList,
     );
 
-    emitBoardList[targetBoardIndex].taskItemList.replaceRange(
+    replaceBoardInfo.taskItemList.replaceRange(
         targetTaskItemIndex, targetTaskItemIndex + 1, [replaceTaskItem]);
 
+    emitBoardList.replaceRange(
+        targetBoardIndex, targetBoardIndex + 1, [replaceBoardInfo]);
+
     emit(
-      (state as BoardListState).copyWith(boardList: emitBoardList),
+      listState.copyWith(boardList: emitBoardList),
     );
   }
 
