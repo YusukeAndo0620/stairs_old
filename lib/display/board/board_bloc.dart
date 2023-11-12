@@ -414,9 +414,7 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
 
     // TODO: position mapに別ボードに残っているshrink itemがないため、削除できない
     // TODO: 一度ページ移動して戻ると、別ボードの要素が消されていく。
-    // TODO: ページ移動が早い
-    //→リビルトされて detailsの値が更新。board id 1の時450px、2の時更新されて110px
-    //ビルドさせないとだめ。
+    // TODO: ページ移動していないのに、他ボードにアイテムを移動できてしまう。
 
     targetShrinkItemPosition[listState.getBoardIndex(boardId: event.boardId)] =
         event.insertingIndex;

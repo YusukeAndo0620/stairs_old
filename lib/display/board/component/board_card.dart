@@ -297,10 +297,9 @@ class _BoardCardState extends State<BoardCard> {
       onMove: (details) async {
         if (!context.read<CarouselDisplayBloc>().state.isReady) return;
         _logger.i('====Drag開始 {board id:${widget.boardId}}====');
-        _logger.d("dx:${details.offset.dx}");
         final cardWidth = boardCardKey.currentContext!.size!.width;
         const previousCriteria = 60.0;
-        final nextCriteria = cardWidth - 60.0;
+        final nextCriteria = cardWidth - 240.0;
 
         // positionを更新
         context.read<BoardPositionBloc>().add(
@@ -308,10 +307,12 @@ class _BoardCardState extends State<BoardCard> {
 
         final boardPositionState = context.read<BoardPositionBloc>().state;
 
+        _logger.d("dx:${details.offset.dx}");
+        _logger.d("nextCriteria:$nextCriteria");
         // カード内移動
         if (details.offset.dx < nextCriteria &&
             previousCriteria < details.offset.dx) {
-          _logger.i('縦ページ移動');
+          _logger.i('=縦スクロール移動=');
           onMoveVertical(
             context: context,
             boardCardKey: boardCardKey,
@@ -319,7 +320,7 @@ class _BoardCardState extends State<BoardCard> {
             positionState: boardPositionState,
           );
         } else {
-          _logger.i('横ページ移動');
+          _logger.i('=横ページ移動=');
           // 横ページ移動
           onMoveHorizontal(
             context: context,
