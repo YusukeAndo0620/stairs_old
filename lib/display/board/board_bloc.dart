@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:stairs/loom/loom_package.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
-import 'board_position_bloc.dart';
 
 import '../board/drag_item_bloc.dart';
 import '../../model/model.dart';

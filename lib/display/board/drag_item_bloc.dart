@@ -1,7 +1,6 @@
 import 'package:stairs/loom/loom_package.dart';
 
 import 'package:equatable/equatable.dart';
-import '../../model/model.dart';
 
 const kShrinkId = 'shrinkId';
 

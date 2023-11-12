@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:stairs/app/enum/screen_id.dart';
 import 'app_function.dart';
-import '../display/project/screen/project_screen.dart';
+
+import '../display/display_contents.dart';
 import '../display/project/project_list_bloc.dart';
 import '../display/project/project_detail_bloc.dart';
 import '../display/board/task_item_bloc.dart';
@@ -30,6 +32,8 @@ class App extends AppFunction {
 
   @override
   Widget buildMainContents(context) {
-    return const Project();
+    return const DisplayContents(
+      screenId: ScreenId.board,
+    );
   }
 }

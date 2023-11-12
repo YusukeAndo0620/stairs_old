@@ -39,8 +39,8 @@ class ProjectDetailItemInfo {
   final String projectName;
   final String themeColorId;
   final String industry;
-  final String startDate;
-  final String endDate;
+  final DateTime startDate;
+  final DateTime endDate;
   final String description;
   final String os;
   final String db;
@@ -49,6 +49,26 @@ class ProjectDetailItemInfo {
   final List<Label> devProgressList;
   final String devSize;
   final List<ColorLabelInfo> tagList;
+
+  // ボードで設定したラベル（開発言語＋タグを含む）リスト取得
+  List<ColorLabelInfo> get allLabelList {
+    final labelList = <ColorLabelInfo>[];
+
+    for (final devItem in devLanguageList) {
+      final targetList = devItem.linkLabelList
+          .map(
+            (item) => ColorLabelInfo(
+              id: devItem.inputValue + item.id,
+              labelName: '${devItem.inputValue} - ${item.labelName}',
+              themeColor: item.themeColor,
+              isDevLanguage: true,
+            ),
+          )
+          .toList();
+      labelList.addAll(targetList);
+    }
+    return [...tagList, ...labelList];
+  }
 }
 
 // TODO: Delete
@@ -74,6 +94,7 @@ class TaskItemInfo {
     required this.description,
     required this.startDate,
     required this.endDate,
+    this.doneDate,
     required this.labelList,
   });
 
@@ -83,6 +104,7 @@ class TaskItemInfo {
   final String description;
   final DateTime startDate;
   final DateTime endDate;
+  final DateTime? doneDate;
   final List<ColorLabelInfo> labelList;
 
   TaskItemInfo copyWith({
@@ -92,6 +114,7 @@ class TaskItemInfo {
     String? description,
     DateTime? startDate,
     DateTime? endDate,
+    DateTime? doneDate,
     List<ColorLabelInfo>? labelList,
   }) =>
       TaskItemInfo(
@@ -101,8 +124,39 @@ class TaskItemInfo {
         description: description ?? this.description,
         startDate: startDate ?? this.startDate,
         endDate: endDate ?? this.endDate,
+        doneDate: doneDate ?? this.doneDate,
         labelList: labelList ?? this.labelList,
       );
+}
+
+// For status display
+class LabelStatusInfo {
+  LabelStatusInfo({
+    required this.projectId,
+    required this.labelId,
+    required this.labelName,
+    this.isDevLanguage = false,
+    required this.taskStatusList,
+  });
+  final String projectId;
+  final String labelId;
+  final String labelName;
+  final bool isDevLanguage;
+  final List<TaskStatusInfo> taskStatusList;
+}
+
+// For status display
+class TaskStatusInfo {
+  TaskStatusInfo({
+    required this.taskItemId,
+    required this.startDate,
+    required this.endDate,
+    this.doneDate,
+  });
+  final String taskItemId;
+  final DateTime startDate;
+  final DateTime endDate;
+  final DateTime? doneDate;
 }
 
 // TODO: Delete
@@ -123,11 +177,13 @@ class ColorLabelInfo {
     required this.id,
     required this.labelName,
     required this.themeColor,
+    this.isDevLanguage = false,
   });
 
   final String id;
   final String labelName;
   final Color themeColor;
+  final bool isDevLanguage;
 }
 
 // TODO: Delete

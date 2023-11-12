@@ -18,11 +18,13 @@ class TaskItemEditModal extends StatelessWidget {
     super.key,
     required this.themeColor,
     required this.taskItem,
+    required this.labelList,
     required this.onChangeTaskItem,
   });
 
   final Color themeColor;
   final TaskItemInfo taskItem;
+  final List<ColorLabelInfo> labelList;
   final Function(TaskItemInfo) onChangeTaskItem;
 
   @override
@@ -183,7 +185,7 @@ class TaskItemEditModal extends StatelessWidget {
                       type: DisplayType.tile,
                       title: _kLabelTxt,
                       height: MediaQuery.of(context).size.height * 0.7,
-                      labelList: taskItem.labelList,
+                      labelList: labelList,
                       selectedLabelList: state.taskItemInfo.labelList,
                       onTapListItem: (linkLabelList) {
                         context.read<TaskItemBloc>().add(

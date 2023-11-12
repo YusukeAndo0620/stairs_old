@@ -268,8 +268,8 @@ class ProjectDetailBloc
           colorInfo: colorList
               .firstWhere((element) => element.id == detailInfo.themeColorId),
           industry: detailInfo.industry,
-          startDate: DateTime.parse(detailInfo.startDate),
-          endDate: DateTime.parse(detailInfo.endDate),
+          startDate: detailInfo.startDate,
+          endDate: detailInfo.endDate,
           description: detailInfo.description,
           os: detailInfo.os,
           db: detailInfo.db,
@@ -360,20 +360,6 @@ class ProjectDetailBloc
     //TODO: API使用予定
     final projectDetail = dummyProjectDetailList
         .firstWhere((element) => element.projectId == projectId);
-    final labelList = <ColorLabelInfo>[];
-
-    for (final devItem in projectDetail.devLanguageList) {
-      final targetList = devItem.linkLabelList
-          .map(
-            (item) => ColorLabelInfo(
-              id: devItem.inputValue + item.id,
-              labelName: devItem.inputValue + ' - ' + item.labelName,
-              themeColor: item.themeColor,
-            ),
-          )
-          .toList();
-      labelList.addAll(targetList);
-    }
-    return [...projectDetail.tagList, ...labelList];
+    return projectDetail.allLabelList;
   }
 }

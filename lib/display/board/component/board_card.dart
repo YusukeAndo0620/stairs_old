@@ -153,6 +153,10 @@ class _BoardCardState extends State<BoardCard> {
                                   return TaskItemEditModal(
                                     themeColor: widget.themeColor,
                                     taskItem: item,
+                                    labelList: context
+                                        .read<ProjectDetailBloc>()
+                                        .getLabelList(
+                                            projectId: widget.projectId),
                                     onChangeTaskItem: (taskItemVal) {},
                                   );
                                 },
