@@ -11,8 +11,12 @@ const _kOsTxt = '使用OS・機種';
 const _kDevLangTxt = '開発言語';
 const _kProgressTxt = '作業工程';
 const _kDevSizeTxt = '開発人数';
+const _kRankingTxt = '順位';
+const _kLabelNameTxt = 'ラベル名';
+const _kTotalCountTxt = '総数';
 
 const _kStackRecordSpace = 8.0;
+const _kRankingHeaderWidth = 120.0;
 const _kStatusContentPadding = EdgeInsets.symmetric(
   vertical: 8.0,
   horizontal: 24.0,
@@ -20,6 +24,10 @@ const _kStatusContentPadding = EdgeInsets.symmetric(
 const _kLabelExpandedPadding = EdgeInsets.symmetric(
   vertical: 0.0,
   horizontal: 16.0,
+);
+const _kRankingHeaderPadding = EdgeInsets.symmetric(
+  vertical: 0.0,
+  horizontal: 8.0,
 );
 
 class StatusScreen extends StatelessWidget {
@@ -178,6 +186,33 @@ class _LabelCountArea extends StatelessWidget {
             content: item.taskStatusList.length.toString(),
           )
         ]
+      ],
+    );
+  }
+}
+
+class _LabelRankingHeader extends StatelessWidget {
+  const _LabelRankingHeader({
+    required this.labelStatusList,
+  });
+
+  final List<LabelStatusInfo> labelStatusList;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = LoomTheme.of(context);
+
+    return Row(
+      children: [
+        Container(
+          width: _kRankingHeaderWidth,
+          padding: _kRankingHeaderPadding,
+          child: Text(
+            _kRankingTxt,
+            style: theme.textStyleBody,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     );
   }

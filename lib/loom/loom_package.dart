@@ -3,7 +3,7 @@ export 'package:flutter/material.dart';
 export 'package:flutter_bloc/flutter_bloc.dart';
 export 'package:provider/single_child_widget.dart';
 export 'package:stairs/model/model.dart';
-
+export 'package:intl/intl.dart' hide TextDirection;
 export 'stairs_logger.dart';
 export 'theme.dart';
 export 'loom_theme_data.dart';

@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart' hide Theme;
-import '/loom/theme.dart';
+import 'package:stairs/loom/loom_package.dart';
 
 // const _kContentPadding = EdgeInsets.all(8.0);
 const _kInputBorderRadius = BorderRadius.all(Radius.circular(10.0));
